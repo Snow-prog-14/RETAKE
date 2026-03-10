@@ -1,13 +1,22 @@
 import { useState } from "react";
-import { apiPost } from "../api/client";
 import ThemeToggle from "../components/ThemeToggle";
+import { apiPost } from "../lib/api"; // adjust path if needed
 
-type Props = {
-  onLoggedIn: (token: string) => void;
-  goToRegister: () => void;
+type UserRole = "staff" | "admin" | "appadmin";
+
+type LoginPageProps = {
+  onLoggedIn: (token: string, role: UserRole) => void;
 };
 
-export default function LoginPage({ onLoggedIn, goToRegister }: Props) {
+type LoginResponse = {
+  token: string;
+  user: {
+    email: string;
+    role: UserRole;
+  };
+};
+
+export default function LoginPage({ onLoggedIn }: LoginPageProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -16,13 +25,15 @@ export default function LoginPage({ onLoggedIn, goToRegister }: Props) {
     try {
       setError("");
 
-      const result = await apiPost<{ token: string; user: { email: string } }>(
-        "/api/auth/login",
-        { email, password },
-      );
+      const result = await apiPost<LoginResponse>("/api/auth/login", {
+        email,
+        password,
+      });
 
       localStorage.setItem("token", result.token);
-      onLoggedIn(result.token);
+      localStorage.setItem("role", result.user.role);
+
+      onLoggedIn(result.token, result.user.role);
     } catch (err) {
       console.error(err);
       setError(err instanceof Error ? err.message : "Login failed.");
@@ -40,9 +51,7 @@ export default function LoginPage({ onLoggedIn, goToRegister }: Props) {
           <div className="card-body p-4 p-md-5">
             <div className="text-center mb-4">
               <h2 className="fw-bold mb-2">Welcome Back</h2>
-              <p className="text-muted mb-0">
-                Sign in to continue to the enrollment system.
-              </p>
+              <p className="text-muted mb-0">Sign in to access the system.</p>
             </div>
 
             {error && (
@@ -77,17 +86,6 @@ export default function LoginPage({ onLoggedIn, goToRegister }: Props) {
                 onClick={handleSubmit}
               >
                 Login
-              </button>
-            </div>
-
-            <div className="text-center mt-4">
-              <span className="text-muted">Don’t have an account?</span>{" "}
-              <button
-                type="button"
-                className="btn btn-link text-decoration-none p-0 fw-semibold"
-                onClick={goToRegister}
-              >
-                Register here
               </button>
             </div>
           </div>
