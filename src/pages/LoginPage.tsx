@@ -1,6 +1,5 @@
 import { useState } from "react";
 import ThemeToggle from "../components/ThemeToggle";
-import { apiPost } from "../lib/api"; // adjust path if needed
 
 type UserRole = "staff" | "admin" | "appadmin";
 
@@ -8,15 +7,7 @@ type LoginPageProps = {
   onLoggedIn: (token: string, role: UserRole) => void;
 };
 
-type LoginResponse = {
-  token: string;
-  user: {
-    email: string;
-    role: UserRole;
-  };
-};
-
-export default function LoginPage({ onLoggedIn }: LoginPageProps) {
+export default function LoginPage({ onLoggedIn, goToRegister }: Props) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -25,15 +16,13 @@ export default function LoginPage({ onLoggedIn }: LoginPageProps) {
     try {
       setError("");
 
-      const result = await apiPost<LoginResponse>("/api/auth/login", {
-        email,
-        password,
-      });
+      const result = await apiPost<{ token: string; user: { email: string } }>(
+        "/api/auth/login",
+        { email, password },
+      );
 
       localStorage.setItem("token", result.token);
-      localStorage.setItem("role", result.user.role);
-
-      onLoggedIn(result.token, result.user.role);
+      onLoggedIn(result.token);
     } catch (err) {
       console.error(err);
       setError(err instanceof Error ? err.message : "Login failed.");
@@ -51,7 +40,9 @@ export default function LoginPage({ onLoggedIn }: LoginPageProps) {
           <div className="card-body p-4 p-md-5">
             <div className="text-center mb-4">
               <h2 className="fw-bold mb-2">Welcome Back</h2>
-              <p className="text-muted mb-0">Sign in to access the system.</p>
+              <p className="text-muted mb-0">
+                Sign in to continue to the enrollment system.
+              </p>
             </div>
 
             {error && (
@@ -86,6 +77,17 @@ export default function LoginPage({ onLoggedIn }: LoginPageProps) {
                 onClick={handleSubmit}
               >
                 Login
+              </button>
+            </div>
+
+            <div className="text-center mt-4">
+              <span className="text-muted">Don’t have an account?</span>{" "}
+              <button
+                type="button"
+                className="btn btn-link text-decoration-none p-0 fw-semibold"
+                onClick={goToRegister}
+              >
+                Register here
               </button>
             </div>
           </div>
