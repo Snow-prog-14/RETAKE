@@ -3,15 +3,15 @@
   --shadow: 0 24px 55px rgba(40, 50, 80, 0.14);
   --text-dark: #2d3436;
 
-  /* default = light mode */
+  /* light mode */
   --page-bg-1: #f8f9fa;
   --page-bg-2: #eef1f4;
 
   --panel-left-1: #ffffff;
   --panel-left-2: #f5f6f7;
 
-  --right-overlay-top: rgba(255, 255, 255, 0.18);
-  --right-overlay-bottom: rgba(45, 52, 54, 0.30);
+  --image-overlay-top: rgba(255, 255, 255, 0.12);
+  --image-overlay-bottom: rgba(45, 52, 54, 0.34);
 
   --heading-main: #ff4b2b;
   --text-main: #2d3436;
@@ -29,16 +29,17 @@
   --button-text: #ffffff;
 
   --link-color: #ff4b2b;
-  --social-border: rgba(255, 255, 255, 0.75);
-  --social-bg: rgba(255, 255, 255, 0.12);
-  --social-hover: rgba(255, 75, 43, 0.14);
+  --subtle-btn-bg: rgba(45, 52, 54, 0.06);
+  --subtle-btn-border: rgba(45, 52, 54, 0.12);
 
   --right-text: #ffffff;
-  --right-subtext: rgba(255, 255, 255, 0.93);
+  --right-subtext: rgba(255, 255, 255, 0.95);
   --right-tag: rgba(255, 255, 255, 0.9);
+
+  --swap-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --swap-speed: 0.8s;
 }
 
-/* dark mode palette */
 body.dark {
   --page-bg-1: #4d4e56;
   --page-bg-2: #587487;
@@ -46,8 +47,8 @@ body.dark {
   --panel-left-1: #26343d;
   --panel-left-2: #324552;
 
-  --right-overlay-top: rgba(34, 45, 56, 0.40);
-  --right-overlay-bottom: rgba(34, 45, 56, 0.68);
+  --image-overlay-top: rgba(34, 45, 56, 0.35);
+  --image-overlay-bottom: rgba(34, 45, 56, 0.7);
 
   --heading-main: #ff6b3d;
   --text-main: #ffffff;
@@ -65,9 +66,8 @@ body.dark {
   --button-text: #ffffff;
 
   --link-color: #c9cdca;
-  --social-border: rgba(201, 205, 202, 0.82);
-  --social-bg: rgba(77, 78, 86, 0.20);
-  --social-hover: rgba(255, 107, 61, 0.12);
+  --subtle-btn-bg: rgba(255, 255, 255, 0.06);
+  --subtle-btn-border: rgba(201, 205, 202, 0.18);
 
   --right-text: #ffffff;
   --right-subtext: rgba(255, 255, 255, 0.92);
@@ -103,32 +103,148 @@ body {
 
 .auth-card {
   width: min(100%, 1120px);
-  min-height: min(88vh, 680px);
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  min-height: min(88vh, 700px);
+  position: relative;
   border-radius: clamp(18px, 2vw, 26px);
   overflow: hidden;
   box-shadow: var(--shadow);
-}
-
-.auth-left,
-.auth-right {
-  min-width: 0;
-}
-
-.auth-left {
   background: linear-gradient(160deg, var(--panel-left-1) 0%, var(--panel-left-2) 100%);
-  padding: clamp(28px, 5vw, 72px);
+}
+
+/* two half-width moving shells */
+.visual-panel,
+.forms-stage {
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  transition: transform var(--swap-speed) var(--swap-ease);
+  will-change: transform;
+}
+
+/* state 1: Login | Picture */
+.visual-panel {
+  left: 50%;
+  transform: translateX(0);
+}
+
+.forms-stage {
+  left: 0;
+  transform: translateX(0);
+}
+
+/* state 2: Picture | Create */
+.auth-card.register-mode .visual-panel {
+  transform: translateX(-100%);
+}
+
+.auth-card.register-mode .forms-stage {
+  transform: translateX(100%);
+}
+
+/* image side */
+.image-panel {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      180deg,
+      var(--image-overlay-top) 0%,
+      var(--image-overlay-bottom) 100%
+    ),
+    url("https://wallpaperbat.com/img/133075208-workplace-vibes-iphone-wallpaper.jpg")
+      center/cover no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(24px, 3vw, 36px);
+}
+
+.image-overlay {
+  width: 100%;
+  max-width: 430px;
+  text-align: center;
+  color: var(--right-text);
+  padding: clamp(12px, 2vw, 24px);
+  animation: overlayFade 0.55s ease;
+}
+
+.right-tag {
+  margin: 0 0 12px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  color: var(--right-tag);
+}
+
+.image-overlay h2 {
+  margin: 0;
+  font-size: clamp(2rem, 4.5vw, 3.3rem);
+  line-height: 1.05;
+  font-weight: 800;
+  color: var(--right-text);
+}
+
+.image-overlay p {
+  margin: 18px 0 0;
+  color: var(--right-subtext);
+  font-size: clamp(1rem, 1.8vw, 1.18rem);
+  line-height: 1.55;
+}
+
+/* form stage */
+.forms-stage {
+  overflow: hidden;
+}
+
+.forms-shell {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.auth-panel {
+  position: absolute;
+  inset: 0;
+  padding: clamp(24px, 4vw, 40px);
   color: var(--text-main);
   display: flex;
   flex-direction: column;
   justify-content: center;
+  transition:
+    transform 0.65s var(--swap-ease),
+    opacity 0.38s ease;
+  will-change: transform, opacity;
+}
+
+.login-panel {
+  transform: translateX(0);
+  opacity: 1;
+  z-index: 2;
+}
+
+.register-panel {
+  transform: translateX(14%);
+  opacity: 0;
+  z-index: 1;
+}
+
+.auth-card.register-mode .login-panel {
+  transform: translateX(-14%);
+  opacity: 0;
+  z-index: 1;
+}
+
+.auth-card.register-mode .register-panel {
+  transform: translateX(0);
+  opacity: 1;
+  z-index: 2;
 }
 
 .top-bar {
   display: flex;
   justify-content: flex-end;
-  margin-bottom: 18px;
+  margin-bottom: 12px;
 }
 
 .theme-toggle {
@@ -148,6 +264,10 @@ body {
   transform: translateY(-1px);
 }
 
+.form-content {
+  animation: formFade 0.45s ease;
+}
+
 .brand-label {
   margin: 0 0 12px;
   font-size: 0.85rem;
@@ -156,9 +276,9 @@ body {
   color: var(--heading-main);
 }
 
-.auth-left h1 {
+.form-content h1 {
   margin: 0;
-  font-size: clamp(2.2rem, 5vw, 3.8rem);
+  font-size: clamp(2.1rem, 4.7vw, 3.5rem);
   line-height: 1.05;
   font-weight: 800;
   color: var(--heading-main);
@@ -167,7 +287,7 @@ body {
 .subtitle {
   margin: 14px 0 clamp(24px, 4vw, 40px);
   color: var(--text-soft);
-  font-size: clamp(1rem, 2vw, 1.25rem);
+  font-size: clamp(1rem, 2vw, 1.18rem);
   line-height: 1.55;
   max-width: 520px;
 }
@@ -234,135 +354,94 @@ body {
   opacity: 0.97;
 }
 
-.form-links {
-  text-align: right;
-  margin-top: 2px;
+.form-footer-actions {
+  margin-top: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.form-links a {
+.text-link {
   color: var(--link-color);
   text-decoration: none;
   font-size: clamp(0.86rem, 1.2vw, 0.98rem);
   font-style: italic;
 }
 
-.auth-right {
-  position: relative;
-  background:
-    linear-gradient(
-      180deg,
-      var(--right-overlay-top) 0%,
-      var(--right-overlay-bottom) 100%
-    ),
-    url("https://wallpaperaccess.com/full/10922455.jpg")
-      center/cover no-repeat;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: clamp(24px, 3vw, 36px);
-}
-
-.overlay {
-  width: 100%;
-  max-width: 430px;
-  text-align: center;
-  color: var(--right-text);
-  padding: clamp(12px, 2vw, 24px);
-}
-
-.right-tag {
-  margin: 0 0 12px;
-  font-size: 0.82rem;
-  font-weight: 800;
-  letter-spacing: 0.16em;
-  color: var(--right-tag);
-}
-
-.overlay h2 {
-  margin: 0;
-  font-size: clamp(2rem, 4.5vw, 3.3rem);
-  line-height: 1.05;
-  font-weight: 800;
-  color: var(--right-text);
-}
-
-.overlay p {
-  margin: 18px 0 clamp(24px, 4vw, 34px);
-  color: var(--right-subtext);
-  font-size: clamp(1rem, 1.8vw, 1.18rem);
-  line-height: 1.55;
-}
-
-.social-row {
-  display: flex;
-  justify-content: center;
-  gap: clamp(12px, 2vw, 24px);
-  margin-bottom: clamp(22px, 3vw, 34px);
-  flex-wrap: wrap;
-}
-
-.social-btn {
-  width: clamp(54px, 6vw, 72px);
-  height: clamp(54px, 6vw, 72px);
-  border-radius: 50%;
-  border: 2px solid var(--social-border);
-  background: var(--social-bg);
-  color: var(--right-text);
-  font-size: clamp(1.1rem, 2vw, 1.55rem);
+.switch-mode-btn {
+  border: 1.5px solid var(--subtle-btn-border);
+  background: var(--subtle-btn-bg);
+  color: var(--text-main);
+  border-radius: 999px;
+  padding: 12px 18px;
+  font-size: 0.95rem;
   font-weight: 700;
   cursor: pointer;
-  transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+  transition: all 0.18s ease;
 }
 
-.social-btn:hover {
-  transform: translateY(-2px);
-  border-color: var(--right-text);
-  background: var(--social-hover);
+.switch-mode-btn:hover {
+  border-color: var(--heading-main);
+  color: var(--heading-main);
+  transform: translateY(-1px);
 }
 
-.terms {
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  gap: 10px;
-  font-size: clamp(0.88rem, 1.4vw, 1rem);
-  color: var(--right-subtext);
-  margin-bottom: clamp(20px, 3vw, 30px);
-  line-height: 1.5;
-  flex-wrap: wrap;
+.switch-mode-btn.secondary {
+  margin-left: auto;
 }
 
-.terms input {
-  margin-top: 3px;
-  accent-color: var(--button-bg-1);
+@keyframes formFade {
+  from {
+    opacity: 0.3;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
-.terms a {
-  color: var(--right-text);
-  text-decoration: none;
+@keyframes overlayFade {
+  from {
+    opacity: 0.75;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
-.create-link {
-  color: var(--right-text);
-  font-style: italic;
-  text-decoration: none;
-  font-size: clamp(0.9rem, 1.3vw, 1rem);
-}
-
+/* tablet/mobile: stack, no horizontal swap */
 @media (max-width: 900px) {
   .auth-card {
-    width: min(100%, 700px);
+    width: min(100%, 760px);
     min-height: auto;
-    grid-template-columns: 1fr;
+    display: block;
   }
 
-  .auth-left,
-  .auth-right {
-    min-height: 360px;
+  .visual-panel,
+  .forms-stage,
+  .auth-card.register-mode .visual-panel,
+  .auth-card.register-mode .forms-stage {
+    position: relative;
+    left: auto;
+    width: 100%;
+    transform: none;
   }
 
-  .overlay {
-    max-width: 500px;
+  .visual-panel {
+    min-height: 260px;
+  }
+
+  .forms-stage {
+    min-height: 500px;
+  }
+
+  .form-footer-actions {
+    justify-content: center;
+  }
+
+  .switch-mode-btn.secondary {
+    margin-left: 0;
   }
 }
 
@@ -375,28 +454,28 @@ body {
     border-radius: 18px;
   }
 
-  .auth-left,
-  .auth-right {
-    min-height: auto;
+  .visual-panel {
+    min-height: 220px;
   }
 
-  .auth-left {
-    padding: 24px 18px;
-  }
-
-  .auth-right {
-    padding: 22px 16px 28px;
+  .auth-panel {
+    padding: 18px 14px 22px;
   }
 
   .top-bar {
     justify-content: center;
   }
 
-  .form-links {
-    text-align: center;
+  .form-footer-actions {
+    flex-direction: column;
+    align-items: stretch;
   }
 
-  .terms {
-    align-items: center;
+  .text-link,
+  .switch-mode-btn,
+  .switch-mode-btn.secondary {
+    text-align: center;
+    width: 100%;
+    margin-left: 0;
   }
 }

@@ -8,23 +8,29 @@ export default function LoginPage() {
   return (
     <div className="auth-page">
       <div className={`auth-card ${isRegister ? "register-mode" : ""}`}>
-        <div className="image-panel">
-          <div className="image-overlay">
-            <p className="right-tag">STUDY BUDDY</p>
-            <h2>Learn Better Every Day</h2>
-            <p>Build habits, stay motivated, and make every session count.</p>
+        <div className="visual-panel">
+          <div className="image-panel">
+            <div className="image-overlay">
+              <p className="right-tag">STUDY BUDDY</p>
+              <h2>{isRegister ? "Start Strong" : "Learn Better Every Day"}</h2>
+              <p>
+                {isRegister
+                  ? "Create your account and begin a more focused and motivating study experience."
+                  : "Build habits, stay motivated, and make every session count."}
+              </p>
+            </div>
           </div>
         </div>
 
-        <div className="form-panel">
-          <div className="top-bar">
-            <ThemeToggle />
-          </div>
+        <div className="forms-stage">
+          <div className="forms-shell">
+            {/* LOGIN PANEL */}
+            <section className="auth-panel login-panel">
+              <div className="top-bar">
+                <ThemeToggle />
+              </div>
 
-          <div className="form-slider">
-            <div className="form-track">
-              {/* LOGIN */}
-              <section className="form-view">
+              <div className="form-content">
                 <p className="brand-label">STUDY BUDDY</p>
                 <h1>Welcome Back</h1>
                 <p className="subtitle">
@@ -60,14 +66,20 @@ export default function LoginPage() {
                     Create Account
                   </button>
                 </div>
-              </section>
+              </div>
+            </section>
 
-              {/* REGISTER */}
-              <section className="form-view">
+            {/* REGISTER PANEL */}
+            <section className="auth-panel register-panel">
+              <div className="top-bar">
+                <ThemeToggle />
+              </div>
+
+              <div className="form-content">
                 <p className="brand-label">STUDY BUDDY</p>
                 <h1>Create Account</h1>
                 <p className="subtitle">
-                  Start your study space and organize your learning your way.
+                  Build your study space and begin a smarter learning routine.
                 </p>
 
                 <form className="login-form">
@@ -100,8 +112,8 @@ export default function LoginPage() {
                     Back to Login
                   </button>
                 </div>
-              </section>
-            </div>
+              </div>
+            </section>
           </div>
         </div>
       </div>
