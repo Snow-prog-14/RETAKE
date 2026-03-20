@@ -28,22 +28,23 @@ export default function LoginPage() {
         }),
       });
 
-      const data = await response.json();
+      const text = await response.text();
+      console.log("RAW LOGIN RESPONSE:", text);
+
+      const data = text ? JSON.parse(text) : {};
 
       if (response.ok) {
         localStorage.setItem("token", data.token || "sample-token");
         setLoginMessage(
           `Login successful. Welcome, ${data.userFirstName || "Admin"}!`,
         );
-
-        setTimeout(() => {
-          navigate("/appadmin");
-        }, 800);
+        navigate("/appadmin");
       } else {
         setLoginMessage(data.message || "Login failed.");
       }
-    } catch {
-      setLoginMessage("Cannot connect to backend.");
+    } catch (error) {
+      console.error("LOGIN ERROR:", error);
+      setLoginMessage("Check browser console.");
     }
   };
 
