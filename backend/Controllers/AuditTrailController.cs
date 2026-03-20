@@ -1,5 +1,6 @@
 using backend.Data;
 using backend.DTOs;
+using backend.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers;
@@ -9,15 +10,24 @@ namespace backend.Controllers;
 public class AuditTrailController : ControllerBase
 {
     private readonly AppDbContext _context;
+    private readonly PermissionService _permissionService;
 
-    public AuditTrailController(AppDbContext context)
+    public AuditTrailController(AppDbContext context, PermissionService permissionService)
     {
         _context = context;
+        _permissionService = permissionService;
     }
 
     [HttpGet]
-    public IActionResult GetAll()
+    public IActionResult GetAll([FromQuery] int userTier)
     {
+        var hasPermission = _permissionService.HasPermission(userTier, "admin.audit.view");
+
+        if (!hasPermission)
+        {
+           return StatusCode(403, new { message = "You do not have permission to view audit trails." });
+        }
+
         var auditLogs = _context.AuditTrails
             .Select(a => new AuditTrailResponseDto
             {

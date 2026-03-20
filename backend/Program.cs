@@ -8,6 +8,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite("Data Source=studybuddy.db"));
 
 builder.Services.AddScoped<PasswordService>();
+builder.Services.AddScoped<PermissionService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -18,12 +19,19 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend", policy =>
     {
         policy
-        .WithOrigins("http://localhost:5173", "http://localhost:5174").AllowAnyHeader()
+            .WithOrigins("http://localhost:5173")
+            .AllowAnyHeader()
             .AllowAnyMethod();
     });
 });
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    PermissionSeeder.Seed(context);
+}
 
 if (app.Environment.IsDevelopment())
 {

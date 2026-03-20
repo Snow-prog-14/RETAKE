@@ -35,10 +35,12 @@ public class AuthController : ControllerBase
 
         var user = new User
         {
+            UserId = Guid.NewGuid().ToString(),
             UserEmail = request.UserEmail,
             UserUsername = request.UserUsername,
             UserLastName = request.UserLastName,
             UserFirstName = request.UserFirstName,
+            MustChangePass = request.MustChangePass,
             UserPasswordHash = _passwordService.HashPassword(request.Password),
             UserTier = 2,
             UserStatus = 0
@@ -49,14 +51,15 @@ public class AuthController : ControllerBase
 
         var auditLog = new AuditTrail
         {
+            AuditTrailId = Guid.NewGuid().ToString(),
             UserId = user.UserId,
             ActionType = "REGISTER",
-            TargetTable = "Users",
-            TargetId = user.UserId.ToString(),
+            TargetTable = "user_list_table",
+            TargetId = user.UserId,
             OldValue = null,
             NewValue = $"UserEmail: {user.UserEmail}, UserUsername: {user.UserUsername}",
             Description = "New user account registered.",
-            Status = 1
+            Status = "SUCCESS"
         };
 
         _context.AuditTrails.Add(auditLog);
@@ -72,6 +75,7 @@ public class AuthController : ControllerBase
             UserLastName = user.UserLastName,
             UserFirstName = user.UserFirstName,
             UserTier = user.UserTier,
+            MustChangePass = user.MustChangePass,
             UserStatus = user.UserStatus
         });
     }
@@ -113,20 +117,22 @@ public class AuthController : ControllerBase
                 UserLastName = user.UserLastName,
                 UserFirstName = user.UserFirstName,
                 UserTier = user.UserTier,
+                MustChangePass = user.MustChangePass,
                 UserStatus = user.UserStatus
             });
         }
 
         var auditLog = new AuditTrail
         {
+            AuditTrailId = Guid.NewGuid().ToString(),
             UserId = user.UserId,
             ActionType = "LOGIN",
-            TargetTable = "Users",
-            TargetId = user.UserId.ToString(),
+            TargetTable = "user_list_table",
+            TargetId = user.UserId,
             OldValue = null,
             NewValue = $"UserEmail: {user.UserEmail}, UserUsername: {user.UserUsername}",
             Description = "User logged in successfully.",
-            Status = 1
+            Status = "SUCCESS"
         };
 
         _context.AuditTrails.Add(auditLog);
@@ -135,14 +141,60 @@ public class AuthController : ControllerBase
         return Ok(new AuthResponseDto
         {
             Success = true,
-            Message = "Login successful.",
+            Message = user.MustChangePass == 1 ? "Password change required." : "Login successful.",
             UserId = user.UserId,
             UserEmail = user.UserEmail,
             UserUsername = user.UserUsername,
             UserLastName = user.UserLastName,
             UserFirstName = user.UserFirstName,
             UserTier = user.UserTier,
+            MustChangePass = user.MustChangePass,
             UserStatus = user.UserStatus
+        });
+    }
+
+    [HttpPut("change-password/{id}")]
+    public IActionResult ChangePassword(string id, ChangePasswordRequestDto request)
+    {
+        var user = _context.Users.FirstOrDefault(u => u.UserId == id);
+
+        if (user == null)
+        {
+            return NotFound(new { message = "User not found." });
+        }
+
+        var isCurrentPasswordValid = _passwordService.VerifyPassword(request.CurrentPassword, user.UserPasswordHash);
+
+        if (!isCurrentPasswordValid)
+        {
+            return BadRequest(new { message = "Current password is incorrect." });
+        }
+
+        user.UserPasswordHash = _passwordService.HashPassword(request.NewPassword);
+        user.MustChangePass = 0;
+        _context.SaveChanges();
+
+        var auditLog = new AuditTrail
+        {
+            AuditTrailId = Guid.NewGuid().ToString(),
+            UserId = user.UserId,
+            ActionType = "CHANGE_PASSWORD",
+            TargetTable = "user_list_table",
+            TargetId = user.UserId,
+            OldValue = "Password updated",
+            NewValue = "Password updated",
+            Description = "User changed password successfully.",
+            Status = "SUCCESS"
+        };
+
+        _context.AuditTrails.Add(auditLog);
+        _context.SaveChanges();
+
+        return Ok(new
+        {
+            message = "Password changed successfully.",
+            userId = user.UserId,
+            mustChangePass = user.MustChangePass
         });
     }
 }

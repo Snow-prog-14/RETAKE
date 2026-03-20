@@ -11,20 +11,19 @@ using backend.Data;
 namespace backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260319060337_AddAuditTrail")]
-    partial class AddAuditTrail
+    [Migration("20260320153727_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "8.0.19");
+            modelBuilder.HasAnnotation("ProductVersion", "10.0.5");
 
             modelBuilder.Entity("backend.Models.AuditTrail", b =>
                 {
-                    b.Property<int>("AuditTrailId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("AuditTrailId")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("ActionType")
                         .IsRequired()
@@ -42,8 +41,9 @@ namespace backend.Migrations
                     b.Property<string>("OldValue")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("TargetId")
                         .IsRequired()
@@ -53,18 +53,38 @@ namespace backend.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.HasKey("AuditTrailId");
 
                     b.ToTable("AuditTrails");
                 });
 
+            modelBuilder.Entity("backend.Models.TierPermission", b =>
+                {
+                    b.Property<string>("ReferenceId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PermissionId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("UserTier")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("ReferenceId");
+
+                    b.ToTable("TierPermissions");
+                });
+
             modelBuilder.Entity("backend.Models.User", b =>
                 {
-                    b.Property<int>("UserId")
-                        .ValueGeneratedOnAdd()
+                    b.Property<string>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("MustChangePass")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("UserEmail")
