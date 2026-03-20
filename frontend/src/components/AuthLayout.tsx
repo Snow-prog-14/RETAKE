@@ -1,4 +1,4 @@
-import ThemeToggle from "../components/ThemeToggle";
+import ThemeToggle from "./ThemeToggle";
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 

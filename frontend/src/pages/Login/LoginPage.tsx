@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import AuthLayout from "./AuthLayout";
-import "./AuthShared.css";
+import AuthLayout from "../../components/AuthLayout";
+import "../../components/AuthShared.css";
 import "./LoginPage.css";
 
 export default function LoginPage() {

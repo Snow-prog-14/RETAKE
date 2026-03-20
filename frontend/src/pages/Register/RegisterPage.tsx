@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import AuthLayout from "./AuthLayout";
-import "./AuthShared.css";
+import AuthLayout from "../../components/AuthLayout";
+import "../../components/AuthShared.css";
 import "./RegisterPage.css";
 
 export default function RegisterPage() {
@@ -47,11 +47,11 @@ export default function RegisterPage() {
     <AuthLayout
       mode="register"
       title="Create Account"
-      subtitle="Build your study space and begin a smarter learning routine."
-      visualTitle="Start Strong"
-      visualText="Create your account and begin a more focused and motivating study experience."
-      lightVisualImage="/images/lightmode.png"
-      darkVisualImage="/images/darkmode.jpg"
+      subtitle="Set up your account and start working."
+      visualTitle="Join Study Buddy"
+      visualText="Build smarter workflows with a cleaner auth experience."
+      lightVisualImage="https://cdn.theanimegallery.com/theanimegallery/864f087c-fc9e-45a1-b7f0-f63d55a22236-anime-room-background.webp"
+      darkVisualImage="https://img.freepik.com/premium-photo/computer-is-sitting-desk-front-city-view_759095-25244.jpg?w=2000"
     >
       <form className="login-form" onSubmit={handleRegisterSubmit}>
         <div className="pill-input">
