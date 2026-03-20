@@ -50,7 +50,7 @@ export default function RegisterPage() {
       subtitle="Build your study space and begin a smarter learning routine."
       visualTitle="Start Strong"
       visualText="Create your account and begin a more focused and motivating study experience."
-      lightVisualImage="/images/lightmode.jpg"
+      lightVisualImage="/images/lightmode.png"
       darkVisualImage="/images/darkmode.jpg"
     >
       <form className="login-form" onSubmit={handleRegisterSubmit}>
