@@ -19,7 +19,12 @@ export default function AppAdminPage() {
 
         <nav className="appadmin-nav">
           <button className="appadmin-nav-item active">Dashboard</button>
-          <button className="appadmin-nav-item">Users</button>
+          <button
+            className="appadmin-nav-item"
+            onClick={() => navigate("/appadmin/users")}
+          >
+            Users
+          </button>{" "}
           <button className="appadmin-nav-item">Reports</button>
           <button className="appadmin-nav-item">Settings</button>
         </nav>

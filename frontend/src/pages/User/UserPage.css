@@ -1,0 +1,309 @@
+.user-page {
+  min-height: 100vh;
+  display: flex;
+  background: #f3f6fb;
+  color: #1f2937;
+  font-family: Arial, sans-serif;
+}
+
+.user-sidebar {
+  width: 260px;
+  background: #0f172a;
+  color: white;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.user-logo {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.user-role {
+  margin-top: 8px;
+  color: #cbd5e1;
+  font-size: 0.95rem;
+}
+
+.user-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+.user-nav-item {
+  border: none;
+  background: transparent;
+  color: white;
+  text-align: left;
+  padding: 12px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.2s ease;
+}
+
+.user-nav-item:hover,
+.user-nav-item.active {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.user-logout-btn {
+  border: none;
+  background: #dc2626;
+  color: white;
+  padding: 12px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.user-main {
+  flex: 1;
+  padding: 32px;
+}
+
+.user-header h1 {
+  margin: 0 0 8px;
+  font-size: 2rem;
+}
+
+.user-header p {
+  margin: 0;
+  color: #6b7280;
+}
+
+.user-cards {
+  margin-top: 28px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.user-card {
+  background: white;
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.user-card h3 {
+  margin: 0 0 12px;
+  font-size: 1rem;
+  color: #6b7280;
+}
+
+.user-card p {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.user-panel {
+  margin-top: 28px;
+  background: white;
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.user-panel-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.user-panel h2 {
+  margin: 0;
+}
+
+.user-panel-subtext {
+  margin: 6px 0 0;
+  color: #6b7280;
+  font-size: 0.95rem;
+}
+
+.user-toolbar {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.user-search,
+.user-filter {
+  padding: 12px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  outline: none;
+  background: #fff;
+}
+
+.user-search {
+  min-width: 220px;
+}
+
+.user-search:focus,
+.user-filter:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.user-table-wrapper {
+  overflow-x: auto;
+}
+
+.user-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 720px;
+}
+
+.user-table thead th {
+  text-align: left;
+  font-size: 0.92rem;
+  color: #6b7280;
+  font-weight: 700;
+  padding: 14px 16px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.user-table tbody td {
+  padding: 16px;
+  border-bottom: 1px solid #eef2f7;
+  vertical-align: middle;
+}
+
+.user-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.role-badge,
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.role-badge-appadmin {
+  background: #ede9fe;
+  color: #6d28d9;
+}
+
+.role-badge-admin {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.status-active {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status-inactive {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.user-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  border: none;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.2s ease;
+}
+
+.action-btn:hover {
+  transform: translateY(-1px);
+  opacity: 0.95;
+}
+
+.edit-btn {
+  background: #2563eb;
+  color: white;
+}
+
+.password-btn {
+  background: #0f172a;
+  color: white;
+}
+
+.empty-state {
+  text-align: center;
+  color: #6b7280;
+  padding: 28px 16px !important;
+}
+
+@media (max-width: 1100px) {
+  .user-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .user-page {
+    flex-direction: column;
+  }
+
+  .user-sidebar {
+    width: 100%;
+    gap: 20px;
+  }
+
+  .user-main {
+    padding: 20px;
+  }
+
+  .user-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .user-panel-top {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .user-toolbar {
+    flex-direction: column;
+  }
+
+  .user-search,
+  .user-filter {
+    width: 100%;
+  }
+}
+
+.user-name-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.user-name-text {
+  font-weight: 600;
+  color: #111827;
+}
+
+.user-email-text {
+  font-size: 0.85rem;
+  color: #6b7280;
+}

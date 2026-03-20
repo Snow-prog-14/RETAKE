@@ -4,6 +4,7 @@ import RegisterPage from "./pages/Register/RegisterPage";
 import AppAdminPage from "./pages/AppAdmin/AppAdminPage";
 import AdminPage from "./pages/Admin/AdminPage";
 import StudentPage from "./pages/Student/StudentPage";
+import UserPage from "./pages/User/UserPage";
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
         <Route path="/appadmin" element={<AppAdminPage />} />
         <Route path="/admin" element={<AdminPage />} />
         <Route path="/student" element={<StudentPage />} />
+        <Route path="/appadmin/users" element={<UserPage />} />
       </Routes>
     </BrowserRouter>
   );
