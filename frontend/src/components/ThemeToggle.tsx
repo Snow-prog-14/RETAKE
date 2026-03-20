@@ -16,9 +16,15 @@ export default function ThemeToggle() {
   const handleToggle = () => {
     const newTheme: Theme = theme === "light" ? "dark" : "light";
 
+    document.body.classList.add("theme-warp");
+
     setTheme(newTheme);
     localStorage.setItem("theme", newTheme);
     document.body.classList.toggle("dark", newTheme === "dark");
+
+    window.setTimeout(() => {
+      document.body.classList.remove("theme-warp");
+    }, 700);
   };
 
   return (

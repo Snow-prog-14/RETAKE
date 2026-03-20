@@ -33,11 +33,9 @@
   position: relative;
   transition: filter 0.3s ease;
 }
-
 body.dark .image-panel {
-  filter: brightness(0.72);
+  filter: brightness(0.72) saturate(0.92);
 }
-
 .image-overlay {
   position: absolute;
   inset: 0;
@@ -48,6 +46,39 @@ body.dark .image-panel {
   background: linear-gradient(to top, rgba(14, 23, 35, 0.68), rgba(14, 23, 35, 0.12));
   color: white;
   transition: background 0.3s ease;
+}
+body.theme-warp .image-panel {
+  animation: imageWarp 0.7s ease;
+}
+
+body.theme-warp .image-overlay {
+  animation: overlayWarp 0.7s ease;
+}
+
+@keyframes imageWarp {
+  0% {
+    transform: scale(1);
+    filter: blur(0px) brightness(1);
+  }
+  40% {
+    transform: scale(1.025);
+    filter: blur(2px) brightness(0.92);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes overlayWarp {
+  0% {
+    opacity: 1;
+  }
+  40% {
+    opacity: 0.88;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 .right-tag {

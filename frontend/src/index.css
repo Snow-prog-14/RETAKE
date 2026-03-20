@@ -79,3 +79,84 @@ button,
 input {
   font: inherit;
 }
+body,
+.auth-page,
+.auth-card,
+.forms-stage,
+.form-content h1,
+.subtitle,
+.brand-label,
+.text-link,
+.auth-message,
+.pill-input input,
+.switch-mode-btn,
+.theme-toggle,
+.image-panel,
+.image-overlay,
+.login-btn {
+  transition:
+    background 0.55s ease,
+    color 0.55s ease,
+    border-color 0.55s ease,
+    box-shadow 0.55s ease,
+    filter 0.7s ease,
+    transform 0.55s ease,
+    opacity 0.55s ease;
+}
+
+body.theme-warp .auth-card,
+body.theme-warp .forms-stage,
+body.theme-warp .image-panel,
+body.theme-warp .image-overlay {
+  animation: themeWarp 0.7s ease;
+}
+
+body.theme-warp .form-content h1,
+body.theme-warp .subtitle,
+body.theme-warp .brand-label,
+body.theme-warp .text-link,
+body.theme-warp .auth-message,
+body.theme-warp .pill-input input,
+body.theme-warp .switch-mode-btn,
+body.theme-warp .theme-toggle,
+body.theme-warp .login-btn {
+  animation: themeDrift 0.7s ease;
+}
+
+@keyframes themeWarp {
+  0% {
+    transform: scale(1);
+    filter: blur(0px) saturate(1);
+  }
+  30% {
+    transform: scale(1.012);
+    filter: blur(1.5px) saturate(1.08);
+  }
+  60% {
+    transform: scale(0.996);
+    filter: blur(0.6px) saturate(1.04);
+  }
+  100% {
+    transform: scale(1);
+    filter: blur(0px) saturate(1);
+  }
+}
+
+@keyframes themeDrift {
+  0% {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+  35% {
+    transform: translateY(-2px);
+    opacity: 0.92;
+  }
+  70% {
+    transform: translateY(1px);
+    opacity: 0.97;
+  }
+  100% {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+}
