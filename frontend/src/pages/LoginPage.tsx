@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import AuthLayout from "./AuthLayout";
+import "./AuthShared.css";
 import "./LoginPage.css";
 
 export default function LoginPage() {
@@ -38,12 +39,13 @@ export default function LoginPage() {
 
   return (
     <AuthLayout
-      mode="login"
-      title="Welcome Back"
-      subtitle="Continue your study journey and stay on track with your goals."
-      visualTitle="Learn Better Every Day"
-      visualText="Build habits, stay motivated, and make every session count."
-      visualImage="https://wallpaperbat.com/img/133075208-workplace-vibes-iphone-wallpaper.jpg"
+      mode="register"
+      title="Create Account"
+      subtitle="Build your study space and begin a smarter learning routine."
+      visualTitle="Start Strong"
+      visualText="Create your account and begin a more focused and motivating study experience."
+      lightVisualImage="/images/lightmode.jpg"
+      darkVisualImage="/images/darkmode.jpg"
     >
       <form className="login-form" onSubmit={handleLoginSubmit}>
         <div className="pill-input">

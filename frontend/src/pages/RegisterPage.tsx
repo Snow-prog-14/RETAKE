@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import AuthLayout from "./AuthLayout";
+import "./AuthShared.css";
 import "./RegisterPage.css";
 
 export default function RegisterPage() {
@@ -49,7 +50,8 @@ export default function RegisterPage() {
       subtitle="Build your study space and begin a smarter learning routine."
       visualTitle="Start Strong"
       visualText="Create your account and begin a more focused and motivating study experience."
-      visualImage="https://wallpaperbat.com/img/133075208-workplace-vibes-iphone-wallpaper.jpg"
+      lightVisualImage="/images/lightmode.jpg"
+      darkVisualImage="/images/darkmode.jpg"
     >
       <form className="login-form" onSubmit={handleRegisterSubmit}>
         <div className="pill-input">

@@ -1,5 +1,8 @@
 import ThemeToggle from "../components/ThemeToggle";
 import type { ReactNode } from "react";
+import { useEffect, useState } from "react";
+
+type Theme = "light" | "dark";
 
 type AuthLayoutProps = {
   mode: "login" | "register";
@@ -7,7 +10,8 @@ type AuthLayoutProps = {
   subtitle: string;
   visualTitle: string;
   visualText: string;
-  visualImage: string;
+  lightVisualImage: string;
+  darkVisualImage: string;
   children: ReactNode;
 };
 
@@ -17,9 +21,35 @@ export default function AuthLayout({
   subtitle,
   visualTitle,
   visualText,
-  visualImage,
+  lightVisualImage,
+  darkVisualImage,
   children,
 }: AuthLayoutProps) {
+  const [theme, setTheme] = useState<Theme>("light");
+
+  useEffect(() => {
+    const applyTheme = () => {
+      const isDark = document.body.classList.contains("dark");
+      setTheme(isDark ? "dark" : "light");
+    };
+
+    applyTheme();
+
+    const observer = new MutationObserver(() => {
+      applyTheme();
+    });
+
+    observer.observe(document.body, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  const currentVisualImage =
+    theme === "dark" ? darkVisualImage : lightVisualImage;
+
   return (
     <div className="auth-page">
       <div
@@ -28,7 +58,7 @@ export default function AuthLayout({
         <div className="visual-panel">
           <div
             className="image-panel"
-            style={{ backgroundImage: `url("${visualImage}")` }}
+            style={{ backgroundImage: `url("${currentVisualImage}")` }}
           >
             <div className="image-overlay">
               <p className="right-tag">STUDY BUDDY</p>
