@@ -7,6 +7,7 @@ type AuthLayoutProps = {
   subtitle: string;
   visualTitle: string;
   visualText: string;
+  visualImage: string;
   children: ReactNode;
 };
 
@@ -16,6 +17,7 @@ export default function AuthLayout({
   subtitle,
   visualTitle,
   visualText,
+  visualImage,
   children,
 }: AuthLayoutProps) {
   return (
@@ -24,7 +26,10 @@ export default function AuthLayout({
         className={`auth-card ${mode === "register" ? "register-mode" : ""}`}
       >
         <div className="visual-panel">
-          <div className="image-panel">
+          <div
+            className="image-panel"
+            style={{ backgroundImage: `url("${visualImage}")` }}
+          >
             <div className="image-overlay">
               <p className="right-tag">STUDY BUDDY</p>
               <h2>{visualTitle}</h2>

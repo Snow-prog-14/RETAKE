@@ -49,6 +49,7 @@ export default function RegisterPage() {
       subtitle="Build your study space and begin a smarter learning routine."
       visualTitle="Start Strong"
       visualText="Create your account and begin a more focused and motivating study experience."
+      visualImage="https://wallpaperbat.com/img/133075208-workplace-vibes-iphone-wallpaper.jpg"
     >
       <form className="login-form" onSubmit={handleRegisterSubmit}>
         <div className="pill-input">

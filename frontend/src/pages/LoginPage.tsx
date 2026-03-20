@@ -43,6 +43,7 @@ export default function LoginPage() {
       subtitle="Continue your study journey and stay on track with your goals."
       visualTitle="Learn Better Every Day"
       visualText="Build habits, stay motivated, and make every session count."
+      visualImage="https://wallpaperbat.com/img/133075208-workplace-vibes-iphone-wallpaper.jpg"
     >
       <form className="login-form" onSubmit={handleLoginSubmit}>
         <div className="pill-input">
