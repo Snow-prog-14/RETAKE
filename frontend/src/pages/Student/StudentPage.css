@@ -1,0 +1,65 @@
+.student-page {
+  min-height: 100vh;
+  display: flex;
+  background: #f7f9fc;
+}
+
+.student-sidebar {
+  width: 250px;
+  background: #1d3557;
+  color: white;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.student-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.student-nav button {
+  border: none;
+  background: transparent;
+  color: white;
+  text-align: left;
+  padding: 12px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.student-nav button.active,
+.student-nav button:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.student-main {
+  flex: 1;
+  padding: 32px;
+}
+
+.student-cards {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.student-card {
+  background: white;
+  padding: 24px;
+  border-radius: 18px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.logout-btn {
+  background: #dc2626;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 10px;
+  cursor: pointer;
+}

@@ -32,13 +32,22 @@ export default function LoginPage() {
       console.log("RAW LOGIN RESPONSE:", text);
 
       const data = text ? JSON.parse(text) : {};
-
       if (response.ok) {
-        localStorage.setItem("token", data.token || "sample-token");
+        localStorage.setItem("user", JSON.stringify(data));
+
         setLoginMessage(
-          `Login successful. Welcome, ${data.userFirstName || "Admin"}!`,
+          `Login successful. Welcome, ${data.userFirstName || "User"}!`,
         );
-        navigate("/appadmin");
+
+        if (data.userTier === 0) {
+          navigate("/appadmin");
+        } else if (data.userTier === 1) {
+          navigate("/admin");
+        } else if (data.userTier === 2) {
+          navigate("/student");
+        } else {
+          setLoginMessage("Unknown user tier.");
+        }
       } else {
         setLoginMessage(data.message || "Login failed.");
       }
