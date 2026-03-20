@@ -7,14 +7,10 @@ export default function ThemeToggle() {
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme") as Theme | null;
+    const initialTheme: Theme = savedTheme === "dark" ? "dark" : "light";
 
-    if (savedTheme === "dark") {
-      document.body.classList.add("dark");
-      setTheme("dark");
-    } else {
-      document.body.classList.remove("dark");
-      setTheme("light");
-    }
+    setTheme(initialTheme);
+    document.body.classList.toggle("dark", initialTheme === "dark");
   }, []);
 
   const handleToggle = () => {
@@ -22,12 +18,7 @@ export default function ThemeToggle() {
 
     setTheme(newTheme);
     localStorage.setItem("theme", newTheme);
-
-    if (newTheme === "dark") {
-      document.body.classList.add("dark");
-    } else {
-      document.body.classList.remove("dark");
-    }
+    document.body.classList.toggle("dark", newTheme === "dark");
   };
 
   return (
@@ -36,6 +27,7 @@ export default function ThemeToggle() {
       className="theme-toggle"
       onClick={handleToggle}
       aria-label="Toggle theme"
+      title={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}
     >
       {theme === "light" ? "Dark Mode" : "Light Mode"}
     </button>

@@ -1,5 +1,4 @@
 import ThemeToggle from "../components/ThemeToggle";
-import "./LoginPage.css";
 import type { ReactNode } from "react";
 
 type AuthLayoutProps = {
