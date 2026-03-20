@@ -1,0 +1,21 @@
+# .NET build files
+**/bin/
+**/obj/
+
+# SQLite
+*.db
+*.db-shm
+*.db-wal
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Node
+node_modules/
+dist/
+
+# OS junk
+Thumbs.db
+.DS_Store
