@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import type { FormEvent } from "react";
 import AuthLayout from "../../components/AuthLayout";
 import "../../components/AuthShared.css";
 import "./LoginPage.css";
@@ -9,7 +10,9 @@ export default function LoginPage() {
   const [loginPassword, setLoginPassword] = useState("");
   const [loginMessage, setLoginMessage] = useState("");
 
-  const handleLoginSubmit = async (e: React.FormEvent) => {
+  const navigate = useNavigate();
+
+  const handleLoginSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setLoginMessage("");
 
@@ -28,7 +31,14 @@ export default function LoginPage() {
       const data = await response.json();
 
       if (response.ok) {
-        setLoginMessage(`Login successful. Welcome, ${data.userFirstName}!`);
+        localStorage.setItem("token", data.token || "sample-token");
+        setLoginMessage(
+          `Login successful. Welcome, ${data.userFirstName || "Admin"}!`,
+        );
+
+        setTimeout(() => {
+          navigate("/appadmin");
+        }, 800);
       } else {
         setLoginMessage(data.message || "Login failed.");
       }
@@ -39,11 +49,11 @@ export default function LoginPage() {
 
   return (
     <AuthLayout
-      mode="register"
-      title="Create Account"
-      subtitle="Build your study space and begin a smarter learning routine."
-      visualTitle="Start Strong"
-      visualText="Create your account and begin a more focused and motivating study experience."
+      mode="login"
+      title="Welcome Back"
+      subtitle="Login to access your admin dashboard and manage the system."
+      visualTitle="Stay In Control"
+      visualText="Sign in to monitor users, manage activity, and keep everything running smoothly."
       lightVisualImage="/images/lightmode.png"
       darkVisualImage="/images/darkmode.jpg"
     >
@@ -55,6 +65,7 @@ export default function LoginPage() {
             placeholder="Username or Email"
             value={loginUserEmail}
             onChange={(e) => setLoginUserEmail(e.target.value)}
+            required
           />
         </div>
 
@@ -65,6 +76,7 @@ export default function LoginPage() {
             placeholder="Password"
             value={loginPassword}
             onChange={(e) => setLoginPassword(e.target.value)}
+            required
           />
         </div>
 

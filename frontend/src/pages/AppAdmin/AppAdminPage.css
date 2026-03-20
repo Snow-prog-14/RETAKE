@@ -1,0 +1,135 @@
+.appadmin-page {
+  min-height: 100vh;
+  display: flex;
+  background: #f3f6fb;
+  color: #1f2937;
+}
+
+.appadmin-sidebar {
+  width: 260px;
+  background: #0f172a;
+  color: white;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.appadmin-logo {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.appadmin-role {
+  margin-top: 8px;
+  color: #cbd5e1;
+  font-size: 0.95rem;
+}
+
+.appadmin-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+.appadmin-nav-item {
+  border: none;
+  background: transparent;
+  color: white;
+  text-align: left;
+  padding: 12px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.2s ease;
+}
+
+.appadmin-nav-item:hover,
+.appadmin-nav-item.active {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.appadmin-logout-btn {
+  border: none;
+  background: #dc2626;
+  color: white;
+  padding: 12px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.appadmin-main {
+  flex: 1;
+  padding: 32px;
+}
+
+.appadmin-header h1 {
+  margin: 0 0 8px;
+  font-size: 2rem;
+}
+
+.appadmin-header p {
+  margin: 0;
+  color: #6b7280;
+}
+
+.appadmin-cards {
+  margin-top: 28px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.appadmin-card {
+  background: white;
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.appadmin-card h3 {
+  margin: 0 0 12px;
+  font-size: 1rem;
+  color: #6b7280;
+}
+
+.appadmin-card p {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.appadmin-panel {
+  margin-top: 28px;
+  background: white;
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.appadmin-panel h2 {
+  margin-top: 0;
+}
+
+.appadmin-panel ul {
+  padding-left: 20px;
+  margin-bottom: 0;
+}
+
+@media (max-width: 900px) {
+  .appadmin-page {
+    flex-direction: column;
+  }
+
+  .appadmin-sidebar {
+    width: 100%;
+    gap: 20px;
+  }
+
+  .appadmin-cards {
+    grid-template-columns: 1fr;
+  }
+}
