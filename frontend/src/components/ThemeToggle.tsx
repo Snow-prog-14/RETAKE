@@ -1,41 +1,44 @@
 import { useEffect, useState } from "react";
-
-type Theme = "light" | "dark";
+import "./ThemeToggle.css";
 
 export default function ThemeToggle() {
-  const [theme, setTheme] = useState<Theme>("light");
+  const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem("theme") as Theme | null;
-    const initialTheme: Theme = savedTheme === "dark" ? "dark" : "light";
+    const savedTheme = localStorage.getItem("theme");
+    const darkMode = savedTheme === "dark";
 
-    setTheme(initialTheme);
-    document.body.classList.toggle("dark", initialTheme === "dark");
+    setIsDark(darkMode);
+
+    if (darkMode) {
+      document.body.classList.add("dark");
+    } else {
+      document.body.classList.remove("dark");
+    }
   }, []);
 
-  const handleToggle = () => {
-    const newTheme: Theme = theme === "light" ? "dark" : "light";
+  const handleToggleTheme = () => {
+    const nextDark = !isDark;
+    setIsDark(nextDark);
 
-    document.body.classList.add("theme-warp");
-
-    setTheme(newTheme);
-    localStorage.setItem("theme", newTheme);
-    document.body.classList.toggle("dark", newTheme === "dark");
-
-    window.setTimeout(() => {
-      document.body.classList.remove("theme-warp");
-    }, 700);
+    if (nextDark) {
+      document.body.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.body.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
   };
 
   return (
     <button
-      type="button"
-      className="theme-toggle"
-      onClick={handleToggle}
+      className="global-theme-toggle"
+      onClick={handleToggleTheme}
       aria-label="Toggle theme"
-      title={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}
+      title={isDark ? "Switch to light mode" : "Switch to dark mode"}
     >
-      {theme === "light" ? "Light Mode" : "Dark Mode"}
+      <span className="theme-toggle-icon">{isDark ? "☀" : "☾"}</span>
+      <span className="theme-toggle-text">{isDark ? "Light" : "Dark"}</span>
     </button>
   );
 }

@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import LoginPage from "./pages/Login/LoginPage";
 import RegisterPage from "./pages/Register/RegisterPage";
 import AppAdminPage from "./pages/AppAdmin/AppAdminPage";
@@ -6,10 +6,12 @@ import AdminPage from "./pages/Admin/AdminPage";
 import StudentPage from "./pages/Student/StudentPage";
 import UserPage from "./pages/User/UserPage";
 import ProfilePage from "./pages/Profile/ProfilePage";
+import ThemeToggle from "./components/ThemeToggle";
 
-export default function App() {
+function App() {
   return (
-    <BrowserRouter>
+    <Router>
+      <ThemeToggle />
       <Routes>
         <Route path="/" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
@@ -19,6 +21,8 @@ export default function App() {
         <Route path="/appadmin/users" element={<UserPage />} />
         <Route path="/profile" element={<ProfilePage />} />
       </Routes>
-    </BrowserRouter>
+    </Router>
   );
 }
+
+export default App;
