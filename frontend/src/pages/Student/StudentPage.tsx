@@ -17,6 +17,8 @@ export default function StudentPage() {
 
         <nav className="student-nav">
           <button className="active">Dashboard</button>
+          <button className="appadmin-nav-item active">View Profile</button>
+
           <button>Subjects</button>
           <button>Tasks</button>
           <button>Profile</button>
