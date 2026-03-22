@@ -1,135 +1,164 @@
 .appadmin-page {
   min-height: 100vh;
   display: flex;
-  background: #f3f6fb;
-  color: #1f2937;
+  background:
+    var(--page-backdrop),
+    url("https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1400&q=80")
+      center/cover no-repeat;
+  color: var(--text-primary);
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .appadmin-sidebar {
   width: 260px;
-  background: #0f172a;
-  color: white;
-  padding: 24px;
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border-soft);
+  padding: 28px 20px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  backdrop-filter: blur(12px);
 }
 
-.appadmin-logo {
+.appadmin-sidebar h2 {
   margin: 0;
-  font-size: 1.8rem;
-  font-weight: 700;
+  font-size: 22px;
+  color: var(--text-primary);
 }
 
-.appadmin-role {
-  margin-top: 8px;
-  color: #cbd5e1;
-  font-size: 0.95rem;
+.appadmin-sidebar p {
+  margin: 8px 0 0;
+  color: var(--text-secondary);
+  font-size: 14px;
 }
 
 .appadmin-nav {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  margin-top: 32px;
+  margin-top: 28px;
 }
 
-.appadmin-nav-item {
-  border: none;
+.appadmin-nav button {
   background: transparent;
-  color: white;
+  border: 1px solid transparent;
+  color: var(--text-secondary);
   text-align: left;
   padding: 12px 14px;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   cursor: pointer;
-  font-size: 1rem;
-  transition: background 0.2s ease;
+  transition: var(--transition-fast);
+  font-size: 14px;
 }
 
-.appadmin-nav-item:hover,
-.appadmin-nav-item.active {
-  background: rgba(255, 255, 255, 0.12);
+.appadmin-nav button:hover,
+.appadmin-nav button.active {
+  background: var(--accent-soft);
+  border-color: var(--accent-border);
+  color: var(--text-primary);
 }
 
-.appadmin-logout-btn {
-  border: none;
-  background: #dc2626;
-  color: white;
+.logout-btn {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+  border: 1px solid var(--border-soft);
   padding: 12px 14px;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   cursor: pointer;
-  font-weight: 600;
+  transition: var(--transition-fast);
+}
+
+.logout-btn:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent-border);
 }
 
 .appadmin-main {
   flex: 1;
   padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
-.appadmin-header h1 {
-  margin: 0 0 8px;
-  font-size: 2rem;
-}
-
-.appadmin-header p {
+.appadmin-main h1 {
   margin: 0;
-  color: #6b7280;
+  font-size: 30px;
+  color: var(--text-primary);
+}
+
+.appadmin-main > p {
+  margin: -12px 0 8px;
+  color: var(--text-muted);
+  font-size: 14px;
 }
 
 .appadmin-cards {
-  margin-top: 28px;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+  grid-template-columns: repeat(3, minmax(180px, 1fr));
+  gap: 18px;
 }
 
 .appadmin-card {
-  background: white;
-  border-radius: 18px;
+  background: var(--card-bg);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
   padding: 24px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(10px);
 }
 
 .appadmin-card h3 {
-  margin: 0 0 12px;
-  font-size: 1rem;
-  color: #6b7280;
+  margin: 0 0 14px;
+  font-size: 15px;
+  color: var(--text-muted);
+  font-weight: 600;
 }
 
 .appadmin-card p {
   margin: 0;
-  font-size: 2rem;
+  font-size: 36px;
   font-weight: 700;
+  color: var(--text-primary);
 }
 
-.appadmin-panel {
-  margin-top: 28px;
-  background: white;
-  border-radius: 18px;
+.appadmin-activity {
+  background: var(--card-bg);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
   padding: 24px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(10px);
 }
 
-.appadmin-panel h2 {
-  margin-top: 0;
+.appadmin-activity h2 {
+  margin: 0 0 16px;
+  font-size: 22px;
+  color: var(--text-primary);
 }
 
-.appadmin-panel ul {
-  padding-left: 20px;
-  margin-bottom: 0;
+.appadmin-activity ul {
+  margin: 0;
+  padding-left: 22px;
+  color: var(--text-secondary);
 }
 
-@media (max-width: 900px) {
+.appadmin-activity li {
+  margin-bottom: 10px;
+}
+
+@media (max-width: 1000px) {
+  .appadmin-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 820px) {
   .appadmin-page {
     flex-direction: column;
   }
 
   .appadmin-sidebar {
     width: 100%;
-    gap: 20px;
-  }
-
-  .appadmin-cards {
-    grid-template-columns: 1fr;
   }
 }
