@@ -21,6 +21,8 @@ export default function ThemeToggle() {
     const nextDark = !isDark;
     setIsDark(nextDark);
 
+    document.body.classList.add("theme-warp");
+
     if (nextDark) {
       document.body.classList.add("dark");
       localStorage.setItem("theme", "dark");
@@ -28,6 +30,10 @@ export default function ThemeToggle() {
       document.body.classList.remove("dark");
       localStorage.setItem("theme", "light");
     }
+
+    window.setTimeout(() => {
+      document.body.classList.remove("theme-warp");
+    }, 700);
   };
 
   return (

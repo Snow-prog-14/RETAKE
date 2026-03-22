@@ -1,65 +1,261 @@
-.admin-page {
+.appadmin-page {
   min-height: 100vh;
   display: flex;
-  background: #f4f6fb;
+  background:
+    linear-gradient(rgba(255, 248, 244, 0.82), rgba(255, 244, 238, 0.9)),
+    url("https://images.unsplash.com/photo-1497366412874-3415097a27e7?auto=format&fit=crop&w=1600&q=80")
+      center/cover no-repeat;
+  color: var(--text-primary);
+  font-family: Arial, Helvetica, sans-serif;
 }
 
-.admin-sidebar {
-  width: 250px;
-  background: #14213d;
-  color: white;
-  padding: 24px;
+.appadmin-sidebar {
+  width: 260px;
+  background: rgba(255, 255, 255, 0.88);
+  border-right: 1px solid rgba(249, 115, 22, 0.2);
+  padding: 28px 20px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  backdrop-filter: blur(12px);
+  box-shadow: inset -1px 0 0 rgba(249, 115, 22, 0.08);
 }
 
-.admin-nav {
+.appadmin-sidebar h2 {
+  margin: 0;
+  font-size: 22px;
+  color: var(--text-primary);
+}
+
+.appadmin-sidebar p {
+  margin: 8px 0 0;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.appadmin-nav {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  margin-top: 24px;
+  margin-top: 28px;
 }
 
-.admin-nav button {
-  border: none;
+.appadmin-nav button {
   background: transparent;
-  color: white;
+  border: 1px solid transparent;
+  color: var(--text-secondary);
   text-align: left;
-  padding: 12px;
-  border-radius: 10px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
   cursor: pointer;
+  transition: var(--transition-fast);
+  font-size: 14px;
 }
 
-.admin-nav button.active,
-.admin-nav button:hover {
-  background: rgba(255, 255, 255, 0.12);
-}
-
-.admin-main {
-  flex: 1;
-  padding: 32px;
-}
-
-.admin-cards {
-  margin-top: 24px;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-}
-
-.admin-card {
-  background: white;
-  padding: 24px;
-  border-radius: 18px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+.appadmin-nav button:hover,
+.appadmin-nav button.active {
+  background: linear-gradient(
+    90deg,
+    rgba(249, 115, 22, 0.14) 0%,
+    rgba(239, 68, 68, 0.08) 100%
+  );
+  border-color: rgba(249, 115, 22, 0.3);
+  color: var(--text-primary);
+  box-shadow: 0 0 0 1px rgba(249, 115, 22, 0.04);
 }
 
 .logout-btn {
-  background: #dc2626;
-  color: white;
+  background: linear-gradient(90deg, var(--accent), var(--accent-hover));
+  color: #ffffff;
   border: none;
-  padding: 12px;
-  border-radius: 10px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
   cursor: pointer;
+  transition: var(--transition-fast);
+  font-weight: 700;
+}
+
+.logout-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+
+.appadmin-main {
+  flex: 1;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.appadmin-main h1 {
+  margin: 0;
+  font-size: 30px;
+  color: var(--text-primary);
+}
+
+.appadmin-main > p {
+  margin: -12px 0 8px;
+  color: var(--text-secondary);
+  font-size: 15px;
+}
+
+.appadmin-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(180px, 1fr));
+  gap: 18px;
+}
+
+.appadmin-card {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(249, 115, 22, 0.18);
+  border-top: 3px solid var(--accent);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+  backdrop-filter: blur(10px);
+}
+
+.appadmin-card h3 {
+  margin: 0 0 14px;
+  font-size: 15px;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.appadmin-card p {
+  margin: 0;
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.appadmin-activity {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(249, 115, 22, 0.16);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+  backdrop-filter: blur(10px);
+}
+
+.appadmin-activity h2 {
+  margin: 0 0 16px;
+  font-size: 22px;
+  color: var(--text-primary);
+}
+
+.appadmin-activity ul {
+  margin: 0;
+  padding-left: 22px;
+  color: var(--text-secondary);
+}
+
+.appadmin-activity li {
+  margin-bottom: 10px;
+}
+
+.appadmin-activity li::marker {
+  color: var(--accent);
+}
+
+@media (max-width: 1000px) {
+  .appadmin-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 820px) {
+  .appadmin-page {
+    flex-direction: column;
+  }
+
+  .appadmin-sidebar {
+    width: 100%;
+  }
+}
+
+body.dark .appadmin-page {
+  background:
+    linear-gradient(rgba(17, 24, 39, 0.78), rgba(17, 24, 39, 0.9)),
+    url("https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1600&q=80")
+      center/cover no-repeat;
+}
+
+body.dark .appadmin-sidebar {
+  background: linear-gradient(
+    180deg,
+    rgba(31, 41, 55, 0.94) 0%,
+    rgba(17, 24, 39, 0.96) 100%
+  );
+  border-right: 1px solid rgba(255, 138, 92, 0.22);
+  box-shadow: inset -1px 0 0 rgba(255, 138, 92, 0.12);
+}
+
+body.dark .appadmin-sidebar h2 {
+  color: var(--text-primary);
+}
+
+body.dark .appadmin-sidebar p {
+  color: var(--secondary-accent);
+}
+
+body.dark .appadmin-nav button {
+  color: var(--text-secondary);
+}
+
+body.dark .appadmin-nav button:hover,
+body.dark .appadmin-nav button.active {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 138, 92, 0.2) 0%,
+    rgba(255, 77, 77, 0.12) 100%
+  );
+  border-color: rgba(255, 138, 92, 0.3);
+  color: #ffffff;
+  box-shadow: 0 0 0 1px rgba(255, 138, 92, 0.08);
+}
+
+body.dark .appadmin-main > p {
+  color: var(--secondary-accent);
+}
+
+body.dark .appadmin-card {
+  background: linear-gradient(
+    180deg,
+    rgba(31, 41, 55, 0.92) 0%,
+    rgba(17, 24, 39, 0.94) 100%
+  );
+  border: 1px solid rgba(255, 138, 92, 0.22);
+  border-top: 3px solid var(--accent);
+  box-shadow:
+    var(--shadow-soft),
+    0 0 0 1px rgba(255, 138, 92, 0.04);
+}
+
+body.dark .appadmin-card h3 {
+  color: var(--secondary-accent);
+}
+
+body.dark .appadmin-card p {
+  color: #ffffff;
+}
+
+body.dark .appadmin-activity {
+  background: linear-gradient(
+    180deg,
+    rgba(31, 41, 55, 0.9) 0%,
+    rgba(17, 24, 39, 0.93) 100%
+  );
+  border: 1px solid rgba(255, 138, 92, 0.18);
+  border-left: 4px solid var(--accent);
+}
+
+body.dark .appadmin-activity h2 {
+  color: #ffffff;
+}
+
+body.dark .appadmin-activity ul {
+  color: var(--text-secondary);
 }
