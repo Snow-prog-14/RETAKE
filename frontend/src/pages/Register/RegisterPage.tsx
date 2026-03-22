@@ -12,7 +12,6 @@ export default function RegisterPage() {
   const [registerUserLastName, setRegisterUserLastName] = useState("");
   const [registerUserFirstName, setRegisterUserFirstName] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
-  const [mustChangePass, setMustChangePass] = useState(true);
   const [registerMessage, setRegisterMessage] = useState("");
 
   const handleRegisterSubmit = async (e: React.FormEvent) => {
@@ -26,12 +25,12 @@ export default function RegisterPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          userEmail: registerUserEmail,
+          userEmail: registerUserEmail.trim(),
           userUsername: registerUserUsername,
           userLastName: registerUserLastName,
           userFirstName: registerUserFirstName,
           password: registerPassword,
-          mustChangePass: mustChangePass ? 1 : 0,
+          mustChangePass: 0,
         }),
       });
 
@@ -109,15 +108,6 @@ export default function RegisterPage() {
             onChange={(e) => setRegisterPassword(e.target.value)}
           />
         </div>
-
-        <label className="must-change-check">
-          <input
-            type="checkbox"
-            checked={mustChangePass}
-            onChange={(e) => setMustChangePass(e.target.checked)}
-          />
-          Force password change on first login
-        </label>
 
         <button className="login-btn" type="submit">
           CONTINUE

@@ -22,7 +22,11 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public IActionResult Register(RegisterRequestDto request)
     {
-        var existingUser = _context.Users.FirstOrDefault(u => u.UserEmail == request.UserEmail);
+        var normalizedEmail = request.UserEmail.Trim().ToLower();
+
+        var existingUser = _context.Users.FirstOrDefault(
+            u => u.UserEmail != null && u.UserEmail.ToLower() == normalizedEmail
+        );
 
         if (existingUser != null)
         {
@@ -36,7 +40,7 @@ public class AuthController : ControllerBase
         var user = new User
         {
             UserId = Guid.NewGuid().ToString(),
-            UserEmail = request.UserEmail,
+            UserEmail = normalizedEmail,
             UserUsername = request.UserUsername,
             UserLastName = request.UserLastName,
             UserFirstName = request.UserFirstName,
@@ -79,11 +83,14 @@ public class AuthController : ControllerBase
             UserStatus = user.UserStatus
         });
     }
-
     [HttpPost("login")]
     public IActionResult Login(LoginRequestDto request)
     {
-        var user = _context.Users.FirstOrDefault(u => u.UserEmail == request.UserEmail);
+        var normalizedEmail = request.UserEmail.Trim().ToLower();
+
+        var user = _context.Users.FirstOrDefault(
+            u => u.UserEmail != null && u.UserEmail.ToLower() == normalizedEmail
+        );
 
         if (user == null)
         {
