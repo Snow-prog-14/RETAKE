@@ -349,3 +349,55 @@ body.theme-warp .image-overlay {
     font-size: 16px;
   }
 }
+.password-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input input {
+  width: 100%;
+  padding-right: 3.4rem;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  min-height: 22px;
+  font-size: 18px;
+  line-height: 1;
+  z-index: 2;
+  box-shadow: none;
+}
+
+.password-toggle:hover {
+  background: transparent;
+  color: var(--brand);
+}
+
+.password-toggle:focus,
+.password-toggle:focus-visible,
+.password-toggle:active {
+  outline: none;
+  background: transparent;
+  box-shadow: none;
+  color: var(--brand);
+}
+
+.password-toggle i {
+  pointer-events: none;
+}

@@ -13,6 +13,7 @@ export default function RegisterPage() {
   const [registerUserFirstName, setRegisterUserFirstName] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
   const [registerMessage, setRegisterMessage] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -99,14 +100,23 @@ export default function RegisterPage() {
           />
         </div>
 
-        <div className="pill-input">
+        <div className="pill-input password-input">
           <span className="input-icon">🔐</span>
           <input
-            type="password"
-            placeholder="Temporary Password"
+            type={showPassword ? "text" : "password"}
+            placeholder="Password"
             value={registerPassword}
             onChange={(e) => setRegisterPassword(e.target.value)}
+            autoComplete="new-password"
           />
+          <button
+            type="button"
+            className="password-toggle"
+            onClick={() => setShowPassword((prev) => !prev)}
+            aria-label={showPassword ? "Hide password" : "Show password"}
+          >
+            <i className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`}></i>
+          </button>
         </div>
 
         <button className="login-btn" type="submit">

@@ -12,6 +12,7 @@ export default function LoginPage() {
   const [loginPassword, setLoginPassword] = useState("");
   const [loginMessage, setLoginMessage] = useState("");
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLoginSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -87,15 +88,24 @@ export default function LoginPage() {
           />
         </div>
 
-        <div className="pill-input">
+        <div className="pill-input password-input">
           <span className="input-icon">🔒</span>
           <input
-            type="password"
+            type={showPassword ? "text" : "password"}
             placeholder="Password"
             value={loginPassword}
             onChange={(e) => setLoginPassword(e.target.value)}
+            autoComplete="current-password"
             required
           />
+          <button
+            type="button"
+            className="password-toggle"
+            onClick={() => setShowPassword((prev) => !prev)}
+            aria-label={showPassword ? "Hide password" : "Show password"}
+          >
+            <i className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`}></i>
+          </button>
         </div>
 
         <button className="login-btn" type="submit">

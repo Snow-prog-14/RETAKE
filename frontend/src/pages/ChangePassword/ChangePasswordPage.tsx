@@ -36,6 +36,9 @@ export default function ChangePasswordPage() {
   const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   useEffect(() => {
     if (!storedUser?.userId) {
@@ -143,37 +146,80 @@ export default function ChangePasswordPage() {
       darkVisualImage="/images/darkmode.jpg"
     >
       <form className="login-form" onSubmit={handleSubmit}>
-        <div className="pill-input">
+        <div className="pill-input password-input">
           <span className="input-icon">🔒</span>
           <input
-            type="password"
+            type={showCurrentPassword ? "text" : "password"}
             placeholder="Current password"
             value={currentPassword}
             onChange={(e) => setCurrentPassword(e.target.value)}
+            autoComplete="current-password"
             required
           />
+          <button
+            type="button"
+            className="password-toggle"
+            onClick={() => setShowCurrentPassword((prev) => !prev)}
+            aria-label={
+              showCurrentPassword
+                ? "Hide current password"
+                : "Show current password"
+            }
+          >
+            <i
+              className={`bi ${showCurrentPassword ? "bi-eye-slash" : "bi-eye"}`}
+            ></i>
+          </button>
         </div>
 
-        <div className="pill-input">
+        <div className="pill-input password-input">
           <span className="input-icon">✨</span>
           <input
-            type="password"
+            type={showNewPassword ? "text" : "password"}
             placeholder="New password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
+            autoComplete="new-password"
             required
           />
+          <button
+            type="button"
+            className="password-toggle"
+            onClick={() => setShowNewPassword((prev) => !prev)}
+            aria-label={
+              showNewPassword ? "Hide new password" : "Show new password"
+            }
+          >
+            <i
+              className={`bi ${showNewPassword ? "bi-eye-slash" : "bi-eye"}`}
+            ></i>
+          </button>
         </div>
 
-        <div className="pill-input">
+        <div className="pill-input password-input">
           <span className="input-icon">✅</span>
           <input
-            type="password"
+            type={showConfirmPassword ? "text" : "password"}
             placeholder="Confirm new password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
+            autoComplete="new-password"
             required
           />
+          <button
+            type="button"
+            className="password-toggle"
+            onClick={() => setShowConfirmPassword((prev) => !prev)}
+            aria-label={
+              showConfirmPassword
+                ? "Hide confirm password"
+                : "Show confirm password"
+            }
+          >
+            <i
+              className={`bi ${showConfirmPassword ? "bi-eye-slash" : "bi-eye"}`}
+            ></i>
+          </button>
         </div>
 
         <button className="login-btn" type="submit" disabled={isSubmitting}>
