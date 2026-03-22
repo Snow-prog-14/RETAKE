@@ -2,8 +2,8 @@
   min-height: 100vh;
   display: flex;
   background:
-    var(--page-backdrop),
-    url("https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1400&q=80")
+    linear-gradient(rgba(255, 248, 244, 0.82), rgba(255, 244, 238, 0.9)),
+    url("https://images.unsplash.com/photo-1497366412874-3415097a27e7?auto=format&fit=crop&w=1600&q=80")
       center/cover no-repeat;
   color: var(--text-primary);
   font-family: Arial, Helvetica, sans-serif;
@@ -11,13 +11,14 @@
 
 .appadmin-sidebar {
   width: 260px;
-  background: var(--bg-sidebar);
-  border-right: 1px solid var(--border-soft);
+  background: rgba(255, 255, 255, 0.88);
+  border-right: 1px solid rgba(249, 115, 22, 0.2);
   padding: 28px 20px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   backdrop-filter: blur(12px);
+  box-shadow: inset -1px 0 0 rgba(249, 115, 22, 0.08);
 }
 
 .appadmin-sidebar h2 {
@@ -53,24 +54,30 @@
 
 .appadmin-nav button:hover,
 .appadmin-nav button.active {
-  background: var(--accent-soft);
-  border-color: var(--accent-border);
+  background: linear-gradient(
+    90deg,
+    rgba(249, 115, 22, 0.14) 0%,
+    rgba(239, 68, 68, 0.08) 100%
+  );
+  border-color: rgba(249, 115, 22, 0.3);
   color: var(--text-primary);
+  box-shadow: 0 0 0 1px rgba(249, 115, 22, 0.04);
 }
 
 .logout-btn {
-  background: var(--surface-hover);
-  color: var(--text-primary);
-  border: 1px solid var(--border-soft);
+  background: linear-gradient(90deg, var(--accent), var(--accent-hover));
+  color: #ffffff;
+  border: none;
   padding: 12px 14px;
   border-radius: var(--radius-md);
   cursor: pointer;
   transition: var(--transition-fast);
+  font-weight: 700;
 }
 
 .logout-btn:hover {
-  background: var(--accent-soft);
-  border-color: var(--accent-border);
+  transform: translateY(-1px);
+  filter: brightness(1.05);
 }
 
 .appadmin-main {
@@ -89,8 +96,8 @@
 
 .appadmin-main > p {
   margin: -12px 0 8px;
-  color: var(--text-muted);
-  font-size: 14px;
+  color: var(--text-secondary);
+  font-size: 15px;
 }
 
 .appadmin-cards {
@@ -100,18 +107,19 @@
 }
 
 .appadmin-card {
-  background: var(--card-bg);
-  border: 1px solid var(--border-soft);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(249, 115, 22, 0.18);
+  border-top: 3px solid var(--accent);
   border-radius: var(--radius-lg);
   padding: 24px;
-  box-shadow: var(--shadow-soft);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
   backdrop-filter: blur(10px);
 }
 
 .appadmin-card h3 {
   margin: 0 0 14px;
   font-size: 15px;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   font-weight: 600;
 }
 
@@ -123,11 +131,12 @@
 }
 
 .appadmin-activity {
-  background: var(--card-bg);
-  border: 1px solid var(--border-soft);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(249, 115, 22, 0.16);
+  border-left: 4px solid var(--accent);
   border-radius: var(--radius-lg);
   padding: 24px;
-  box-shadow: var(--shadow-soft);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
   backdrop-filter: blur(10px);
 }
 
@@ -147,6 +156,10 @@
   margin-bottom: 10px;
 }
 
+.appadmin-activity li::marker {
+  color: var(--accent);
+}
+
 @media (max-width: 1000px) {
   .appadmin-cards {
     grid-template-columns: 1fr;
@@ -161,4 +174,88 @@
   .appadmin-sidebar {
     width: 100%;
   }
+}
+
+body.dark .appadmin-page {
+  background:
+    linear-gradient(rgba(17, 24, 39, 0.78), rgba(17, 24, 39, 0.9)),
+    url("https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1600&q=80")
+      center/cover no-repeat;
+}
+
+body.dark .appadmin-sidebar {
+  background: linear-gradient(
+    180deg,
+    rgba(31, 41, 55, 0.94) 0%,
+    rgba(17, 24, 39, 0.96) 100%
+  );
+  border-right: 1px solid rgba(255, 138, 92, 0.22);
+  box-shadow: inset -1px 0 0 rgba(255, 138, 92, 0.12);
+}
+
+body.dark .appadmin-sidebar h2 {
+  color: var(--text-primary);
+}
+
+body.dark .appadmin-sidebar p {
+  color: var(--secondary-accent);
+}
+
+body.dark .appadmin-nav button {
+  color: var(--text-secondary);
+}
+
+body.dark .appadmin-nav button:hover,
+body.dark .appadmin-nav button.active {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 138, 92, 0.2) 0%,
+    rgba(255, 77, 77, 0.12) 100%
+  );
+  border-color: rgba(255, 138, 92, 0.3);
+  color: #ffffff;
+  box-shadow: 0 0 0 1px rgba(255, 138, 92, 0.08);
+}
+
+body.dark .appadmin-main > p {
+  color: var(--secondary-accent);
+}
+
+body.dark .appadmin-card {
+  background: linear-gradient(
+    180deg,
+    rgba(31, 41, 55, 0.92) 0%,
+    rgba(17, 24, 39, 0.94) 100%
+  );
+  border: 1px solid rgba(255, 138, 92, 0.22);
+  border-top: 3px solid var(--accent);
+  box-shadow:
+    var(--shadow-soft),
+    0 0 0 1px rgba(255, 138, 92, 0.04);
+}
+
+body.dark .appadmin-card h3 {
+  color: var(--secondary-accent);
+}
+
+body.dark .appadmin-card p {
+  color: #ffffff;
+}
+
+body.dark .appadmin-activity {
+  background: linear-gradient(
+    180deg,
+    rgba(31, 41, 55, 0.9) 0%,
+    rgba(17, 24, 39, 0.93) 100%
+  );
+  border: 1px solid rgba(255, 138, 92, 0.18);
+  border-left: 4px solid var(--accent);
+}
+
+body.dark .appadmin-activity h2 {
+  color: #ffffff;
+}
+
+body.dark .appadmin-activity ul {
+  color: var(--text-secondary);
 }
