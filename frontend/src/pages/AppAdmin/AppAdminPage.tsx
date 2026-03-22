@@ -6,6 +6,7 @@ export default function AppAdminPage() {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
     navigate("/");
   };
 
@@ -13,42 +14,32 @@ export default function AppAdminPage() {
     <div className="appadmin-page">
       <aside className="appadmin-sidebar">
         <div>
-          <h2 className="appadmin-logo">AppAdmin</h2>
-          <p className="appadmin-role">Administrator Panel</p>
+          <h2>AppAdmin</h2>
+          <p>Administrator Panel</p>
+
+          <nav className="appadmin-nav">
+            <button className="active" onClick={() => navigate("/appadmin")}>
+              Dashboard
+            </button>
+            <button onClick={() => navigate("/appadmin/users")}>Users</button>
+            <button>Reports</button>
+            <button>Settings</button>
+          </nav>
         </div>
 
-        <nav className="appadmin-nav">
-          <button className="appadmin-nav-item active">Dashboard</button>
-          <button onClick={() => navigate("/profile")}>
-            View Profile
-          </button>{" "}
-          <button
-            className="appadmin-nav-item"
-            onClick={() => navigate("/appadmin/users")}
-          >
-            Users
-          </button>{" "}
-          <button className="appadmin-nav-item">Reports</button>
-          <button className="appadmin-nav-item">Settings</button>
-        </nav>
-
-        <button className="appadmin-logout-btn" onClick={handleLogout}>
+        <button className="logout-btn" onClick={handleLogout}>
           Logout
         </button>
       </aside>
 
       <main className="appadmin-main">
-        <header className="appadmin-header">
-          <div>
-            <h1>AppAdmin Dashboard</h1>
-            <p>
-              Manage users, monitor activity, and pretend everything is under
-              control.
-            </p>
-          </div>
-        </header>
+        <h1>AppAdmin Dashboard</h1>
+        <p>
+          Manage users, monitor activity, and pretend everything is under
+          control.
+        </p>
 
-        <section className="appadmin-cards">
+        <div className="appadmin-cards">
           <div className="appadmin-card">
             <h3>Total Users</h3>
             <p>120</p>
@@ -63,16 +54,16 @@ export default function AppAdminPage() {
             <h3>Reports Today</h3>
             <p>6</p>
           </div>
-        </section>
+        </div>
 
-        <section className="appadmin-panel">
+        <div className="appadmin-activity">
           <h2>Recent Activity</h2>
           <ul>
             <li>Admin logged in</li>
             <li>User records checked</li>
             <li>System status reviewed</li>
           </ul>
-        </section>
+        </div>
       </main>
     </div>
   );

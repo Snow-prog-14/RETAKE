@@ -13,15 +13,23 @@ export default function StudentPage() {
   return (
     <div className="student-page">
       <aside className="student-sidebar">
-        <h2>Student</h2>
+        <div>
+          <h2>Student</h2>
+          <p>Student Panel</p>
 
-        <nav className="student-nav">
-          <button onClick={() => navigate("/student")}>Dashboard</button>
-          <button>Subjects</button>
-          <button>Tasks</button>
-          <button onClick={() => navigate("/profile")}>Profile</button>
-          <button onClick={handleLogout}>Logout</button>
-        </nav>
+          <nav className="student-nav">
+            <button className="active" onClick={() => navigate("/student")}>
+              Dashboard
+            </button>
+            <button>Subjects</button>
+            <button>Tasks</button>
+            <button onClick={() => navigate("/profile")}>View Profile</button>
+          </nav>
+        </div>
+
+        <button className="logout-btn" onClick={handleLogout}>
+          Logout
+        </button>
       </aside>
 
       <main className="student-main">
@@ -43,6 +51,15 @@ export default function StudentPage() {
             <h3>Completed</h3>
             <p>11</p>
           </div>
+        </div>
+
+        <div className="student-activity">
+          <h2>Recent Activity</h2>
+          <ul>
+            <li>Joined a study session</li>
+            <li>Completed Module 4 quiz</li>
+            <li>Uploaded lab notes</li>
+          </ul>
         </div>
       </main>
     </div>
