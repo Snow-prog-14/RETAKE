@@ -5,7 +5,7 @@ type UserRole = "AppAdmin" | "Admin" | "Student";
 
 type ProfileData = {
   fullName: string;
-  preferredName: string;
+  username: string;
   role: UserRole;
   email: string;
   status: "Online" | "Offline";
@@ -13,60 +13,41 @@ type ProfileData = {
     label: string;
     value: string | number;
   }[];
-  highlights: string[];
   connections: {
     name: string;
     role: string;
   }[];
-  security: {
-    hasPassword: boolean;
-    hasFingerprint: boolean;
-    hasCardTap: boolean;
-  };
 };
 
 export default function ProfilePage() {
   const navigate = useNavigate();
 
-  // Temporary mock role
-  // Later, replace this with role from token, localStorage, or backend response
-  const storedRole = localStorage.getItem("role") as UserRole | null;
-  const mockRole: UserRole = storedRole || "Student";
+  const storedRole =
+    (localStorage.getItem("role") as UserRole | null) || "Student";
+  const mockRole: UserRole = storedRole;
+
   const profileDataByRole: Record<UserRole, ProfileData> = {
     Student: {
       fullName: "ALEJANDRA MARAASIN",
-      preferredName: "Alejandra",
+      username: "alejandra.maraasin",
       role: "Student",
       email: "alejandramaraasin6@gmail.com",
       status: "Online",
       stats: [
-        { label: "Hours Studied", value: "45 Hrs" },
+        { label: "Pending Tasks", value: 4 },
         { label: "Tasks Completed", value: 12 },
-        { label: "Modules Completed", value: 3 },
-        { label: "Study Partners", value: 4 },
-      ],
-      highlights: [
-        "Quiz A+",
-        "Lab Notes",
-        "Group Sync",
-        "Module 4",
-        "Final Review",
+        { label: "Collaborations", value: 3 },
       ],
       connections: [
-        { name: "Matt L.", role: "Study Partner" },
-        { name: "Sarah J.", role: "Study Partner" },
-        { name: "Ben K.", role: "Study Partner" },
+        { name: "Capstone Group A", role: "Human Computer Interaction" },
+        { name: "Network Team 2", role: "Computer Networks" },
+        { name: "UI Research Circle", role: "Information Management" },
       ],
-      security: {
-        hasPassword: true,
-        hasFingerprint: false,
-        hasCardTap: true,
-      },
     },
 
     Admin: {
       fullName: "JONATHAN REYES",
-      preferredName: "Jon",
+      username: "jon.reyes",
       role: "Admin",
       email: "jonathan.reyes@retake.edu",
       status: "Online",
@@ -74,56 +55,30 @@ export default function ProfilePage() {
         { label: "Users Managed", value: 28 },
         { label: "Reports Reviewed", value: 16 },
         { label: "Active Sessions", value: 5 },
-        { label: "Tasks Resolved", value: 11 },
-      ],
-      highlights: [
-        "User Audit",
-        "Approvals",
-        "Reports",
-        "Security Check",
-        "Session Logs",
       ],
       connections: [
         { name: "Maria T.", role: "Staff" },
         { name: "Kevin D.", role: "Coordinator" },
         { name: "Louise P.", role: "Support" },
       ],
-      security: {
-        hasPassword: true,
-        hasFingerprint: true,
-        hasCardTap: true,
-      },
     },
 
     AppAdmin: {
       fullName: "PENELOPE SANTOS",
-      preferredName: "Penelope",
+      username: "penelope.santos",
       role: "AppAdmin",
       email: "penelope.santos@retake.edu",
       status: "Online",
       stats: [
         { label: "Total Admins", value: 8 },
         { label: "Active Users", value: 214 },
-        { label: "System Actions", value: 39 },
         { label: "Access Requests", value: 7 },
-      ],
-      highlights: [
-        "Role Update",
-        "Password Reset",
-        "New Admin",
-        "Security Log",
-        "System Check",
       ],
       connections: [
         { name: "Admin Rose", role: "Admin" },
         { name: "Admin Carlo", role: "Admin" },
         { name: "Admin Mae", role: "Admin" },
       ],
-      security: {
-        hasPassword: true,
-        hasFingerprint: true,
-        hasCardTap: true,
-      },
     },
   };
 
@@ -131,11 +86,12 @@ export default function ProfilePage() {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
     navigate("/");
   };
 
   const getConnectionsTitle = () => {
-    if (profile.role === "Student") return "Study Partners";
+    if (profile.role === "Student") return "Collaborations";
     if (profile.role === "Admin") return "Team Connections";
     return "Admin Connections";
   };
@@ -157,11 +113,40 @@ export default function ProfilePage() {
 
           <nav className="profile-nav">
             <button className="nav-item active">Account Profile</button>
-            <button className="nav-item">Study Schedule</button>
-            <button className="nav-item">Academic Materials</button>
-            <button className="nav-item">Progress Dashboard</button>
-            <button className="nav-item">Connections</button>
-            <button className="nav-item">Support</button>
+            {profile.role === "Student" && (
+              <>
+                <button
+                  className="nav-item"
+                  onClick={() => navigate("/student/schedule")}
+                >
+                  Study Schedule
+                </button>
+                <button
+                  className="nav-item"
+                  onClick={() => navigate("/student/tasks")}
+                >
+                  Manage Tasks
+                </button>
+                <button
+                  className="nav-item"
+                  onClick={() => navigate("/student/connections")}
+                >
+                  Connections
+                </button>
+                <button
+                  className="nav-item"
+                  onClick={() => navigate("/student/support")}
+                >
+                  Support
+                </button>
+              </>
+            )}
+            <button
+              className="nav-item"
+              onClick={() => navigate("/student/settings")}
+            >
+              Settings
+            </button>
           </nav>
         </div>
 
@@ -173,8 +158,8 @@ export default function ProfilePage() {
       <main className="profile-main">
         <div className="profile-header">
           <div>
-            <h1>STUDY KIOSK PROFILE</h1>
-            <p>Manage your academic identity, progress, and connections.</p>
+            <h1>ACCOUNT PROFILE</h1>
+            <p>Manage your academic identity and collaborations.</p>
           </div>
           <button className="edit-btn">Edit Profile</button>
         </div>
@@ -196,9 +181,7 @@ export default function ProfilePage() {
             </div>
 
             <h2>{profile.fullName}</h2>
-            <p className="preferred-name">
-              Preferred Name: {profile.preferredName}
-            </p>
+            <p className="preferred-name">@{profile.username}</p>
             <p className="email-text">{profile.email}</p>
           </div>
         </section>
@@ -213,21 +196,8 @@ export default function ProfilePage() {
         </section>
 
         <section className="card">
-          <h3 className="section-title">Highlights</h3>
-          <div className="highlights-row">
-            {profile.highlights.map((item) => (
-              <div className="highlight-item" key={item}>
-                <div className="highlight-circle">{item.charAt(0)}</div>
-                <span>{item}</span>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section className="card">
           <div className="section-header">
             <h3 className="section-title">{getConnectionsTitle()}</h3>
-            <button className="message-btn">Message</button>
           </div>
 
           <div className="connections-row">
@@ -242,62 +212,6 @@ export default function ProfilePage() {
                 </div>
               </div>
             ))}
-          </div>
-        </section>
-
-        <section className="card">
-          <h3 className="section-title">Kiosk Access & Security</h3>
-
-          <div className="security-grid">
-            <div className="security-item">
-              <div>
-                <p className="security-label">Email</p>
-                <span className="security-value">{profile.email}</span>
-              </div>
-              <button className="security-btn">Update Email</button>
-            </div>
-
-            <div className="security-item">
-              <div>
-                <p className="security-label">Password</p>
-                <span className="security-value">
-                  {profile.security.hasPassword
-                    ? "Password is set"
-                    : "No password set"}
-                </span>
-              </div>
-              <button className="security-btn">
-                {profile.security.hasPassword
-                  ? "Change Password"
-                  : "Add Password"}
-              </button>
-            </div>
-
-            <div className="security-item">
-              <div>
-                <p className="security-label">Fingerprint</p>
-                <span className="security-value">
-                  {profile.security.hasFingerprint
-                    ? "Registered"
-                    : "Not registered"}
-                </span>
-              </div>
-              <button className="security-btn">
-                {profile.security.hasFingerprint
-                  ? "Manage Fingerprint"
-                  : "Add Fingerprint"}
-              </button>
-            </div>
-
-            <div className="security-item">
-              <div>
-                <p className="security-label">Card Tap / RFID</p>
-                <span className="security-value">
-                  {profile.security.hasCardTap ? "Linked" : "Not linked"}
-                </span>
-              </div>
-              <button className="security-btn">Manage Card Tap</button>
-            </div>
           </div>
         </section>
       </main>
