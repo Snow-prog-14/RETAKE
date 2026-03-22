@@ -8,7 +8,7 @@ import "./LoginPage.css";
 const API_BASE = "http://localhost:5023";
 
 export default function LoginPage() {
-  const [loginUserEmail, setLoginUserEmail] = useState("");
+  const [loginIdentifier, setLoginIdentifier] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [loginMessage, setLoginMessage] = useState("");
   const navigate = useNavigate();
@@ -24,7 +24,7 @@ export default function LoginPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          userEmail: loginUserEmail.trim(),
+          login: loginIdentifier.trim(),
           password: loginPassword,
         }),
       });
@@ -79,10 +79,10 @@ export default function LoginPage() {
         <div className="pill-input">
           <span className="input-icon">📧</span>
           <input
-            type="email"
-            placeholder="Email"
-            value={loginUserEmail}
-            onChange={(e) => setLoginUserEmail(e.target.value)}
+            type="text"
+            placeholder="Email or Username"
+            value={loginIdentifier}
+            onChange={(e) => setLoginIdentifier(e.target.value)}
             required
           />
         </div>

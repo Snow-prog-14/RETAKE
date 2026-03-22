@@ -86,10 +86,11 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public IActionResult Login(LoginRequestDto request)
     {
-        var normalizedEmail = request.UserEmail.Trim().ToLower();
+        var loginInput = request.Login.Trim().ToLower();
 
-        var user = _context.Users.FirstOrDefault(
-            u => u.UserEmail != null && u.UserEmail.ToLower() == normalizedEmail
+        var user = _context.Users.FirstOrDefault(u =>
+            (u.UserEmail != null && u.UserEmail.ToLower() == loginInput) ||
+            (u.UserUsername != null && u.UserUsername.ToLower() == loginInput)
         );
 
         if (user == null)
@@ -97,7 +98,7 @@ public class AuthController : ControllerBase
             return Unauthorized(new AuthResponseDto
             {
                 Success = false,
-                Message = "Invalid email or password."
+                Message = "Invalid email, username, or password."
             });
         }
 
@@ -108,7 +109,7 @@ public class AuthController : ControllerBase
             return Unauthorized(new AuthResponseDto
             {
                 Success = false,
-                Message = "Invalid email or password."
+                Message = "Invalid email, username, or password."
             });
         }
 
@@ -159,7 +160,6 @@ public class AuthController : ControllerBase
             UserStatus = user.UserStatus
         });
     }
-
     [HttpPut("change-password/{id}")]
     public IActionResult ChangePassword(string id, ChangePasswordRequestDto request)
     {
