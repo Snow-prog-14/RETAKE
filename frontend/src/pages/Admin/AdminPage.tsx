@@ -17,6 +17,8 @@ export default function AdminPage() {
 
         <nav className="admin-nav">
           <button className="active">Dashboard</button>
+          <button onClick={() => navigate("/profile")}>Profile</button>
+
           <button>Students</button>
           <button>Courses</button>
           <button>Reports</button>

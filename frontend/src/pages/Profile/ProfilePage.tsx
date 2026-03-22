@@ -30,8 +30,8 @@ export default function ProfilePage() {
 
   // Temporary mock role
   // Later, replace this with role from token, localStorage, or backend response
-  const mockRole: UserRole = "Student";
-
+  const storedRole = localStorage.getItem("role") as UserRole | null;
+  const mockRole: UserRole = storedRole || "Student";
   const profileDataByRole: Record<UserRole, ProfileData> = {
     Student: {
       fullName: "ALEJANDRA MARAASIN",

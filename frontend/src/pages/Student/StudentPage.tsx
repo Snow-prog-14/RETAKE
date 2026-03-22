@@ -5,6 +5,7 @@ export default function StudentPage() {
   const navigate = useNavigate();
 
   const handleLogout = () => {
+    localStorage.removeItem("token");
     localStorage.removeItem("user");
     navigate("/");
   };
@@ -13,20 +14,14 @@ export default function StudentPage() {
     <div className="student-page">
       <aside className="student-sidebar">
         <h2>Student</h2>
-        <p>Learning Dashboard</p>
 
         <nav className="student-nav">
-          <button className="active">Dashboard</button>
-          <button className="appadmin-nav-item active">View Profile</button>
-
+          <button onClick={() => navigate("/student")}>Dashboard</button>
           <button>Subjects</button>
           <button>Tasks</button>
-          <button>Profile</button>
+          <button onClick={() => navigate("/profile")}>Profile</button>
+          <button onClick={handleLogout}>Logout</button>
         </nav>
-
-        <button className="logout-btn" onClick={handleLogout}>
-          Logout
-        </button>
       </aside>
 
       <main className="student-main">
@@ -38,10 +33,12 @@ export default function StudentPage() {
             <h3>Subjects</h3>
             <p>6</p>
           </div>
+
           <div className="student-card">
             <h3>Pending Tasks</h3>
             <p>4</p>
           </div>
+
           <div className="student-card">
             <h3>Completed</h3>
             <p>11</p>
