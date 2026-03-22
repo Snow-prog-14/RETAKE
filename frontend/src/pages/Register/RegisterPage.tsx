@@ -4,12 +4,15 @@ import AuthLayout from "../../components/AuthLayout";
 import "../../components/AuthShared.css";
 import "./RegisterPage.css";
 
+const API_BASE = "http://localhost:5023";
+
 export default function RegisterPage() {
   const [registerUserEmail, setRegisterUserEmail] = useState("");
   const [registerUserUsername, setRegisterUserUsername] = useState("");
   const [registerUserLastName, setRegisterUserLastName] = useState("");
   const [registerUserFirstName, setRegisterUserFirstName] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
+  const [mustChangePass, setMustChangePass] = useState(true);
   const [registerMessage, setRegisterMessage] = useState("");
 
   const handleRegisterSubmit = async (e: React.FormEvent) => {
@@ -17,7 +20,7 @@ export default function RegisterPage() {
     setRegisterMessage("");
 
     try {
-      const response = await fetch("http://localhost:5023/api/Auth/register", {
+      const response = await fetch(`${API_BASE}/api/Auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -28,6 +31,7 @@ export default function RegisterPage() {
           userLastName: registerUserLastName,
           userFirstName: registerUserFirstName,
           password: registerPassword,
+          mustChangePass: mustChangePass ? 1 : 0,
         }),
       });
 
@@ -47,35 +51,37 @@ export default function RegisterPage() {
     <AuthLayout
       mode="register"
       title="Create Account"
-      subtitle="Set up your account and start working."
-      visualTitle="Join Study Buddy"
-      visualText="Build smarter workflows with a cleaner auth experience."
-      lightVisualImage="https://cdn.theanimegallery.com/theanimegallery/864f087c-fc9e-45a1-b7f0-f63d55a22236-anime-room-background.webp"
-      darkVisualImage="https://img.freepik.com/premium-photo/computer-is-sitting-desk-front-city-view_759095-25244.jpg?w=2000"
+      subtitle="Set up a new account and control whether the user must change their password on first login."
+      visualTitle="New account setup."
+      visualText="Create users properly so you don’t spend next week cleaning up avoidable auth nonsense."
+      lightVisualImage="/images/lightmode.png"
+      darkVisualImage="/images/darkmode.jpg"
     >
       <form className="login-form" onSubmit={handleRegisterSubmit}>
-        <div className="pill-input">
-          <span className="input-icon">👤</span>
-          <input
-            type="text"
-            placeholder="First Name"
-            value={registerUserFirstName}
-            onChange={(e) => setRegisterUserFirstName(e.target.value)}
-          />
+        <div className="name-row">
+          <div className="pill-input">
+            <span className="input-icon">👤</span>
+            <input
+              type="text"
+              placeholder="First Name"
+              value={registerUserFirstName}
+              onChange={(e) => setRegisterUserFirstName(e.target.value)}
+            />
+          </div>
+
+          <div className="pill-input">
+            <span className="input-icon">👤</span>
+            <input
+              type="text"
+              placeholder="Last Name"
+              value={registerUserLastName}
+              onChange={(e) => setRegisterUserLastName(e.target.value)}
+            />
+          </div>
         </div>
 
         <div className="pill-input">
-          <span className="input-icon">👤</span>
-          <input
-            type="text"
-            placeholder="Last Name"
-            value={registerUserLastName}
-            onChange={(e) => setRegisterUserLastName(e.target.value)}
-          />
-        </div>
-
-        <div className="pill-input">
-          <span className="input-icon">👤</span>
+          <span className="input-icon">🪪</span>
           <input
             type="text"
             placeholder="Username"
@@ -88,34 +94,43 @@ export default function RegisterPage() {
           <span className="input-icon">📧</span>
           <input
             type="email"
-            placeholder="Email Address"
+            placeholder="Email"
             value={registerUserEmail}
             onChange={(e) => setRegisterUserEmail(e.target.value)}
           />
         </div>
 
         <div className="pill-input">
-          <span className="input-icon">🔒</span>
+          <span className="input-icon">🔐</span>
           <input
             type="password"
-            placeholder="Create Password"
+            placeholder="Temporary Password"
             value={registerPassword}
             onChange={(e) => setRegisterPassword(e.target.value)}
           />
         </div>
 
-        <button type="submit" className="login-btn">
+        <label className="must-change-check">
+          <input
+            type="checkbox"
+            checked={mustChangePass}
+            onChange={(e) => setMustChangePass(e.target.checked)}
+          />
+          Force password change on first login
+        </label>
+
+        <button className="login-btn" type="submit">
           CONTINUE
         </button>
+
+        {registerMessage && <p className="auth-message">{registerMessage}</p>}
+
+        <div className="form-footer-actions">
+          <Link to="/" className="text-link">
+            Back to Login
+          </Link>
+        </div>
       </form>
-
-      {registerMessage && <p className="auth-message">{registerMessage}</p>}
-
-      <div className="form-footer-actions">
-        <Link to="/" className="switch-mode-btn secondary">
-          Back to Login
-        </Link>
-      </div>
     </AuthLayout>
   );
 }
