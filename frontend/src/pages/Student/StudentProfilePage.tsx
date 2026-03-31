@@ -27,6 +27,11 @@ type StoredUser = {
   UserTier?: number;
 };
 
+type PermissionItem = {
+  code: string;
+  allowedText: string;
+};
+
 function getResolvedRole(): number | null {
   const rawRole = localStorage.getItem("role");
 
@@ -50,6 +55,52 @@ function getResolvedRole(): number | null {
     console.error("Failed to parse stored user:", error);
     return null;
   }
+}
+
+function getStudentPermissions(role: number | null): PermissionItem[] {
+  if (role === 0) {
+    return [
+      {
+        code: "student.list.view",
+        allowedText: "Allowed for Tier 0 and Tier 1",
+      },
+      {
+        code: "student.profile.view",
+        allowedText: "Allowed for Tier 0 and Tier 1",
+      },
+      {
+        code: "student.info.edit",
+        allowedText: "Allowed for Tier 0 and Tier 1",
+      },
+      {
+        code: "student.status.update",
+        allowedText: "Allowed for Tier 0 and Tier 1",
+      },
+    ];
+  }
+
+  if (role === 1) {
+    return [
+      {
+        code: "student.list.view",
+        allowedText: "Allowed for Tier 0 and Tier 1",
+      },
+      {
+        code: "student.profile.view",
+        allowedText: "Allowed for Tier 0 and Tier 1",
+      },
+      {
+        code: "student.info.edit",
+        allowedText: "Allowed for Tier 0 and Tier 1",
+      },
+      {
+        code: "student.status.update",
+        allowedText: "Allowed for Tier 0 and Tier 1",
+      },
+    ];
+  }
+
+  return [];
 }
 
 export default function StudentProfilePage() {
@@ -83,6 +134,11 @@ export default function StudentProfilePage() {
   const [student, setStudent] = useState<ApiStudent | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const permissions = useMemo(
+    () => getStudentPermissions(resolvedRole),
+    [resolvedRole],
+  );
 
   const fetchStudent = async () => {
     try {
@@ -258,14 +314,30 @@ export default function StudentProfilePage() {
             </div>
 
             <div className="dashboard-panel student-profile-card">
-              <h2>Quick Summary</h2>
-              <ul className="student-summary-list">
-                <li>This account belongs to a tier 2 student user.</li>
-                <li>Visible only to AppAdmin and Admin dashboards.</li>
-                <li>
-                  Good place to add course, section, year, and enrollment later.
-                </li>
-              </ul>
+              <h2>Permissions</h2>
+              <p className="student-panel-subtext">
+                Permissions available to your current role for student records.
+              </p>
+
+              {permissions.length > 0 ? (
+                <div className="student-profile-info-list">
+                  {permissions.map((permission) => (
+                    <div
+                      className="student-profile-info-row"
+                      key={permission.code}
+                    >
+                      <span className="student-info-label">
+                        {permission.code}
+                      </span>
+                      <strong>{permission.allowedText}</strong>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="student-empty-state">
+                  No student permissions available for this role.
+                </p>
+              )}
             </div>
           </section>
         </>
