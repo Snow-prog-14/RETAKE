@@ -1,0 +1,229 @@
+.profile-card,
+.profile-edit-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.profile-avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.profile-avatar-image,
+.profile-avatar-fallback,
+.profile-preview-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-avatar-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #dbeafe;
+  color: #1d4ed8;
+  font-weight: 700;
+  font-size: 28px;
+  border-radius: 50%;
+}
+
+.profile-heading h2,
+.profile-heading p {
+  margin: 4px 0;
+}
+
+.profile-status {
+  display: inline-block;
+  background: #dcfce7;
+  color: #166534;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.profile-role-label {
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.profile-edit-btn,
+.profile-edit-actions button,
+.profile-password-btn,
+.profile-danger-btn {
+  border: none;
+  border-radius: 12px;
+  padding: 12px 16px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.profile-edit-btn,
+.profile-edit-actions button:first-child,
+.profile-password-btn {
+  background: #2563eb;
+  color: #fff;
+}
+
+.secondary-btn {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.profile-danger-btn {
+  background: #dc2626;
+  color: #fff;
+}
+
+.profile-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.profile-stat-card {
+  background: #f8fafc;
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.profile-stat-card span {
+  display: block;
+  color: #6b7280;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.profile-stat-card strong {
+  font-size: 24px;
+}
+
+.profile-collaborations {
+  margin-top: 24px;
+}
+
+.profile-collab-list {
+  display: grid;
+  gap: 12px;
+}
+
+.profile-collab-card {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  background: #f8fafc;
+  padding: 14px;
+  border-radius: 14px;
+}
+
+.profile-collab-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #e0e7ff;
+  color: #3730a3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.profile-edit-card {
+  display: grid;
+  gap: 16px;
+}
+
+.profile-edit-card label,
+.profile-password-box label {
+  display: grid;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.profile-edit-card input,
+.profile-password-box input,
+.profile-edit-card input[type="file"] {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+.profile-edit-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.profile-password-box,
+.profile-danger-zone {
+  margin-top: 8px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.profile-password-field {
+  display: flex;
+  gap: 8px;
+}
+
+.profile-password-field button {
+  border: none;
+  background: #e5e7eb;
+  border-radius: 12px;
+  padding: 0 14px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.profile-message {
+  margin: 0;
+  font-size: 14px;
+  color: #1d4ed8;
+  font-weight: 600;
+}
+
+.profile-edit-preview {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #f3f4f6;
+}
+
+.profile-preview-image {
+  border-radius: 50%;
+}
+
+.profile-preview-empty {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  text-align: center;
+  padding: 10px;
+  color: #6b7280;
+}
+
+@media (max-width: 980px) {
+  .profile-stats {
+    grid-template-columns: 1fr;
+  }
+}

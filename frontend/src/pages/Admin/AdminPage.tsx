@@ -21,7 +21,7 @@ export default function AdminPage() {
           <button className="active" onClick={() => navigate("/admin")}>
             Dashboard
           </button>
-          <button onClick={() => navigate("/profile")}>Profile</button>
+          <button onClick={() => navigate("/admin/profile")}>Profile</button>{" "}
           <button>Students</button>
           <button>Courses</button>
           <button>Reports</button>

@@ -21,7 +21,9 @@ export default function AppAdminPage() {
               Dashboard
             </button>
             <button onClick={() => navigate("/appadmin/users")}>Users</button>
-            <button onClick={() => navigate("/profile")}>Profile</button>
+            <button onClick={() => navigate("/appadmin/profile")}>
+              Profile
+            </button>{" "}
             <button>Reports</button>
             <button>Settings</button>
           </nav>
