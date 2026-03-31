@@ -16,7 +16,7 @@ export default function StudentPage() {
   const getPageTitle = () => {
     switch (currentPath) {
       case "/student/profile":
-        return "Account Profile";
+        return "Profile";
       case "/student/schedule":
         return "Study Schedule";
       case "/student/tasks":
@@ -311,13 +311,19 @@ export default function StudentPage() {
         <div>
           <h2>Student</h2>
           <p>Student Panel</p>
-
           <nav className="student-nav">
+            <button
+              className={currentPath === "/student" ? "active" : ""}
+              onClick={() => navigate("/student")}
+            >
+              Dashboard
+            </button>
+
             <button
               className={currentPath === "/student/profile" ? "active" : ""}
               onClick={() => navigate("/student/profile")}
             >
-              Account Profile
+              Profile
             </button>
 
             <button

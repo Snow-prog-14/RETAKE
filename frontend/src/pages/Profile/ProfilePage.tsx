@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import "./ProfilePage.css";
 
 type UserRole = "AppAdmin" | "Admin" | "Student";
@@ -42,6 +42,7 @@ type ProfileData = {
 
 export default function ProfilePage() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   let storedUser: StoredUser | null = null;
 
@@ -136,7 +137,8 @@ export default function ProfilePage() {
   const navItems =
     profile.role === "Student"
       ? [
-          { label: "Account Profile", path: "/profile", active: true },
+          { label: "Dashboard", path: "/student" },
+          { label: "Profile", path: "/student/profile" },
           { label: "Study Schedule", path: "/student/schedule" },
           { label: "Manage Tasks", path: "/student/tasks" },
           { label: "Connections", path: "/student/connections" },
@@ -146,13 +148,13 @@ export default function ProfilePage() {
       : profile.role === "Admin"
         ? [
             { label: "Dashboard", path: "/admin" },
-            { label: "Account Profile", path: "/profile", active: true },
+            { label: "Profile", path: "/profile", active: true },
             { label: "Settings", path: "/admin/settings" },
           ]
         : [
             { label: "Dashboard", path: "/appadmin" },
             { label: "Users", path: "/appadmin/users" },
-            { label: "Account Profile", path: "/profile", active: true },
+            { label: "Profile", path: "/profile", active: true },
             { label: "Settings", path: "/appadmin/settings" },
           ];
 
@@ -180,15 +182,19 @@ export default function ProfilePage() {
           <h2 className="profile-sidebar-title">{sidebarTitle}</h2>
 
           <nav className="profile-nav">
-            {navItems.map((item) => (
-              <button
-                key={item.label}
-                className={`nav-item ${item.active ? "active" : ""}`}
-                onClick={() => navigate(item.path)}
-              >
-                {item.label}
-              </button>
-            ))}
+            {navItems.map((item) => {
+              const isActive = location.pathname === item.path;
+
+              return (
+                <button
+                  key={item.label}
+                  className={`nav-item ${isActive ? "active" : ""}`}
+                  onClick={() => navigate(item.path)}
+                >
+                  {item.label}
+                </button>
+              );
+            })}
           </nav>
         </div>
 
@@ -200,7 +206,7 @@ export default function ProfilePage() {
       <main className="profile-main">
         <div className="profile-header">
           <div>
-            <h1>ACCOUNT PROFILE</h1>
+            <h1>PROFILE</h1>
             <p>{profile.subtitle}</p>
           </div>
           <button className="edit-btn">Edit Profile</button>
