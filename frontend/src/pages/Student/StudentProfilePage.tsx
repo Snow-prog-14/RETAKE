@@ -27,11 +27,6 @@ type StoredUser = {
   UserTier?: number;
 };
 
-type PermissionItem = {
-  code: string;
-  allowedText: string;
-};
-
 function getResolvedRole(): number | null {
   const rawRole = localStorage.getItem("role");
 
@@ -57,47 +52,18 @@ function getResolvedRole(): number | null {
   }
 }
 
-function getStudentPermissions(role: number | null): PermissionItem[] {
-  if (role === 0) {
-    return [
-      {
-        code: "student.list.view",
-        allowedText: "Allowed for Tier 0 and Tier 1",
-      },
-      {
-        code: "student.profile.view",
-        allowedText: "Allowed for Tier 0 and Tier 1",
-      },
-      {
-        code: "student.info.edit",
-        allowedText: "Allowed for Tier 0 and Tier 1",
-      },
-      {
-        code: "student.status.update",
-        allowedText: "Allowed for Tier 0 and Tier 1",
-      },
-    ];
-  }
+function getAllStudentPermissions(): string[] {
+  return [
+    "student.list.view",
+    "student.profile.view",
+    "student.info.edit",
+    "student.status.update",
+  ];
+}
 
-  if (role === 1) {
-    return [
-      {
-        code: "student.list.view",
-        allowedText: "Allowed for Tier 0 and Tier 1",
-      },
-      {
-        code: "student.profile.view",
-        allowedText: "Allowed for Tier 0 and Tier 1",
-      },
-      {
-        code: "student.info.edit",
-        allowedText: "Allowed for Tier 0 and Tier 1",
-      },
-      {
-        code: "student.status.update",
-        allowedText: "Allowed for Tier 0 and Tier 1",
-      },
-    ];
+function getDefaultAssignedPermissions(role: number | null): string[] {
+  if (role === 0 || role === 1) {
+    return ["student.list.view", "student.profile.view"];
   }
 
   return [];
@@ -134,11 +100,15 @@ export default function StudentProfilePage() {
   const [student, setStudent] = useState<ApiStudent | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
-  const permissions = useMemo(
-    () => getStudentPermissions(resolvedRole),
-    [resolvedRole],
+  const [showPermissionModal, setShowPermissionModal] = useState(false);
+  const [assignedPermissions, setAssignedPermissions] = useState<string[]>(
+    getDefaultAssignedPermissions(resolvedRole),
   );
+
+  const canManagePermissions = isAppAdmin;
+  const canViewPermissions = isAppAdmin || isAdmin;
+
+  const allPermissions = useMemo(() => getAllStudentPermissions(), []);
 
   const fetchStudent = async () => {
     try {
@@ -160,10 +130,6 @@ export default function StudentProfilePage() {
       }
 
       const data: ApiStudent[] = await response.json();
-      console.log("API student profile data:", data);
-      console.log("Resolved role:", resolvedRole);
-      console.log("Raw role:", localStorage.getItem("role"));
-      console.log("Stored user:", localStorage.getItem("user"));
 
       const foundStudent =
         data.find(
@@ -203,6 +169,20 @@ export default function StudentProfilePage() {
     navigate("/");
   };
 
+  const togglePermission = (permissionCode: string) => {
+    if (!canManagePermissions) return;
+
+    setAssignedPermissions((prev) => {
+      const exists = prev.includes(permissionCode);
+
+      if (exists) {
+        return prev.filter((item) => item !== permissionCode);
+      }
+
+      return [...prev, permissionCode];
+    });
+  };
+
   const fullName =
     `${student?.userFirstName ?? student?.UserFirstName ?? ""} ${student?.userLastName ?? student?.UserLastName ?? ""}`.trim();
   const username = student?.userUsername ?? student?.UserUsername ?? "";
@@ -226,122 +206,201 @@ export default function StudentProfilePage() {
   const backPath = isAppAdmin ? "/appadmin/students" : "/admin/students";
 
   return (
-    <DashboardShell
-      roleTitle={isAppAdmin ? "AppAdmin" : "Admin"}
-      roleSubtitle={isAppAdmin ? "Administrator Panel" : "Management Panel"}
-      currentPath={currentPath}
-      pageTitle="Student Profile"
-      pageSubtitle="View detailed student account information."
-      navItems={navItems}
-      onNavigate={navigate}
-      onLogout={handleLogout}
-      mainClassName="student-management-main"
-    >
-      {loading ? (
-        <section className="dashboard-panel">
-          <p className="student-empty-state">Loading student profile...</p>
-        </section>
-      ) : error || !student ? (
-        <section className="dashboard-panel">
-          <p className="student-empty-state">{error || "Student not found."}</p>
-          <div className="student-profile-actions">
-            <button
-              type="button"
-              className="student-action-btn student-view-btn"
-              onClick={() => navigate(backPath)}
-            >
-              Back to Student List
-            </button>
-          </div>
-        </section>
-      ) : (
-        <>
-          <section className="dashboard-panel student-profile-panel">
-            <div className="student-profile-top">
-              <div className="student-profile-avatar">{initials}</div>
-
-              <div className="student-profile-heading">
-                <h2>{fullName || "No Name"}</h2>
-                <p>@{username || "no-username"}</p>
-              </div>
-
-              <div className="student-profile-actions">
-                <button
-                  type="button"
-                  className="student-action-btn student-view-btn"
-                  onClick={() => navigate(backPath)}
-                >
-                  Back to Student List
-                </button>
-              </div>
+    <>
+      <DashboardShell
+        roleTitle={isAppAdmin ? "AppAdmin" : "Admin"}
+        roleSubtitle={isAppAdmin ? "Administrator Panel" : "Management Panel"}
+        currentPath={currentPath}
+        pageTitle="Student Profile"
+        pageSubtitle="View detailed student account information."
+        navItems={navItems}
+        onNavigate={navigate}
+        onLogout={handleLogout}
+        mainClassName="student-management-main"
+      >
+        {loading ? (
+          <section className="dashboard-panel">
+            <p className="student-empty-state">Loading student profile...</p>
+          </section>
+        ) : error || !student ? (
+          <section className="dashboard-panel">
+            <p className="student-empty-state">
+              {error || "Student not found."}
+            </p>
+            <div className="student-profile-actions">
+              <button
+                type="button"
+                className="student-action-btn student-view-btn"
+                onClick={() => navigate(backPath)}
+              >
+                Back to Student List
+              </button>
             </div>
           </section>
+        ) : (
+          <>
+            <section className="dashboard-panel student-profile-panel">
+              <div className="student-profile-top">
+                <div className="student-profile-avatar">{initials}</div>
 
-          <section className="student-profile-grid">
-            <div className="dashboard-panel student-profile-card">
-              <h2>Account Information</h2>
-              <div className="student-profile-info-list">
-                <div className="student-profile-info-row">
-                  <span className="student-info-label">Full Name</span>
-                  <strong>{fullName || "No Name"}</strong>
+                <div className="student-profile-heading">
+                  <h2>{fullName || "No Name"}</h2>
+                  <p>@{username || "no-username"}</p>
                 </div>
 
-                <div className="student-profile-info-row">
-                  <span className="student-info-label">Email</span>
-                  <strong>{email || "No Email"}</strong>
-                </div>
-
-                <div className="student-profile-info-row">
-                  <span className="student-info-label">Username</span>
-                  <strong>@{username || "no-username"}</strong>
-                </div>
-
-                <div className="student-profile-info-row">
-                  <span className="student-info-label">Role</span>
-                  <strong>Student</strong>
-                </div>
-
-                <div className="student-profile-info-row">
-                  <span className="student-info-label">Status</span>
-                  <strong>{status}</strong>
-                </div>
-
-                <div className="student-profile-info-row">
-                  <span className="student-info-label">User ID</span>
-                  <strong>{userId}</strong>
+                <div className="student-profile-actions">
+                  <button
+                    type="button"
+                    className="student-action-btn student-view-btn"
+                    onClick={() => navigate(backPath)}
+                  >
+                    Back to Student List
+                  </button>
                 </div>
               </div>
-            </div>
+            </section>
 
-            <div className="dashboard-panel student-profile-card">
-              <h2>Permissions</h2>
-              <p className="student-panel-subtext">
-                Permissions available to your current role for student records.
-              </p>
-
-              {permissions.length > 0 ? (
+            <section className="student-profile-grid">
+              <div className="dashboard-panel student-profile-card">
+                <h2>Account Information</h2>
                 <div className="student-profile-info-list">
-                  {permissions.map((permission) => (
-                    <div
-                      className="student-profile-info-row"
-                      key={permission.code}
-                    >
-                      <span className="student-info-label">
-                        {permission.code}
-                      </span>
-                      <strong>{permission.allowedText}</strong>
-                    </div>
-                  ))}
+                  <div className="student-profile-info-row">
+                    <span className="student-info-label">Full Name</span>
+                    <strong>{fullName || "No Name"}</strong>
+                  </div>
+
+                  <div className="student-profile-info-row">
+                    <span className="student-info-label">Email</span>
+                    <strong>{email || "No Email"}</strong>
+                  </div>
+
+                  <div className="student-profile-info-row">
+                    <span className="student-info-label">Username</span>
+                    <strong>@{username || "no-username"}</strong>
+                  </div>
+
+                  <div className="student-profile-info-row">
+                    <span className="student-info-label">Role</span>
+                    <strong>Student</strong>
+                  </div>
+
+                  <div className="student-profile-info-row">
+                    <span className="student-info-label">Status</span>
+                    <strong>{status}</strong>
+                  </div>
+
+                  <div className="student-profile-info-row">
+                    <span className="student-info-label">User ID</span>
+                    <strong>{userId}</strong>
+                  </div>
                 </div>
-              ) : (
-                <p className="student-empty-state">
-                  No student permissions available for this role.
+              </div>
+
+              <div className="dashboard-panel student-profile-card">
+                <div className="student-permission-header">
+                  <div>
+                    <h2>Permissions</h2>
+                    <p className="student-panel-subtext">
+                      {canManagePermissions
+                        ? "Click Edit to add or remove permissions."
+                        : "View-only permission access."}
+                    </p>
+                  </div>
+
+                  {canManagePermissions && (
+                    <button
+                      type="button"
+                      className="student-permission-edit-btn"
+                      onClick={() => setShowPermissionModal(true)}
+                    >
+                      Edit
+                    </button>
+                  )}
+                </div>
+
+                {canViewPermissions ? (
+                  assignedPermissions.length > 0 ? (
+                    <div className="student-pill-list">
+                      {assignedPermissions.map((permission) => (
+                        <span
+                          className="student-permission-pill active"
+                          key={permission}
+                        >
+                          {permission}
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="student-empty-state">
+                      No permissions assigned.
+                    </p>
+                  )
+                ) : (
+                  <p className="student-empty-state">
+                    No student permissions available for this role.
+                  </p>
+                )}
+              </div>
+            </section>
+          </>
+        )}
+      </DashboardShell>
+
+      {showPermissionModal && canManagePermissions && (
+        <div
+          className="student-modal-overlay"
+          onClick={() => setShowPermissionModal(false)}
+        >
+          <div className="student-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="student-modal-header">
+              <div>
+                <h2>Edit Permissions</h2>
+                <p>
+                  Click a pill to add or remove a permission. Highlighted pills
+                  are currently assigned.
                 </p>
-              )}
+              </div>
+
+              <button
+                type="button"
+                className="student-modal-close-btn"
+                onClick={() => setShowPermissionModal(false)}
+              >
+                ×
+              </button>
             </div>
-          </section>
-        </>
+
+            <div className="student-pill-list modal-pill-list">
+              {allPermissions.map((permission) => {
+                const isActive = assignedPermissions.includes(permission);
+
+                return (
+                  <button
+                    key={permission}
+                    type="button"
+                    className={`student-permission-pill ${
+                      isActive ? "active" : ""
+                    }`}
+                    onClick={() => togglePermission(permission)}
+                  >
+                    {permission}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="student-modal-actions">
+              <button
+                type="button"
+                className="dashboard-primary-btn"
+                onClick={() => setShowPermissionModal(false)}
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
       )}
-    </DashboardShell>
+    </>
   );
 }
