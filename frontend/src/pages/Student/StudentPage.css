@@ -795,3 +795,72 @@ body.dark .profile-modal-overlay {
 .danger-section .settings-label {
   color: var(--brand-strong);
 }
+
+.student-settings-password-box {
+  display: grid;
+  gap: 14px;
+  background: var(--panel-bg);
+  border: 1px solid var(--outline-soft);
+  border-radius: 18px;
+  padding: 18px;
+}
+
+.student-settings-password-box label {
+  display: grid;
+  gap: 8px;
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+.student-settings-password-field {
+  display: flex;
+  gap: 8px;
+}
+
+.student-settings-password-field input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--input-border);
+  background: var(--input-bg);
+  color: var(--input-text);
+  border-radius: 12px;
+  font-size: 14px;
+  outline: none;
+}
+
+.student-settings-password-field input::placeholder {
+  color: var(--input-placeholder);
+}
+
+.student-settings-password-field input:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.14);
+}
+
+.student-settings-password-field button {
+  border: none;
+  background: var(--toggle-bg);
+  color: var(--toggle-text);
+  border-radius: 12px;
+  padding: 0 14px;
+  cursor: pointer;
+  font-weight: 700;
+  min-width: 72px;
+}
+
+.student-settings-message {
+  margin: 0;
+  color: var(--brand);
+  font-weight: 600;
+}
+
+.student-danger-btn {
+  border: none;
+  border-radius: 12px;
+  padding: 12px 16px;
+  cursor: pointer;
+  font-weight: 700;
+  background: var(--brand-strong);
+  color: var(--button-text);
+  margin-top: 14px;
+}

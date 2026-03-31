@@ -11,6 +11,20 @@ export default function StudentPage() {
 
   const [isEditingProfile, setIsEditingProfile] = useState(false);
 
+  const [settingsPassword, setSettingsPassword] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+
+  const [showSettingsPasswords, setShowSettingsPasswords] = useState({
+    current: false,
+    next: false,
+    confirm: false,
+  });
+
+  const [settingsPasswordMessage, setSettingsPasswordMessage] = useState("");
+
   const [profile, setProfile] = useState({
     fullName: "ALEJANDRA MARAASIN",
     username: "alejandra.maraasin",
@@ -95,15 +109,38 @@ export default function StudentPage() {
     // PUT /api/profile/me
   };
 
-  const handleChangePassword = (data: {
-    currentPassword: string;
-    newPassword: string;
-    confirmPassword: string;
-  }) => {
-    console.log("Change password payload:", data);
+  const handleChangePassword = () => {
+    if (
+      !settingsPassword.currentPassword ||
+      !settingsPassword.newPassword ||
+      !settingsPassword.confirmPassword
+    ) {
+      setSettingsPasswordMessage("Please complete all password fields.");
+      return;
+    }
+
+    if (settingsPassword.newPassword.length < 8) {
+      setSettingsPasswordMessage("New password must be at least 8 characters.");
+      return;
+    }
+
+    if (settingsPassword.newPassword !== settingsPassword.confirmPassword) {
+      setSettingsPasswordMessage("Passwords do not match.");
+      return;
+    }
+
+    setSettingsPasswordMessage("Password updated successfully.");
+
+    console.log("Change password payload:", settingsPassword);
 
     // later connect this to backend
     // PUT /api/profile/change-password
+
+    setSettingsPassword({
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    });
   };
 
   const handleDeactivate = () => {
@@ -277,8 +314,23 @@ export default function StudentPage() {
             <div className="student-settings-card">
               <h2>Access and Security</h2>
               <p className="student-settings-description">
-                Manage account access, password, and protection settings.
+                Manage account access, password, preferences, and protection
+                settings.
               </p>
+
+              <div className="student-settings-section">
+                <h3>Themes</h3>
+                <p>Customize how the system looks.</p>
+                <div className="student-settings-item static-open">
+                  <div>
+                    <p className="settings-label">Theme Mode</p>
+                    <span className="settings-value">
+                      Use the floating theme toggle to switch light and dark
+                      mode.
+                    </span>
+                  </div>
+                </div>
+              </div>
 
               <div className="student-settings-section">
                 <h3>Security Settings</h3>
@@ -296,33 +348,112 @@ export default function StudentPage() {
               <div className="student-settings-section">
                 <h3>Change Password</h3>
                 <p>Update your password to keep your account secure.</p>
-                <div className="student-settings-item static-open">
-                  <div>
-                    <p className="settings-label">Password Management</p>
-                    <span className="settings-value">
-                      You can update your password from Edit Profile.
-                    </span>
-                  </div>
-                </div>
-              </div>
 
-              <div className="student-settings-section">
-                <h3>Themes</h3>
-                <p>Customize how the system looks.</p>
-                <div className="student-settings-item static-open">
-                  <div>
-                    <p className="settings-label">Theme Mode</p>
-                    <span className="settings-value">
-                      Use the floating theme toggle to switch light and dark
-                      mode.
-                    </span>
-                  </div>
+                <div className="student-settings-password-box">
+                  <label>
+                    Current Password
+                    <div className="student-settings-password-field">
+                      <input
+                        type={
+                          showSettingsPasswords.current ? "text" : "password"
+                        }
+                        value={settingsPassword.currentPassword}
+                        onChange={(e) =>
+                          setSettingsPassword((prev) => ({
+                            ...prev,
+                            currentPassword: e.target.value,
+                          }))
+                        }
+                      />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setShowSettingsPasswords((prev) => ({
+                            ...prev,
+                            current: !prev.current,
+                          }))
+                        }
+                      >
+                        {showSettingsPasswords.current ? "Hide" : "Show"}
+                      </button>
+                    </div>
+                  </label>
+
+                  <label>
+                    New Password
+                    <div className="student-settings-password-field">
+                      <input
+                        type={showSettingsPasswords.next ? "text" : "password"}
+                        value={settingsPassword.newPassword}
+                        onChange={(e) =>
+                          setSettingsPassword((prev) => ({
+                            ...prev,
+                            newPassword: e.target.value,
+                          }))
+                        }
+                      />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setShowSettingsPasswords((prev) => ({
+                            ...prev,
+                            next: !prev.next,
+                          }))
+                        }
+                      >
+                        {showSettingsPasswords.next ? "Hide" : "Show"}
+                      </button>
+                    </div>
+                  </label>
+
+                  <label>
+                    Confirm Password
+                    <div className="student-settings-password-field">
+                      <input
+                        type={
+                          showSettingsPasswords.confirm ? "text" : "password"
+                        }
+                        value={settingsPassword.confirmPassword}
+                        onChange={(e) =>
+                          setSettingsPassword((prev) => ({
+                            ...prev,
+                            confirmPassword: e.target.value,
+                          }))
+                        }
+                      />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setShowSettingsPasswords((prev) => ({
+                            ...prev,
+                            confirm: !prev.confirm,
+                          }))
+                        }
+                      >
+                        {showSettingsPasswords.confirm ? "Hide" : "Show"}
+                      </button>
+                    </div>
+                  </label>
+
+                  <button
+                    type="button"
+                    className="student-submit-btn"
+                    onClick={handleChangePassword}
+                  >
+                    Update Password
+                  </button>
+
+                  {settingsPasswordMessage ? (
+                    <p className="student-settings-message">
+                      {settingsPasswordMessage}
+                    </p>
+                  ) : null}
                 </div>
               </div>
 
               <div className="student-settings-section">
                 <h3>Account Management</h3>
-                <p>Manage your account details and status.</p>
+                <p>Manage your account details and profile status.</p>
                 <div className="student-settings-item static-open">
                   <div>
                     <p className="settings-label">Username</p>
@@ -340,9 +471,18 @@ export default function StudentPage() {
                   <div>
                     <p className="settings-label">Account Deactivation</p>
                     <span className="settings-value">
-                      Deactivation is available from Edit Profile.
+                      Once deactivated, you will need admin help to regain
+                      access.
                     </span>
                   </div>
+
+                  <button
+                    type="button"
+                    className="student-danger-btn"
+                    onClick={handleDeactivate}
+                  >
+                    Deactivate Account
+                  </button>
                 </div>
               </div>
             </div>
