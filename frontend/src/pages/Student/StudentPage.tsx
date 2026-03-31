@@ -15,6 +15,9 @@ export default function StudentPage() {
   const currentPath = location.pathname;
 
   const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [currentTheme, setCurrentTheme] = useState(
+    document.body.classList.contains("dark") ? "dark" : "light",
+  );
 
   const [settingsPassword, setSettingsPassword] = useState({
     currentPassword: "",
@@ -48,6 +51,18 @@ export default function StudentPage() {
       { name: "UI Research Circle", subject: "Information Management" },
     ],
   });
+
+  const handleThemeChange = (theme: "light" | "dark") => {
+    if (theme === "dark") {
+      document.body.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.body.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+
+    setCurrentTheme(theme);
+  };
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -354,17 +369,42 @@ export default function StudentPage() {
                 Manage account access, password, preferences, and protection
                 settings.
               </p>
-
               <div className="student-settings-section">
                 <h3>Themes</h3>
                 <p>Customize how the system looks.</p>
-                <div className="student-settings-item static-open">
+
+                <div className="student-settings-theme-box">
                   <div>
                     <p className="settings-label">Theme Mode</p>
                     <span className="settings-value">
-                      Use the floating theme toggle to switch light and dark
-                      mode.
+                      Choose how the interface appears on your screen.
                     </span>
+                  </div>
+
+                  <div className="student-theme-toggle-group">
+                    <button
+                      type="button"
+                      className={
+                        currentTheme === "light"
+                          ? "theme-option active"
+                          : "theme-option"
+                      }
+                      onClick={() => handleThemeChange("light")}
+                    >
+                      Light
+                    </button>
+
+                    <button
+                      type="button"
+                      className={
+                        currentTheme === "dark"
+                          ? "theme-option active"
+                          : "theme-option"
+                      }
+                      onClick={() => handleThemeChange("dark")}
+                    >
+                      Dark
+                    </button>
                   </div>
                 </div>
               </div>
@@ -488,28 +528,15 @@ export default function StudentPage() {
                 </div>
               </div>
 
-              <div className="student-settings-section">
-                <h3>Account Management</h3>
-                <p>Manage your account details and profile status.</p>
-                <div className="student-settings-item static-open">
-                  <div>
-                    <p className="settings-label">Username</p>
-                    <span className="settings-value">
-                      Your username can be updated from Edit Profile.
-                    </span>
-                  </div>
-                </div>
-              </div>
-
               <div className="student-settings-section danger-section">
-                <h3>Deactivate Account</h3>
-                <p>Temporarily disable your account access.</p>
+                <h3>Account Management</h3>
+                <p>Manage your account status.</p>
                 <div className="student-settings-item static-open">
                   <div>
-                    <p className="settings-label">Account Deactivation</p>
+                    <p className="settings-label">Deactivate Account</p>
                     <span className="settings-value">
-                      Once deactivated, you will need admin help to regain
-                      access.
+                      Temporarily disable your account access. You may need
+                      admin help to regain access.
                     </span>
                   </div>
 

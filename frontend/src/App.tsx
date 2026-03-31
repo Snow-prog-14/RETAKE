@@ -1,4 +1,9 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom";
 import LoginPage from "./pages/Login/LoginPage";
 import RegisterPage from "./pages/Register/RegisterPage";
 import ChangePasswordPage from "./pages/ChangePassword/ChangePasswordPage";
@@ -10,10 +15,16 @@ import UserPage from "./pages/User/UserPage";
 import ProfilePage from "./pages/Profile/ProfilePage";
 import ThemeToggle from "./components/ThemeToggle";
 
-function App() {
+function AppContent() {
+  const location = useLocation();
+
+  const showFloatingThemeToggle =
+    location.pathname === "/" || location.pathname === "/register";
+
   return (
-    <Router>
-      <ThemeToggle />
+    <>
+      {showFloatingThemeToggle && <ThemeToggle />}
+
       <Routes>
         <Route path="/" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
@@ -35,6 +46,14 @@ function App() {
 
         <Route path="/profile" element={<ProfilePage />} />
       </Routes>
+    </>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <AppContent />
     </Router>
   );
 }
