@@ -225,6 +225,13 @@ span.tier-permission-pill:hover {
   color: rgba(255, 255, 255, 0.76);
 }
 
+.tier-tooltip-pill {
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .tier-actions {
   display: flex;
   flex-direction: column;
@@ -435,8 +442,62 @@ span.tier-permission-pill:hover {
   font-size: 14px;
 }
 
-.tier-modal-pill-list {
-  margin-top: 4px;
+.tier-permission-card-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.tier-permission-card {
+  width: 100%;
+  text-align: left;
+  border: 1px solid rgba(255, 138, 101, 0.16);
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+  border-radius: 18px;
+  padding: 14px 16px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition:
+    transform 0.15s ease,
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.tier-permission-card:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.tier-permission-card.active {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 138, 101, 0.2) 0%,
+    rgba(255, 109, 87, 0.16) 100%
+  );
+  border-color: rgba(255, 138, 101, 0.45);
+  box-shadow: 0 10px 22px rgba(255, 109, 87, 0.12);
+}
+
+.tier-permission-card-code {
+  font-size: 13px;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.2;
+  word-break: break-word;
+}
+
+.tier-permission-card-description {
+  font-size: 12px;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.74);
+}
+
+.tier-permission-card.active .tier-permission-card-description {
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .tier-form-message {
@@ -486,6 +547,10 @@ span.tier-permission-pill:hover {
   }
 
   .tier-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tier-permission-card-list {
     grid-template-columns: 1fr;
   }
 

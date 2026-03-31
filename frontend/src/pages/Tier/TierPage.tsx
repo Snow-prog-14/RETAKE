@@ -24,6 +24,11 @@ type TierForm = {
   permissions: string[];
 };
 
+type PermissionItem = {
+  code: string;
+  description: string;
+};
+
 function getResolvedRole(): number | null {
   const rawRole = localStorage.getItem("role");
 
@@ -49,29 +54,94 @@ function getResolvedRole(): number | null {
   }
 }
 
-function getAllPermissions(): string[] {
+function getAllPermissions(): PermissionItem[] {
   return [
-    "profile.view_own",
-    "profile.edit_own",
-    "profile.photo.update_own",
-    "username.update_own",
-    "password.update_own",
-    "profile.deactivate_own",
-    "student.list.view",
-    "student.profile.view",
-    "student.info.edit",
-    "student.status.update",
-    "admin.audit.view",
-    "admin.list.view",
-    "admin.info.edit",
-    "admin.status.update",
-    "admin.create",
-    "admin.create_tier",
-    "admin.edit_tier",
-    "profile.view_permission",
-    "profile.edit_permissions",
-    "profile.delete_permission",
-    "prototype.allow_user",
+    {
+      code: "profile.view_own",
+      description: "Allows the user to view their own profile page.",
+    },
+    {
+      code: "profile.edit_own",
+      description:
+        "Allows the user to edit their own basic profile information.",
+    },
+    {
+      code: "profile.photo.update_own",
+      description: "Allows the user to change their own profile photo.",
+    },
+    {
+      code: "username.update_own",
+      description: "Allows the user to change their own username or handle.",
+    },
+    {
+      code: "password.update_own",
+      description: "Allows the user to change their own password.",
+    },
+    {
+      code: "profile.deactivate_own",
+      description:
+        "Allows the user to deactivate or archive their own account.",
+    },
+    {
+      code: "student.list.view",
+      description: "Allows viewing the list of student accounts.",
+    },
+    {
+      code: "student.profile.view",
+      description: "Allows viewing a student's profile details.",
+    },
+    {
+      code: "student.info.edit",
+      description: "Allows editing other student information.",
+    },
+    {
+      code: "student.status.update",
+      description: "Allows deactivating or reactivating student accounts.",
+    },
+    {
+      code: "admin.audit.view",
+      description: "Allows viewing the audit trail of admin actions.",
+    },
+    {
+      code: "admin.list.view",
+      description: "Allows viewing the list of admin accounts.",
+    },
+    {
+      code: "admin.info.edit",
+      description: "Allows editing other admin information.",
+    },
+    {
+      code: "admin.status.update",
+      description: "Allows deactivating or reactivating admin accounts.",
+    },
+    {
+      code: "admin.create",
+      description: "Allows creating a new admin or super admin account.",
+    },
+    {
+      code: "admin.create_tier",
+      description: "Allows creating a new tier.",
+    },
+    {
+      code: "admin.edit_tier",
+      description: "Allows editing tier descriptions.",
+    },
+    {
+      code: "profile.view_permission",
+      description: "Allows user to view other user and self permissions.",
+    },
+    {
+      code: "profile.edit_permissions",
+      description: "Allows user to edit other user and self permissions.",
+    },
+    {
+      code: "profile.delete_permission",
+      description: "Allows user to remove a permission from a user.",
+    },
+    {
+      code: "prototype.allow_user",
+      description: "Allows user to login via biometrics on the prototype.",
+    },
   ];
 }
 
@@ -171,6 +241,16 @@ export default function TierPage() {
   const [formMessage, setFormMessage] = useState("");
 
   const allPermissions = useMemo(() => getAllPermissions(), []);
+  const permissionMap = useMemo(
+    () =>
+      Object.fromEntries(
+        allPermissions.map((permission) => [
+          permission.code,
+          permission.description,
+        ]),
+      ) as Record<string, string>,
+    [allPermissions],
+  );
 
   if (!isTier0) {
     navigate("/");
@@ -456,14 +536,27 @@ export default function TierPage() {
                           {tier.permissions.slice(0, 3).map((permission) => (
                             <span
                               key={permission}
-                              className="tier-permission-pill active"
+                              className="tier-permission-pill active tier-tooltip-pill"
+                              title={permissionMap[permission] || permission}
                             >
                               {permission}
                             </span>
                           ))}
 
                           {tier.permissions.length > 3 && (
-                            <span className="tier-permission-pill tier-pill-more">
+                            <span
+                              className="tier-permission-pill tier-pill-more"
+                              title={tier.permissions
+                                .slice(3)
+                                .map(
+                                  (permission) =>
+                                    `${permission}: ${
+                                      permissionMap[permission] ||
+                                      "No description"
+                                    }`,
+                                )
+                                .join("\n")}
+                            >
                               +{tier.permissions.length - 3} more
                             </span>
                           )}
@@ -596,23 +689,28 @@ export default function TierPage() {
               <div className="tier-permission-section">
                 <div className="tier-permission-header">
                   <h3>Tier Permissions</h3>
-                  <p>Click a pill to add or remove a permission.</p>
+                  <p>Click a permission card to add or remove it.</p>
                 </div>
 
-                <div className="tier-pill-list tier-modal-pill-list">
+                <div className="tier-permission-card-list">
                   {allPermissions.map((permission) => {
-                    const isActive = tierForm.permissions.includes(permission);
+                    const isActive = tierForm.permissions.includes(
+                      permission.code,
+                    );
 
                     return (
                       <button
-                        key={permission}
+                        key={permission.code}
                         type="button"
-                        className={`tier-permission-pill ${
-                          isActive ? "active" : ""
-                        }`}
-                        onClick={() => togglePermission(permission)}
+                        className={`tier-permission-card ${isActive ? "active" : ""}`}
+                        onClick={() => togglePermission(permission.code)}
                       >
-                        {permission}
+                        <span className="tier-permission-card-code">
+                          {permission.code}
+                        </span>
+                        <span className="tier-permission-card-description">
+                          {permission.description}
+                        </span>
                       </button>
                     );
                   })}
