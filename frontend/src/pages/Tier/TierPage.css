@@ -3,11 +3,14 @@
 }
 
 .tier-stat-grid {
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 22px;
 }
 
 .tier-management-panel {
   overflow: hidden;
+  padding: 24px;
 }
 
 .tier-panel-top {
@@ -15,13 +18,17 @@
   justify-content: space-between;
   align-items: flex-start;
   gap: 18px;
-  margin-bottom: 22px;
+  margin-bottom: 24px;
   flex-wrap: wrap;
 }
 
+.tier-panel-top h2 {
+  margin: 0;
+}
+
 .tier-panel-subtext {
-  margin: 6px 0 0;
-  color: rgba(255, 255, 255, 0.78);
+  margin: 8px 0 0;
+  color: rgba(255, 255, 255, 0.76);
   font-size: 14px;
 }
 
@@ -30,17 +37,23 @@
   gap: 12px;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: flex-end;
 }
 
 .tier-search,
 .tier-filter {
-  padding: 12px 14px;
+  height: 44px;
+  padding: 0 14px;
   border: 1px solid rgba(255, 138, 101, 0.16);
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.07);
   color: #ffffff;
-  border-radius: 12px;
+  border-radius: 14px;
   font-size: 14px;
   outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
 }
 
 .tier-search {
@@ -56,59 +69,74 @@
 }
 
 .tier-search::placeholder {
-  color: rgba(255, 255, 255, 0.58);
+  color: rgba(255, 255, 255, 0.52);
 }
 
 .tier-search:focus,
 .tier-filter:focus {
-  border-color: rgba(255, 138, 101, 0.55);
+  border-color: rgba(255, 138, 101, 0.5);
   box-shadow: 0 0 0 3px rgba(255, 138, 101, 0.12);
+  background: rgba(255, 255, 255, 0.09);
 }
 
 .tier-table-wrapper {
   overflow-x: auto;
   border-radius: 18px;
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .tier-table {
   width: 100%;
-  border-collapse: collapse;
-  min-width: 980px;
+  border-collapse: separate;
+  border-spacing: 0;
+  min-width: 1100px;
 }
 
 .tier-table thead th {
   text-align: left;
-  font-size: 14px;
+  font-size: 13px;
   color: #ffb08f;
   font-weight: 700;
-  padding: 14px 16px;
+  padding: 16px 16px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.015);
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
 .tier-table tbody td {
-  padding: 16px;
+  padding: 18px 16px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   vertical-align: top;
   color: #ffffff;
 }
 
+.tier-table tbody tr {
+  transition: background 0.2s ease;
+}
+
 .tier-table tbody tr:hover {
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .tier-name-cell {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
+  max-width: 320px;
 }
 
 .tier-name-text {
-  font-weight: 700;
+  font-weight: 800;
+  font-size: 16px;
   color: #ffffff;
+  line-height: 1.2;
 }
 
 .tier-description-text {
   font-size: 13px;
+  line-height: 1.35;
   color: rgba(255, 255, 255, 0.72);
 }
 
@@ -116,12 +144,13 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  min-width: 64px;
   border-radius: 999px;
   padding: 8px 12px;
   font-size: 13px;
   font-weight: 700;
-  color: #ffffff;
-  background: rgba(59, 130, 246, 0.16);
+  color: #cfe3ff;
+  background: rgba(59, 130, 246, 0.14);
   border: 1px solid rgba(96, 165, 250, 0.22);
 }
 
@@ -130,63 +159,22 @@
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  padding: 7px 12px;
+  padding: 8px 12px;
   font-size: 13px;
   font-weight: 700;
+  min-width: 88px;
 }
 
 .tier-status-active {
   background: rgba(74, 222, 128, 0.16);
   color: #86efac;
-  border: 1px solid rgba(74, 222, 128, 0.22);
+  border: 1px solid rgba(74, 222, 128, 0.2);
 }
 
 .tier-status-archived {
   background: rgba(248, 113, 113, 0.14);
   color: #fca5a5;
   border: 1px solid rgba(248, 113, 113, 0.2);
-}
-
-.tier-actions {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.tier-action-btn {
-  border: none;
-  border-radius: 12px;
-  padding: 10px 14px;
-  cursor: pointer;
-  font-weight: 700;
-  transition: 0.2s ease;
-}
-
-.tier-action-btn:hover {
-  filter: brightness(1.04);
-  transform: translateY(-1px);
-}
-
-.tier-edit-btn {
-  background: linear-gradient(180deg, #ff8a65 0%, #ff6d57 100%);
-  color: #ffffff;
-}
-
-.tier-archive-btn {
-  background: linear-gradient(180deg, #ff6357 0%, #f14c45 100%);
-  color: #ffffff;
-}
-
-.tier-archive-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.tier-empty-state {
-  text-align: center;
-  color: rgba(255, 255, 255, 0.78);
-  padding: 28px 16px !important;
 }
 
 .tier-pill-list {
@@ -196,56 +184,137 @@
 }
 
 .tier-permission-pill {
-  border: 1px solid rgba(255, 138, 101, 0.2);
-  background: rgba(255, 255, 255, 0.06);
-  color: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(255, 138, 101, 0.16);
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.88);
   border-radius: 999px;
-  padding: 10px 14px;
-  font-size: 13px;
+  padding: 9px 13px;
+  font-size: 12px;
   font-weight: 700;
+  line-height: 1;
   cursor: pointer;
-  transition: 0.2s ease;
+  transition:
+    transform 0.15s ease,
+    background 0.2s ease,
+    border-color 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.tier-permission-pill:hover {
+  transform: translateY(-1px);
 }
 
 span.tier-permission-pill {
   cursor: default;
 }
 
+span.tier-permission-pill:hover {
+  transform: none;
+}
+
 .tier-permission-pill.active {
   background: linear-gradient(180deg, #ff8a65 0%, #ff6d57 100%);
-  border-color: rgba(255, 138, 101, 0.45);
+  border-color: rgba(255, 138, 101, 0.42);
   color: #ffffff;
+  box-shadow: 0 8px 18px rgba(255, 109, 87, 0.14);
 }
 
 .tier-pill-more {
   background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.76);
+}
+
+.tier-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: stretch;
+  min-width: 88px;
+}
+
+.tier-action-btn {
+  border: none;
+  border-radius: 12px;
+  min-height: 40px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 14px;
+  transition:
+    transform 0.15s ease,
+    filter 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.tier-action-btn:hover {
+  filter: brightness(1.04);
+  transform: translateY(-1px);
+}
+
+.tier-action-btn:disabled {
+  opacity: 0.58;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.tier-edit-btn {
+  background: linear-gradient(180deg, #ff9b73 0%, #ff7a61 100%);
+  color: #ffffff;
+}
+
+.tier-archive-btn {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffd2c4;
+  border: 1px solid rgba(255, 138, 101, 0.18);
+}
+
+.tier-archive-btn:not(:disabled):hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.tier-empty-state {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.78);
+  padding: 34px 16px !important;
 }
 
 .tier-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.6);
+  background: rgba(15, 23, 42, 0.64);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
   z-index: 1000;
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(6px);
 }
 
 .tier-modal {
   width: 100%;
-  max-width: 760px;
+  max-width: 780px;
+  max-height: min(88vh, 920px);
+  overflow-y: auto;
   background: linear-gradient(
     180deg,
     rgba(26, 39, 63, 0.98),
-    rgba(20, 31, 52, 0.98)
+    rgba(20, 31, 52, 0.99)
   );
-  border: 1px solid rgba(255, 138, 101, 0.24);
-  border-radius: 24px;
-  padding: 24px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.28);
+  border: 1px solid rgba(255, 138, 101, 0.22);
+  border-radius: 26px;
+  padding: 26px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.34);
   color: #ffffff;
+}
+
+.tier-modal::-webkit-scrollbar {
+  width: 8px;
+}
+
+.tier-modal::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
 }
 
 .tier-modal-header {
@@ -253,7 +322,7 @@ span.tier-permission-pill {
   justify-content: space-between;
   align-items: flex-start;
   gap: 16px;
-  margin-bottom: 20px;
+  margin-bottom: 22px;
 }
 
 .tier-modal-header h2 {
@@ -263,24 +332,32 @@ span.tier-permission-pill {
 
 .tier-modal-header p {
   margin: 0;
-  color: rgba(255, 255, 255, 0.78);
+  color: rgba(255, 255, 255, 0.76);
+  font-size: 14px;
+  line-height: 1.4;
 }
 
 .tier-modal-close-btn {
   border: none;
   background: rgba(255, 255, 255, 0.08);
   color: #ffffff;
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   border-radius: 999px;
   font-size: 22px;
   cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.2s ease;
+}
+
+.tier-modal-close-btn:hover {
+  background: rgba(255, 255, 255, 0.14);
 }
 
 .tier-modal-form {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 20px;
 }
 
 .tier-form-grid {
@@ -310,13 +387,25 @@ span.tier-permission-pill {
 .tier-form-group textarea {
   width: 100%;
   padding: 12px 14px;
-  border: 1px solid rgba(255, 138, 101, 0.16);
+  border: 1px solid rgba(255, 138, 101, 0.14);
   background: rgba(255, 255, 255, 0.08);
   color: #ffffff;
-  border-radius: 12px;
+  border-radius: 14px;
   font-size: 14px;
   outline: none;
   resize: vertical;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.tier-form-group input:focus,
+.tier-form-group select:focus,
+.tier-form-group textarea:focus {
+  border-color: rgba(255, 138, 101, 0.5);
+  box-shadow: 0 0 0 3px rgba(255, 138, 101, 0.12);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .tier-form-group select option {
@@ -332,10 +421,12 @@ span.tier-permission-pill {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  padding-top: 4px;
 }
 
 .tier-permission-header h3 {
   margin: 0 0 4px;
+  font-size: 17px;
 }
 
 .tier-permission-header p {
@@ -367,6 +458,7 @@ span.tier-permission-pill {
   justify-content: flex-end;
   gap: 12px;
   flex-wrap: wrap;
+  padding-top: 4px;
 }
 
 @media (max-width: 1100px) {
@@ -375,7 +467,7 @@ span.tier-permission-pill {
   }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 920px) {
   .tier-panel-top {
     flex-direction: column;
     align-items: stretch;
@@ -384,10 +476,12 @@ span.tier-permission-pill {
   .tier-toolbar {
     flex-direction: column;
     align-items: stretch;
+    justify-content: stretch;
   }
 
   .tier-search,
-  .tier-filter {
+  .tier-filter,
+  .tier-toolbar .dashboard-primary-btn {
     width: 100%;
   }
 
@@ -396,11 +490,20 @@ span.tier-permission-pill {
   }
 
   .tier-table {
-    min-width: 760px;
+    min-width: 880px;
   }
 }
 
 @media (max-width: 768px) {
+  .tier-management-panel {
+    padding: 18px;
+  }
+
+  .tier-modal {
+    padding: 20px;
+    border-radius: 22px;
+  }
+
   .tier-modal-actions {
     flex-direction: column;
   }
