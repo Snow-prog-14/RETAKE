@@ -51,49 +51,55 @@ export default function UserPage() {
     email: "",
     temporaryPassword: "",
   });
+  const [addAdminLoading, setAddAdminLoading] = useState(false);
+  const [addAdminMessage, setAddAdminMessage] = useState("");
+  const [addAdminError, setAddAdminError] = useState("");
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        setLoading(true);
-        setError("");
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+      setError("");
 
-        const token = localStorage.getItem("token");
+      const token = localStorage.getItem("token");
 
-        const response = await fetch("http://localhost:5023/api/User", {
+      const response = await fetch(
+        "http://localhost:5023/api/User?userTier=0",
+        {
           method: "GET",
           headers: {
             Accept: "application/json",
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
           },
-        });
+        },
+      );
 
-        if (!response.ok) {
-          throw new Error(`Failed to fetch users. Status: ${response.status}`);
-        }
-
-        const data: ApiUser[] = await response.json();
-
-        const mappedUsers: User[] = data
-          .filter((user) => user.userTier === 0 || user.userTier === 1)
-          .map((user) => ({
-            id: user.userId,
-            name: `${user.userFirstName} ${user.userLastName}`.trim(),
-            email: user.userEmail,
-            username: user.userUsername,
-            role: user.userTier === 0 ? "AppAdmin" : "Admin",
-            status: user.userStatus === 0 ? "Active" : "Inactive",
-          }));
-
-        setUsers(mappedUsers);
-      } catch (err) {
-        console.error("Fetch users error:", err);
-        setError("Failed to load users.");
-      } finally {
-        setLoading(false);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch users. Status: ${response.status}`);
       }
-    };
 
+      const data: ApiUser[] = await response.json();
+
+      const mappedUsers: User[] = data
+        .filter((user) => user.userTier === 0 || user.userTier === 1)
+        .map((user) => ({
+          id: user.userId,
+          name: `${user.userFirstName} ${user.userLastName}`.trim(),
+          email: user.userEmail,
+          username: user.userUsername,
+          role: user.userTier === 0 ? "AppAdmin" : "Admin",
+          status: user.userStatus === 0 ? "Active" : "Inactive",
+        }));
+
+      setUsers(mappedUsers);
+    } catch (err) {
+      console.error("Fetch users error:", err);
+      setError("Failed to load users.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchUsers();
   }, []);
 
@@ -142,10 +148,13 @@ export default function UserPage() {
       email: "",
       temporaryPassword: "",
     });
+    setAddAdminMessage("");
+    setAddAdminError("");
     setShowAddAdminModal(true);
   };
 
   const handleCloseAddAdminModal = () => {
+    if (addAdminLoading) return;
     setShowAddAdminModal(false);
   };
 
@@ -159,17 +168,61 @@ export default function UserPage() {
     }));
   };
 
-  const handleAddAdminSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleAddAdminSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    alert(
-      `Ready to create admin:\n` +
-        `Name: ${addAdminForm.firstName} ${addAdminForm.lastName}\n` +
-        `Username: ${addAdminForm.username}\n` +
-        `Email: ${addAdminForm.email}`,
-    );
+    try {
+      setAddAdminLoading(true);
+      setAddAdminMessage("");
+      setAddAdminError("");
 
-    setShowAddAdminModal(false);
+      const response = await fetch("http://localhost:5023/api/Auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          userEmail: addAdminForm.email.trim(),
+          userUsername: addAdminForm.username.trim(),
+          userLastName: addAdminForm.lastName.trim(),
+          userFirstName: addAdminForm.firstName.trim(),
+          mustChangePass: 1,
+          userTier: 1,
+          password: addAdminForm.temporaryPassword,
+        }),
+      });
+
+      const text = await response.text();
+      const data = text ? JSON.parse(text) : {};
+
+      if (!response.ok) {
+        setAddAdminError(data.message || "Failed to create admin.");
+        return;
+      }
+
+      setAddAdminMessage(data.message || "Admin created successfully.");
+
+      await fetchUsers();
+
+      setAddAdminForm({
+        firstName: "",
+        lastName: "",
+        username: "",
+        email: "",
+        temporaryPassword: "",
+      });
+
+      setTimeout(() => {
+        setShowAddAdminModal(false);
+        setAddAdminMessage("");
+      }, 1000);
+    } catch (err) {
+      console.error("Add admin error:", err);
+      setAddAdminError("Failed to create admin.");
+    } finally {
+      setAddAdminLoading(false);
+    }
   };
 
   return (
@@ -365,6 +418,7 @@ export default function UserPage() {
               <button
                 className="modal-close-btn"
                 onClick={handleCloseAddAdminModal}
+                disabled={addAdminLoading}
               >
                 ×
               </button>
@@ -433,16 +487,33 @@ export default function UserPage() {
                 </div>
               </div>
 
+              {addAdminError && (
+                <p className="form-message form-message-error">
+                  {addAdminError}
+                </p>
+              )}
+
+              {addAdminMessage && (
+                <p className="form-message form-message-success">
+                  {addAdminMessage}
+                </p>
+              )}
+
               <div className="add-admin-actions">
                 <button
                   type="button"
                   className="cancel-btn"
                   onClick={handleCloseAddAdminModal}
+                  disabled={addAdminLoading}
                 >
                   Cancel
                 </button>
-                <button type="submit" className="save-admin-btn">
-                  Create Admin
+                <button
+                  type="submit"
+                  className="save-admin-btn"
+                  disabled={addAdminLoading}
+                >
+                  {addAdminLoading ? "Creating..." : "Create Admin"}
                 </button>
               </div>
             </form>

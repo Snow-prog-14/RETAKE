@@ -4,7 +4,16 @@ import "./ProfilePage.css";
 type UserRole = "AppAdmin" | "Admin" | "Student";
 
 type StoredUser = {
-  UserId?: string;
+  userId?: string | number;
+  userEmail?: string;
+  userUsername?: string;
+  userLastName?: string;
+  userFirstName?: string;
+  userTier?: number;
+  userStatus?: number;
+  mustChangePass?: number;
+
+  UserId?: string | number;
   UserEmail?: string;
   UserUsername?: string;
   UserLastName?: string;
@@ -12,8 +21,6 @@ type StoredUser = {
   UserTier?: number;
   UserStatus?: number;
   MustChangePass?: number;
-  Success?: boolean;
-  Message?: string;
 };
 
 type ProfileData = {
@@ -49,22 +56,31 @@ export default function ProfilePage() {
   const storedRole =
     (localStorage.getItem("role") as UserRole | null) || "Student";
 
+  const resolvedUserId = storedUser?.userId ?? storedUser?.UserId ?? "N/A";
+  const resolvedEmail = storedUser?.userEmail ?? storedUser?.UserEmail ?? "";
+  const resolvedUsername =
+    storedUser?.userUsername ?? storedUser?.UserUsername ?? "";
+  const resolvedLastName =
+    storedUser?.userLastName ?? storedUser?.UserLastName ?? "";
+  const resolvedFirstName =
+    storedUser?.userFirstName ?? storedUser?.UserFirstName ?? "";
+  const resolvedTier = storedUser?.userTier ?? storedUser?.UserTier;
+  const resolvedStatus = storedUser?.userStatus ?? storedUser?.UserStatus;
+
   const roleFromTier: UserRole =
-    storedUser?.UserTier === 0
+    resolvedTier === 0
       ? "AppAdmin"
-      : storedUser?.UserTier === 1
+      : resolvedTier === 1
         ? "Admin"
-        : storedUser?.UserTier === 2
+        : resolvedTier === 2
           ? "Student"
           : storedRole;
 
   const fullName =
-    `${storedUser?.UserFirstName || ""} ${storedUser?.UserLastName || ""}`.trim() ||
-    "Unknown User";
-
-  const username = storedUser?.UserUsername || "no-username";
-  const email = storedUser?.UserEmail || "no-email";
-  const status = storedUser?.UserStatus === 1 ? "Offline" : "Online";
+    `${resolvedFirstName} ${resolvedLastName}`.trim() || "Unknown User";
+  const username = resolvedUsername || "no-username";
+  const email = resolvedEmail || "no-email";
+  const status = resolvedStatus === 1 ? "Offline" : "Online";
 
   const subtitle =
     roleFromTier === "AppAdmin"
@@ -76,20 +92,20 @@ export default function ProfilePage() {
   const stats =
     roleFromTier === "AppAdmin"
       ? [
-          { label: "User ID", value: storedUser?.UserId || "N/A" },
+          { label: "User ID", value: resolvedUserId },
           { label: "Account Type", value: "Super Admin" },
-          { label: "Status Code", value: storedUser?.UserStatus ?? "N/A" },
+          { label: "Status Code", value: resolvedStatus ?? "N/A" },
         ]
       : roleFromTier === "Admin"
         ? [
-            { label: "User ID", value: storedUser?.UserId || "N/A" },
+            { label: "User ID", value: resolvedUserId },
             { label: "Account Type", value: "Admin" },
-            { label: "Status Code", value: storedUser?.UserStatus ?? "N/A" },
+            { label: "Status Code", value: resolvedStatus ?? "N/A" },
           ]
         : [
-            { label: "User ID", value: storedUser?.UserId || "N/A" },
+            { label: "User ID", value: resolvedUserId },
             { label: "Account Type", value: "Student" },
-            { label: "Status Code", value: storedUser?.UserStatus ?? "N/A" },
+            { label: "Status Code", value: resolvedStatus ?? "N/A" },
           ];
 
   const connections =
