@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import DashboardShell from "../../components/DashboardShell";
+import "../../components/DashboardShell.css";
 import "./UserPage.css";
 
 type ApiUser = {
@@ -36,6 +38,16 @@ type AddAdminForm = {
 
 export default function UserPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const currentPath = location.pathname;
+
+  const navItems = [
+    { label: "Dashboard", path: "/appadmin" },
+    { label: "Users", path: "/appadmin/users" },
+    { label: "Profile", path: "/appadmin/profile" },
+    { label: "Reports", path: "/appadmin/reports" },
+    { label: "Settings", path: "/appadmin/settings" },
+  ];
 
   const [users, setUsers] = useState<User[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -226,66 +238,41 @@ export default function UserPage() {
   };
 
   return (
-    <div className="user-page">
-      <aside className="user-sidebar">
-        <div>
-          <h2 className="user-logo">AppAdmin</h2>
-          <p className="user-role">Administrator Panel</p>
-        </div>
-
-        <nav className="user-nav">
-          <button
-            className="user-nav-item"
-            onClick={() => navigate("/appadmin")}
-          >
-            Dashboard
-          </button>
-
-          <button className="user-nav-item active">Users</button>
-
-          <button className="user-nav-item">Reports</button>
-          <button className="user-nav-item">Settings</button>
-        </nav>
-
-        <button className="user-logout-btn" onClick={handleLogout}>
-          Logout
-        </button>
-      </aside>
-
-      <main className="user-main">
-        <header className="user-header">
-          <div>
-            <h1>User Dashboard</h1>
-            <p>
-              Manage AppAdmins and Admins from your database, like civilized
-              people.
-            </p>
-          </div>
-        </header>
-
-        <section className="user-cards">
-          <div className="user-card">
+    <>
+      <DashboardShell
+        roleTitle="AppAdmin"
+        roleSubtitle="Administrator Panel"
+        currentPath={currentPath}
+        pageTitle="User Dashboard"
+        pageSubtitle="Manage AppAdmins and Admins from your database."
+        navItems={navItems}
+        onNavigate={navigate}
+        onLogout={handleLogout}
+        mainClassName="user-dashboard-main"
+      >
+        <section className="dashboard-stat-grid user-stat-grid">
+          <div className="dashboard-stat-card">
             <h3>Total Users</h3>
             <p>{totalUsers}</p>
           </div>
 
-          <div className="user-card">
+          <div className="dashboard-stat-card">
             <h3>AppAdmins</h3>
             <p>{totalAppAdmins}</p>
           </div>
 
-          <div className="user-card">
+          <div className="dashboard-stat-card">
             <h3>Admins</h3>
             <p>{totalAdmins}</p>
           </div>
 
-          <div className="user-card">
+          <div className="dashboard-stat-card">
             <h3>Active Users</h3>
             <p>{activeUsers}</p>
           </div>
         </section>
 
-        <section className="user-panel">
+        <section className="dashboard-panel user-management-panel">
           <div className="user-panel-top">
             <div>
               <h2>User Management</h2>
@@ -316,7 +303,8 @@ export default function UserPage() {
               </select>
 
               <button
-                className="add-admin-btn"
+                type="button"
+                className="dashboard-primary-btn"
                 onClick={handleOpenAddAdminModal}
               >
                 + Add Admin
@@ -325,20 +313,22 @@ export default function UserPage() {
           </div>
 
           {loading ? (
-            <p>Loading users...</p>
+            <p className="user-empty-state">Loading users...</p>
           ) : error ? (
-            <p className="empty-state">{error}</p>
+            <p className="user-empty-state">{error}</p>
           ) : (
             <div className="user-table-wrapper">
               <table className="user-table">
                 <thead>
                   <tr>
                     <th>Name</th>
+                    <th>Username</th>
                     <th>Role</th>
                     <th>Status</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
+
                 <tbody>
                   {filteredUsers.length > 0 ? (
                     filteredUsers.map((user) => (
@@ -351,38 +341,50 @@ export default function UserPage() {
                             </span>
                           </div>
                         </td>
+
+                        <td>
+                          <span className="user-username-text">
+                            @{user.username}
+                          </span>
+                        </td>
+
                         <td>
                           <span
-                            className={`role-badge ${
+                            className={`user-role-badge ${
                               user.role === "AppAdmin"
-                                ? "role-badge-appadmin"
-                                : "role-badge-admin"
+                                ? "user-role-badge-appadmin"
+                                : "user-role-badge-admin"
                             }`}
                           >
                             {user.role}
                           </span>
                         </td>
+
                         <td>
                           <span
-                            className={`status-badge ${
+                            className={`user-status-badge ${
                               user.status === "Active"
-                                ? "status-active"
-                                : "status-inactive"
+                                ? "user-status-active"
+                                : "user-status-inactive"
                             }`}
                           >
                             {user.status}
                           </span>
                         </td>
+
                         <td>
                           <div className="user-actions">
                             <button
-                              className="action-btn edit-btn"
+                              type="button"
+                              className="user-action-btn user-edit-btn"
                               onClick={() => handleEdit(user)}
                             >
                               Edit
                             </button>
+
                             <button
-                              className="action-btn password-btn"
+                              type="button"
+                              className="user-action-btn user-password-btn"
                               onClick={() => handleChangePassword(user)}
                             >
                               Change Password
@@ -393,7 +395,7 @@ export default function UserPage() {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={4} className="empty-state">
+                      <td colSpan={5} className="user-empty-state">
                         No admin users found.
                       </td>
                     </tr>
@@ -403,20 +405,22 @@ export default function UserPage() {
             </div>
           )}
         </section>
-      </main>
+      </DashboardShell>
 
       {showAddAdminModal && (
-        <div className="modal-overlay" onClick={handleCloseAddAdminModal}>
-          <div className="add-admin-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="add-admin-modal-header">
+        <div className="user-modal-overlay" onClick={handleCloseAddAdminModal}>
+          <div className="user-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="user-modal-header">
               <div>
                 <h2>Add New Admin</h2>
                 <p>
                   Create a new tier 1 admin account with a temporary password.
                 </p>
               </div>
+
               <button
-                className="modal-close-btn"
+                type="button"
+                className="user-modal-close-btn"
                 onClick={handleCloseAddAdminModal}
                 disabled={addAdminLoading}
               >
@@ -424,9 +428,12 @@ export default function UserPage() {
               </button>
             </div>
 
-            <form className="add-admin-form" onSubmit={handleAddAdminSubmit}>
-              <div className="add-admin-grid">
-                <div className="form-group">
+            <form
+              className="user-add-admin-form"
+              onSubmit={handleAddAdminSubmit}
+            >
+              <div className="user-add-admin-grid">
+                <div className="user-form-group">
                   <label htmlFor="firstName">First Name</label>
                   <input
                     id="firstName"
@@ -438,7 +445,7 @@ export default function UserPage() {
                   />
                 </div>
 
-                <div className="form-group">
+                <div className="user-form-group">
                   <label htmlFor="lastName">Last Name</label>
                   <input
                     id="lastName"
@@ -450,7 +457,7 @@ export default function UserPage() {
                   />
                 </div>
 
-                <div className="form-group">
+                <div className="user-form-group">
                   <label htmlFor="username">Username</label>
                   <input
                     id="username"
@@ -462,7 +469,7 @@ export default function UserPage() {
                   />
                 </div>
 
-                <div className="form-group">
+                <div className="user-form-group">
                   <label htmlFor="email">Email</label>
                   <input
                     id="email"
@@ -474,7 +481,7 @@ export default function UserPage() {
                   />
                 </div>
 
-                <div className="form-group form-group-full">
+                <div className="user-form-group user-form-group-full">
                   <label htmlFor="temporaryPassword">Temporary Password</label>
                   <input
                     id="temporaryPassword"
@@ -488,29 +495,30 @@ export default function UserPage() {
               </div>
 
               {addAdminError && (
-                <p className="form-message form-message-error">
+                <p className="user-form-message user-form-message-error">
                   {addAdminError}
                 </p>
               )}
 
               {addAdminMessage && (
-                <p className="form-message form-message-success">
+                <p className="user-form-message user-form-message-success">
                   {addAdminMessage}
                 </p>
               )}
 
-              <div className="add-admin-actions">
+              <div className="user-add-admin-actions">
                 <button
                   type="button"
-                  className="cancel-btn"
+                  className="dashboard-settings-cancel-btn"
                   onClick={handleCloseAddAdminModal}
                   disabled={addAdminLoading}
                 >
                   Cancel
                 </button>
+
                 <button
                   type="submit"
-                  className="save-admin-btn"
+                  className="dashboard-primary-btn"
                   disabled={addAdminLoading}
                 >
                   {addAdminLoading ? "Creating..." : "Create Admin"}
@@ -520,6 +528,6 @@ export default function UserPage() {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }
