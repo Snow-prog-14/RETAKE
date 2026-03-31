@@ -1,13 +1,13 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import DashboardShell from "../../components/DashboardShell";
-import ProfileViewCard from "../../components/ProfileViewCard";
-import EditProfileModal from "../../components/EditProfileModal";
+import ProfileViewCard from "../../components/Profile/ProfileViewCard";
+import EditProfileModal from "../../components/Profile/EditProfileModal";
 import {
   changeMyPassword,
   deactivateMyAccount,
   updateMyProfile,
-} from "../../components/profileService";
+} from "../../components/Profile/profileService";
 import "./StudentPage.css";
 import "../../components/DashboardShell.css";
 
