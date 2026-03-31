@@ -2,6 +2,11 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import ProfileViewCard from "../../components/ProfileViewCard";
 import EditProfileCard from "../../components/EditProfileCard";
+import {
+  changeMyPassword,
+  deactivateMyAccount,
+  updateMyProfile,
+} from "../../components/profileService";
 import "./StudentPage.css";
 
 export default function StudentPage() {
@@ -97,19 +102,36 @@ export default function StudentPage() {
       .toUpperCase();
   };
 
-  const handleSaveProfile = (data: { username: string; photo: string }) => {
-    setProfile((prev) => ({
-      ...prev,
-      username: data.username,
-      photo: data.photo,
-    }));
-    setIsEditingProfile(false);
+  const [profileMessage, setProfileMessage] = useState("");
 
-    // later connect this to backend
-    // PUT /api/profile/me
+  const handleSaveProfile = async (data: {
+    username: string;
+    photo: string;
+  }) => {
+    try {
+      setProfileMessage("");
+
+      await updateMyProfile();
+
+      setProfile((prev) => ({
+        ...prev,
+        username: data.username,
+        photo: data.photo,
+      }));
+
+      setProfileMessage("Profile updated successfully.");
+      setIsEditingProfile(false);
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Username update is not available yet.";
+
+      setProfileMessage(message);
+    }
   };
 
-  const handleChangePassword = () => {
+  const handleChangePassword = async () => {
     if (
       !settingsPassword.currentPassword ||
       !settingsPassword.newPassword ||
@@ -129,37 +151,48 @@ export default function StudentPage() {
       return;
     }
 
-    setSettingsPasswordMessage("Password updated successfully.");
+    try {
+      await changeMyPassword({
+        currentPassword: settingsPassword.currentPassword,
+        newPassword: settingsPassword.newPassword,
+      });
 
-    console.log("Change password payload:", settingsPassword);
+      setSettingsPasswordMessage("Password updated successfully.");
 
-    // later connect this to backend
-    // PUT /api/profile/change-password
-
-    setSettingsPassword({
-      currentPassword: "",
-      newPassword: "",
-      confirmPassword: "",
-    });
+      setSettingsPassword({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Failed to update password.";
+      setSettingsPasswordMessage(message);
+    }
   };
 
-  const handleDeactivate = () => {
+  const handleDeactivate = async () => {
     const confirmed = window.confirm(
-      "Are you sure you want to deactivate your profile?",
+      "Are you sure you want to deactivate your account?",
     );
 
     if (!confirmed) return;
 
-    console.log("Deactivate profile");
+    try {
+      await deactivateMyAccount();
 
-    // later connect this to backend
-    // PUT /api/profile/deactivate
-
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    navigate("/");
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      localStorage.removeItem("role");
+      navigate("/");
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Failed to deactivate account.";
+      alert(message);
+    }
   };
-
   const renderContent = () => {
     switch (currentPath) {
       case "/student/profile":
@@ -178,6 +211,10 @@ export default function StudentPage() {
                 onEdit={() => setIsEditingProfile(true)}
               />
             </div>
+
+            {profileMessage ? (
+              <p className="student-settings-message">{profileMessage}</p>
+            ) : null}
 
             {isEditingProfile && (
               <div
