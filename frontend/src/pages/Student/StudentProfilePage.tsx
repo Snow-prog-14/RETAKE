@@ -5,7 +5,7 @@ import "../../components/DashboardShell.css";
 import "./StudentManagement.css";
 
 type ApiStudent = {
-  userId?: number;
+  userId?: number | string;
   userEmail?: string;
   userUsername?: string;
   userLastName?: string;
@@ -13,7 +13,7 @@ type ApiStudent = {
   userTier?: number;
   userStatus?: number;
 
-  UserId?: number;
+  UserId?: number | string;
   UserEmail?: string;
   UserUsername?: string;
   UserLastName?: string;
@@ -25,6 +25,15 @@ type ApiStudent = {
 type StoredUser = {
   userTier?: number;
   UserTier?: number;
+};
+
+type EditableStudent = {
+  fullName: string;
+  email: string;
+  username: string;
+  role: string;
+  status: "Active" | "Inactive";
+  userId: string;
 };
 
 function getResolvedRole(): number | null {
@@ -132,12 +141,23 @@ export default function StudentProfilePage() {
       ];
 
   const [student, setStudent] = useState<ApiStudent | null>(null);
+  const [editableStudent, setEditableStudent] =
+    useState<EditableStudent | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [showPermissionModal, setShowPermissionModal] = useState(false);
+  const [showEditInfoModal, setShowEditInfoModal] = useState(false);
   const [assignedPermissions, setAssignedPermissions] = useState<string[]>(
     getDefaultAssignedPermissions(resolvedRole),
   );
+  const [editForm, setEditForm] = useState<EditableStudent>({
+    fullName: "",
+    email: "",
+    username: "",
+    role: "Student",
+    status: "Active",
+    userId: "",
+  });
 
   const canManagePermissions = isAppAdmin;
   const canViewPermissions = isAppAdmin || isAdmin;
@@ -175,10 +195,30 @@ export default function StudentProfilePage() {
       if (!foundStudent) {
         setError("Student not found.");
         setStudent(null);
+        setEditableStudent(null);
         return;
       }
 
       setStudent(foundStudent);
+
+      const fullName = `${
+        foundStudent.userFirstName ?? foundStudent.UserFirstName ?? ""
+      } ${foundStudent.userLastName ?? foundStudent.UserLastName ?? ""}`.trim();
+
+      const normalizedStudent: EditableStudent = {
+        fullName: fullName || "No Name",
+        email: foundStudent.userEmail ?? foundStudent.UserEmail ?? "",
+        username: foundStudent.userUsername ?? foundStudent.UserUsername ?? "",
+        role: "Student",
+        status:
+          (foundStudent.userStatus ?? foundStudent.UserStatus) === 0
+            ? "Active"
+            : "Inactive",
+        userId: String(foundStudent.userId ?? foundStudent.UserId ?? "N/A"),
+      };
+
+      setEditableStudent(normalizedStudent);
+      setEditForm(normalizedStudent);
     } catch (err) {
       console.error("Fetch student profile error:", err);
       setError("Failed to load student profile.");
@@ -217,15 +257,36 @@ export default function StudentProfilePage() {
     });
   };
 
-  const fullName =
-    `${student?.userFirstName ?? student?.UserFirstName ?? ""} ${student?.userLastName ?? student?.UserLastName ?? ""}`.trim();
-  const username = student?.userUsername ?? student?.UserUsername ?? "";
-  const email = student?.userEmail ?? student?.UserEmail ?? "";
-  const status =
-    (student?.userStatus ?? student?.UserStatus) === 0 ? "Active" : "Inactive";
-  const userId = student?.userId ?? student?.UserId ?? "N/A";
+  const handleOpenEditInfoModal = () => {
+    if (!editableStudent) return;
+    setEditForm(editableStudent);
+    setShowEditInfoModal(true);
+  };
+
+  const handleSaveAccountInfo = () => {
+    const trimmedFullName = editForm.fullName.trim();
+    const trimmedEmail = editForm.email.trim();
+    const trimmedUsername = editForm.username.trim();
+
+    if (!trimmedFullName || !trimmedEmail || !trimmedUsername) {
+      alert("Please complete all editable account fields.");
+      return;
+    }
+
+    const updatedStudent: EditableStudent = {
+      ...editForm,
+      fullName: trimmedFullName,
+      email: trimmedEmail,
+      username: trimmedUsername,
+    };
+
+    setEditableStudent(updatedStudent);
+    setEditForm(updatedStudent);
+    setShowEditInfoModal(false);
+  };
 
   const initials = useMemo(() => {
+    const fullName = editableStudent?.fullName ?? "";
     if (!fullName) return "ST";
 
     return fullName
@@ -235,7 +296,7 @@ export default function StudentProfilePage() {
       .join("")
       .slice(0, 2)
       .toUpperCase();
-  }, [fullName]);
+  }, [editableStudent]);
 
   const backPath = isAppAdmin ? "/appadmin/students" : "/admin/students";
 
@@ -256,7 +317,7 @@ export default function StudentProfilePage() {
           <section className="dashboard-panel">
             <p className="student-empty-state">Loading student profile...</p>
           </section>
-        ) : error || !student ? (
+        ) : error || !student || !editableStudent ? (
           <section className="dashboard-panel">
             <p className="student-empty-state">
               {error || "Student not found."}
@@ -278,8 +339,8 @@ export default function StudentProfilePage() {
                 <div className="student-profile-avatar">{initials}</div>
 
                 <div className="student-profile-heading">
-                  <h2>{fullName || "No Name"}</h2>
-                  <p>@{username || "no-username"}</p>
+                  <h2>{editableStudent.fullName || "No Name"}</h2>
+                  <p>@{editableStudent.username || "no-username"}</p>
                 </div>
 
                 <div className="student-profile-actions">
@@ -296,36 +357,48 @@ export default function StudentProfilePage() {
 
             <section className="student-profile-grid">
               <div className="dashboard-panel student-profile-card">
-                <h2>Account Information</h2>
+                <div className="student-info-header">
+                  <h2>Account Information</h2>
+                  <button
+                    type="button"
+                    className="student-permission-edit-btn"
+                    onClick={handleOpenEditInfoModal}
+                  >
+                    Edit
+                  </button>
+                </div>
+
                 <div className="student-profile-info-list">
                   <div className="student-profile-info-row">
                     <span className="student-info-label">Full Name</span>
-                    <strong>{fullName || "No Name"}</strong>
+                    <strong>{editableStudent.fullName || "No Name"}</strong>
                   </div>
 
                   <div className="student-profile-info-row">
                     <span className="student-info-label">Email</span>
-                    <strong>{email || "No Email"}</strong>
+                    <strong>{editableStudent.email || "No Email"}</strong>
                   </div>
 
                   <div className="student-profile-info-row">
                     <span className="student-info-label">Username</span>
-                    <strong>@{username || "no-username"}</strong>
+                    <strong>
+                      @{editableStudent.username || "no-username"}
+                    </strong>
                   </div>
 
                   <div className="student-profile-info-row">
                     <span className="student-info-label">Role</span>
-                    <strong>Student</strong>
+                    <strong>{editableStudent.role}</strong>
                   </div>
 
                   <div className="student-profile-info-row">
                     <span className="student-info-label">Status</span>
-                    <strong>{status}</strong>
+                    <strong>{editableStudent.status}</strong>
                   </div>
 
                   <div className="student-profile-info-row">
                     <span className="student-info-label">User ID</span>
-                    <strong>{userId}</strong>
+                    <strong>{editableStudent.userId}</strong>
                   </div>
                 </div>
               </div>
@@ -431,6 +504,144 @@ export default function StudentProfilePage() {
               >
                 Done
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showEditInfoModal && editableStudent && (
+        <div
+          className="student-modal-overlay"
+          onClick={() => setShowEditInfoModal(false)}
+        >
+          <div className="student-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="student-modal-header">
+              <div>
+                <h2>Edit Account Information</h2>
+                <p>
+                  Update the student's account information. User ID is
+                  read-only.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                className="student-modal-close-btn"
+                onClick={() => setShowEditInfoModal(false)}
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="student-modal-form">
+              <div className="student-form-group">
+                <label htmlFor="studentFullName">Full Name</label>
+                <input
+                  id="studentFullName"
+                  type="text"
+                  value={editForm.fullName}
+                  onChange={(e) =>
+                    setEditForm((prev) => ({
+                      ...prev,
+                      fullName: e.target.value,
+                    }))
+                  }
+                />
+              </div>
+
+              <div className="student-form-group">
+                <label htmlFor="studentEmail">Email</label>
+                <input
+                  id="studentEmail"
+                  type="email"
+                  value={editForm.email}
+                  onChange={(e) =>
+                    setEditForm((prev) => ({
+                      ...prev,
+                      email: e.target.value,
+                    }))
+                  }
+                />
+              </div>
+
+              <div className="student-form-group">
+                <label htmlFor="studentUsername">Username</label>
+                <input
+                  id="studentUsername"
+                  type="text"
+                  value={editForm.username}
+                  onChange={(e) =>
+                    setEditForm((prev) => ({
+                      ...prev,
+                      username: e.target.value,
+                    }))
+                  }
+                />
+              </div>
+
+              <div className="student-form-group">
+                <label htmlFor="studentRole">Role</label>
+                <select
+                  id="studentRole"
+                  value={editForm.role}
+                  onChange={(e) =>
+                    setEditForm((prev) => ({
+                      ...prev,
+                      role: e.target.value,
+                    }))
+                  }
+                >
+                  <option value="Student">Student</option>
+                  <option value="Admin">Admin</option>
+                  <option value="AppAdmin">AppAdmin</option>
+                </select>
+              </div>
+
+              <div className="student-form-group">
+                <label htmlFor="studentStatus">Status</label>
+                <select
+                  id="studentStatus"
+                  value={editForm.status}
+                  onChange={(e) =>
+                    setEditForm((prev) => ({
+                      ...prev,
+                      status: e.target.value as "Active" | "Inactive",
+                    }))
+                  }
+                >
+                  <option value="Active">Active</option>
+                  <option value="Inactive">Inactive</option>
+                </select>
+              </div>
+
+              <div className="student-form-group">
+                <label htmlFor="studentUserId">User ID</label>
+                <input
+                  id="studentUserId"
+                  type="text"
+                  value={editForm.userId}
+                  disabled
+                  className="student-readonly-input"
+                />
+              </div>
+
+              <div className="student-modal-actions">
+                <button
+                  type="button"
+                  className="dashboard-settings-cancel-btn"
+                  onClick={() => setShowEditInfoModal(false)}
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="button"
+                  className="dashboard-primary-btn"
+                  onClick={handleSaveAccountInfo}
+                >
+                  Save Changes
+                </button>
+              </div>
             </div>
           </div>
         </div>

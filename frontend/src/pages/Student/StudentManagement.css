@@ -598,3 +598,54 @@ span.student-permission-pill {
     width: 100%;
   }
 }
+
+.student-info-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.student-modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.student-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.student-form-group label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.student-form-group input,
+.student-form-group select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 138, 101, 0.16);
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  border-radius: 12px;
+  font-size: 14px;
+  outline: none;
+}
+
+.student-form-group select option {
+  color: #111827;
+}
+
+.student-form-group input::placeholder {
+  color: rgba(255, 255, 255, 0.58);
+}
+
+.student-readonly-input {
+  opacity: 0.75;
+  cursor: not-allowed;
+}
