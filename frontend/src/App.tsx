@@ -44,6 +44,19 @@ function AppContent() {
         <Route path="/student/support" element={<StudentPage />} />
         <Route path="/student/settings" element={<StudentPage />} />
 
+        <Route path="/admin" element={<AdminPage />} />
+        <Route path="/admin/profile" element={<AdminPage />} />
+        <Route path="/admin/students" element={<AdminPage />} />
+        <Route path="/admin/courses" element={<AdminPage />} />
+        <Route path="/admin/reports" element={<AdminPage />} />
+        <Route path="/admin/settings" element={<AdminPage />} />
+
+        <Route path="/appadmin" element={<AppAdminPage />} />
+        <Route path="/appadmin/profile" element={<AppAdminPage />} />
+        <Route path="/appadmin/users" element={<AppAdminPage />} />
+        <Route path="/appadmin/reports" element={<AppAdminPage />} />
+        <Route path="/appadmin/settings" element={<AppAdminPage />} />
+
         <Route path="/profile" element={<ProfilePage />} />
       </Routes>
     </>
