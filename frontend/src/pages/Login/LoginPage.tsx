@@ -11,8 +11,8 @@ export default function LoginPage() {
   const [loginIdentifier, setLoginIdentifier] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [loginMessage, setLoginMessage] = useState("");
-  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
   const handleLoginSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -42,6 +42,21 @@ export default function LoginPage() {
 
       localStorage.setItem("user", JSON.stringify(data));
 
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+      }
+
+      if (data.userTier === 0) {
+        localStorage.setItem("role", "AppAdmin");
+      } else if (data.userTier === 1) {
+        localStorage.setItem("role", "Admin");
+      } else if (data.userTier === 2) {
+        localStorage.setItem("role", "Student");
+      } else {
+        setLoginMessage("Unknown user tier.");
+        return;
+      }
+
       if (data.mustChangePass === 1) {
         navigate("/change-password");
         return;
@@ -57,8 +72,6 @@ export default function LoginPage() {
         navigate("/admin");
       } else if (data.userTier === 2) {
         navigate("/student");
-      } else {
-        setLoginMessage("Unknown user tier.");
       }
     } catch (error) {
       console.error("LOGIN ERROR:", error);
