@@ -16,10 +16,13 @@ export default function AppAdminPage() {
 
   const navItems = [
     { label: "Dashboard", path: "/appadmin" },
+    { label: "Profile", path: "/appadmin/profile" },
+
     { label: "Users", path: "/appadmin/users" },
     { label: "Students", path: "/appadmin/students" },
-    { label: "Profile", path: "/appadmin/profile" },
     { label: "Reports", path: "/appadmin/reports" },
+    { label: "Tier Management", path: "/appadmin/tiers" },
+
     { label: "Settings", path: "/appadmin/settings" },
   ];
 
@@ -93,6 +96,8 @@ export default function AppAdminPage() {
         return "Settings";
       case "/appadmin/students":
         return "Students";
+      case "/appadmin/tiers":
+        return "Tier Management";
       default:
         return "AppAdmin Dashboard";
     }
@@ -110,6 +115,8 @@ export default function AppAdminPage() {
         return "Manage your preferences and account settings.";
       case "/appadmin/students":
         return "View and manage student records.";
+      case "/appadmin/tiers":
+        return "Manage available system tiers and their assigned permissions.";
       default:
         return "Manage users, monitor activity, and system status.";
     }
