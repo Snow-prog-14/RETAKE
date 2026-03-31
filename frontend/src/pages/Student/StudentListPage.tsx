@@ -7,13 +7,27 @@ import "./StudentManagement.css";
 type ApiStudent = {
   success?: boolean;
   message?: string;
-  userId: number;
-  userEmail: string;
-  userUsername: string;
-  userLastName: string;
-  userFirstName: string;
-  userTier: number;
-  userStatus: number;
+
+  userId?: number;
+  userEmail?: string;
+  userUsername?: string;
+  userLastName?: string;
+  userFirstName?: string;
+  userTier?: number;
+  userStatus?: number;
+
+  UserId?: number;
+  UserEmail?: string;
+  UserUsername?: string;
+  UserLastName?: string;
+  UserFirstName?: string;
+  UserTier?: number;
+  UserStatus?: number;
+};
+
+type StoredUser = {
+  userTier?: number;
+  UserTier?: number;
 };
 
 type Student = {
@@ -24,14 +38,39 @@ type Student = {
   status: "Active" | "Inactive";
 };
 
+function getResolvedRole(): number | null {
+  const rawRole = localStorage.getItem("role");
+
+  if (rawRole === "0" || rawRole === "1" || rawRole === "2") {
+    return Number(rawRole);
+  }
+
+  if (rawRole === "AppAdmin") return 0;
+  if (rawRole === "Admin") return 1;
+  if (rawRole === "Student") return 2;
+
+  try {
+    const rawUser = localStorage.getItem("user");
+    if (!rawUser) return null;
+
+    const parsedUser: StoredUser = JSON.parse(rawUser);
+    const tier = parsedUser.userTier ?? parsedUser.UserTier;
+
+    return typeof tier === "number" ? tier : null;
+  } catch (error) {
+    console.error("Failed to parse stored user:", error);
+    return null;
+  }
+}
+
 export default function StudentListPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const currentPath = location.pathname;
 
-  const role = Number(localStorage.getItem("role"));
-  const isAppAdmin = role === 0;
-  const isAdmin = role === 1;
+  const resolvedRole = getResolvedRole();
+  const isAppAdmin = resolvedRole === 0;
+  const isAdmin = resolvedRole === 1;
 
   const navItems = isAppAdmin
     ? [
@@ -79,16 +118,28 @@ export default function StudentListPage() {
       }
 
       const data: ApiStudent[] = await response.json();
+      console.log("API student data:", data);
+      console.log("Resolved role:", resolvedRole);
+      console.log("Raw role:", localStorage.getItem("role"));
+      console.log("Stored user:", localStorage.getItem("user"));
 
       const mappedStudents: Student[] = data
-        .filter((user) => user.userTier === 2)
-        .map((user) => ({
-          id: user.userId,
-          name: `${user.userFirstName} ${user.userLastName}`.trim(),
-          email: user.userEmail,
-          username: user.userUsername,
-          status: user.userStatus === 0 ? "Active" : "Inactive",
-        }));
+        .filter((user) => (user.userTier ?? user.UserTier) === 2)
+        .map(
+          (user): Student => ({
+            id: user.userId ?? user.UserId ?? 0,
+            name: `${
+              user.userFirstName ?? user.UserFirstName ?? ""
+            } ${user.userLastName ?? user.UserLastName ?? ""}`.trim(),
+            email: user.userEmail ?? user.UserEmail ?? "",
+            username: user.userUsername ?? user.UserUsername ?? "",
+            status:
+              (user.userStatus ?? user.UserStatus) === 0
+                ? "Active"
+                : "Inactive",
+          }),
+        )
+        .filter((student) => student.id !== 0);
 
       setStudents(mappedStudents);
     } catch (err) {
@@ -106,7 +157,7 @@ export default function StudentListPage() {
     }
 
     fetchStudents();
-  }, [isAppAdmin, isAdmin, navigate]);
+  }, [isAppAdmin, isAdmin, navigate, resolvedRole]);
 
   const filteredStudents = useMemo(() => {
     return students.filter((student) => {
@@ -232,17 +283,17 @@ export default function StudentListPage() {
                       <td>
                         <div className="student-name-cell">
                           <span className="student-name-text">
-                            {student.name}
+                            {student.name || "No Name"}
                           </span>
                           <span className="student-email-text">
-                            {student.email}
+                            {student.email || "No Email"}
                           </span>
                         </div>
                       </td>
 
                       <td>
                         <span className="student-username-text">
-                          @{student.username}
+                          @{student.username || "no-username"}
                         </span>
                       </td>
 

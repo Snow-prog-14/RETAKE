@@ -5,14 +5,52 @@ import "../../components/DashboardShell.css";
 import "./StudentManagement.css";
 
 type ApiStudent = {
-  userId: number;
-  userEmail: string;
-  userUsername: string;
-  userLastName: string;
-  userFirstName: string;
-  userTier: number;
-  userStatus: number;
+  userId?: number;
+  userEmail?: string;
+  userUsername?: string;
+  userLastName?: string;
+  userFirstName?: string;
+  userTier?: number;
+  userStatus?: number;
+
+  UserId?: number;
+  UserEmail?: string;
+  UserUsername?: string;
+  UserLastName?: string;
+  UserFirstName?: string;
+  UserTier?: number;
+  UserStatus?: number;
 };
+
+type StoredUser = {
+  userTier?: number;
+  UserTier?: number;
+};
+
+function getResolvedRole(): number | null {
+  const rawRole = localStorage.getItem("role");
+
+  if (rawRole === "0" || rawRole === "1" || rawRole === "2") {
+    return Number(rawRole);
+  }
+
+  if (rawRole === "AppAdmin") return 0;
+  if (rawRole === "Admin") return 1;
+  if (rawRole === "Student") return 2;
+
+  try {
+    const rawUser = localStorage.getItem("user");
+    if (!rawUser) return null;
+
+    const parsedUser: StoredUser = JSON.parse(rawUser);
+    const tier = parsedUser.userTier ?? parsedUser.UserTier;
+
+    return typeof tier === "number" ? tier : null;
+  } catch (error) {
+    console.error("Failed to parse stored user:", error);
+    return null;
+  }
+}
 
 export default function StudentProfilePage() {
   const navigate = useNavigate();
@@ -20,9 +58,9 @@ export default function StudentProfilePage() {
   const currentPath = location.pathname;
   const { studentId } = useParams();
 
-  const role = Number(localStorage.getItem("role"));
-  const isAppAdmin = role === 0;
-  const isAdmin = role === 1;
+  const resolvedRole = getResolvedRole();
+  const isAppAdmin = resolvedRole === 0;
+  const isAdmin = resolvedRole === 1;
 
   const navItems = isAppAdmin
     ? [
@@ -66,11 +104,16 @@ export default function StudentProfilePage() {
       }
 
       const data: ApiStudent[] = await response.json();
+      console.log("API student profile data:", data);
+      console.log("Resolved role:", resolvedRole);
+      console.log("Raw role:", localStorage.getItem("role"));
+      console.log("Stored user:", localStorage.getItem("user"));
 
       const foundStudent =
         data.find(
           (user) =>
-            user.userTier === 2 && String(user.userId) === String(studentId),
+            (user.userTier ?? user.UserTier) === 2 &&
+            String(user.userId ?? user.UserId) === String(studentId),
         ) || null;
 
       if (!foundStudent) {
@@ -95,7 +138,7 @@ export default function StudentProfilePage() {
     }
 
     fetchStudent();
-  }, [isAppAdmin, isAdmin, navigate, studentId]);
+  }, [isAppAdmin, isAdmin, navigate, studentId, resolvedRole]);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -104,18 +147,25 @@ export default function StudentProfilePage() {
     navigate("/");
   };
 
-  const initials = useMemo(() => {
-    if (!student) return "ST";
+  const fullName =
+    `${student?.userFirstName ?? student?.UserFirstName ?? ""} ${student?.userLastName ?? student?.UserLastName ?? ""}`.trim();
+  const username = student?.userUsername ?? student?.UserUsername ?? "";
+  const email = student?.userEmail ?? student?.UserEmail ?? "";
+  const status =
+    (student?.userStatus ?? student?.UserStatus) === 0 ? "Active" : "Inactive";
+  const userId = student?.userId ?? student?.UserId ?? "N/A";
 
-    return `${student.userFirstName ?? ""} ${student.userLastName ?? ""}`
-      .trim()
+  const initials = useMemo(() => {
+    if (!fullName) return "ST";
+
+    return fullName
       .split(" ")
       .filter(Boolean)
       .map((part) => part[0])
       .join("")
       .slice(0, 2)
       .toUpperCase();
-  }, [student]);
+  }, [fullName]);
 
   const backPath = isAppAdmin ? "/appadmin/students" : "/admin/students";
 
@@ -155,10 +205,8 @@ export default function StudentProfilePage() {
               <div className="student-profile-avatar">{initials}</div>
 
               <div className="student-profile-heading">
-                <h2>
-                  {`${student.userFirstName} ${student.userLastName}`.trim()}
-                </h2>
-                <p>@{student.userUsername}</p>
+                <h2>{fullName || "No Name"}</h2>
+                <p>@{username || "no-username"}</p>
               </div>
 
               <div className="student-profile-actions">
@@ -179,19 +227,17 @@ export default function StudentProfilePage() {
               <div className="student-profile-info-list">
                 <div className="student-profile-info-row">
                   <span className="student-info-label">Full Name</span>
-                  <strong>
-                    {`${student.userFirstName} ${student.userLastName}`.trim()}
-                  </strong>
+                  <strong>{fullName || "No Name"}</strong>
                 </div>
 
                 <div className="student-profile-info-row">
                   <span className="student-info-label">Email</span>
-                  <strong>{student.userEmail}</strong>
+                  <strong>{email || "No Email"}</strong>
                 </div>
 
                 <div className="student-profile-info-row">
                   <span className="student-info-label">Username</span>
-                  <strong>@{student.userUsername}</strong>
+                  <strong>@{username || "no-username"}</strong>
                 </div>
 
                 <div className="student-profile-info-row">
@@ -201,14 +247,12 @@ export default function StudentProfilePage() {
 
                 <div className="student-profile-info-row">
                   <span className="student-info-label">Status</span>
-                  <strong>
-                    {student.userStatus === 0 ? "Active" : "Inactive"}
-                  </strong>
+                  <strong>{status}</strong>
                 </div>
 
                 <div className="student-profile-info-row">
                   <span className="student-info-label">User ID</span>
-                  <strong>{student.userId}</strong>
+                  <strong>{userId}</strong>
                 </div>
               </div>
             </div>
