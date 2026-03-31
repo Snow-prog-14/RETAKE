@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import DashboardShell from "../../components/DashboardShell";
 import ProfileViewCard from "../../components/ProfileViewCard";
 import EditProfileCard from "../../components/EditProfileCard";
 import {
@@ -7,17 +8,28 @@ import {
   deactivateMyAccount,
   updateMyProfile,
 } from "../../components/profileService";
-import "./AppAdminPage.css";
-
+import "../../components/DashboardShell.css";
 export default function AppAdminPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const currentPath = location.pathname;
 
+  const navItems = [
+    { label: "Dashboard", path: "/appadmin" },
+    { label: "Users", path: "/appadmin/users" },
+    { label: "Profile", path: "/appadmin/profile" },
+    { label: "Reports", path: "/appadmin/reports" },
+    { label: "Settings", path: "/appadmin/settings" },
+  ];
+
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [currentTheme, setCurrentTheme] = useState(
     document.body.classList.contains("dark") ? "dark" : "light",
   );
+  const [showChangePasswordFields, setShowChangePasswordFields] =
+    useState(false);
+  const [settingsPasswordMessage, setSettingsPasswordMessage] = useState("");
+  const [profileMessage, setProfileMessage] = useState("");
 
   const [settingsPassword, setSettingsPassword] = useState({
     currentPassword: "",
@@ -30,11 +42,6 @@ export default function AppAdminPage() {
     next: false,
     confirm: false,
   });
-
-  const [settingsPasswordMessage, setSettingsPasswordMessage] = useState("");
-  const [showChangePasswordFields, setShowChangePasswordFields] =
-    useState(false);
-  const [profileMessage, setProfileMessage] = useState("");
 
   const [profile, setProfile] = useState({
     fullName: "SUPER ADMIN",
@@ -63,7 +70,6 @@ export default function AppAdminPage() {
       document.body.classList.remove("dark");
       localStorage.setItem("theme", "light");
     }
-
     setCurrentTheme(theme);
   };
 
@@ -110,15 +116,12 @@ export default function AppAdminPage() {
   }) => {
     try {
       setProfileMessage("");
-
       await updateMyProfile();
-
       setProfile((prev) => ({
         ...prev,
         username: data.username,
         photo: data.photo,
       }));
-
       setProfileMessage("Profile updated successfully.");
       setIsEditingProfile(false);
     } catch (error) {
@@ -126,7 +129,6 @@ export default function AppAdminPage() {
         error instanceof Error
           ? error.message
           : "Username update is not available yet.";
-
       setProfileMessage(message);
     }
   };
@@ -158,13 +160,11 @@ export default function AppAdminPage() {
       });
 
       setSettingsPasswordMessage("Password updated successfully.");
-
       setSettingsPassword({
         currentPassword: "",
         newPassword: "",
         confirmPassword: "",
       });
-
       setShowChangePasswordFields(false);
     } catch (error) {
       const message =
@@ -177,12 +177,10 @@ export default function AppAdminPage() {
     const confirmed = window.confirm(
       "Are you sure you want to deactivate your account?",
     );
-
     if (!confirmed) return;
 
     try {
       await deactivateMyAccount();
-
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       localStorage.removeItem("role");
@@ -197,18 +195,18 @@ export default function AppAdminPage() {
   };
 
   const renderSettings = () => (
-    <div className="appadmin-settings-page">
-      <div className="appadmin-settings-card">
+    <div className="dashboard-page-block">
+      <div className="dashboard-settings-card">
         <h2>Access and Security</h2>
-        <p className="appadmin-settings-description">
+        <p className="dashboard-settings-description">
           Manage account access, password, preferences, and protection settings.
         </p>
 
-        <div className="appadmin-settings-section">
+        <div className="dashboard-settings-section">
           <h3>Themes</h3>
           <p>Customize how the system looks.</p>
 
-          <div className="appadmin-settings-theme-box">
+          <div className="dashboard-settings-theme-box">
             <div>
               <p className="settings-label">Theme Mode</p>
               <span className="settings-value">
@@ -216,13 +214,13 @@ export default function AppAdminPage() {
               </span>
             </div>
 
-            <div className="appadmin-theme-toggle-group">
+            <div className="dashboard-theme-toggle-group">
               <button
                 type="button"
                 className={
                   currentTheme === "light"
-                    ? "theme-option active"
-                    : "theme-option"
+                    ? "dashboard-theme-option active"
+                    : "dashboard-theme-option"
                 }
                 onClick={() => handleThemeChange("light")}
               >
@@ -233,8 +231,8 @@ export default function AppAdminPage() {
                 type="button"
                 className={
                   currentTheme === "dark"
-                    ? "theme-option active"
-                    : "theme-option"
+                    ? "dashboard-theme-option active"
+                    : "dashboard-theme-option"
                 }
                 onClick={() => handleThemeChange("dark")}
               >
@@ -244,11 +242,11 @@ export default function AppAdminPage() {
           </div>
         </div>
 
-        <div className="appadmin-settings-section">
+        <div className="dashboard-settings-section">
           <h3>Security Settings</h3>
           <p>Review your account protection and sign-in details.</p>
 
-          <div className="appadmin-settings-item static-open">
+          <div className="dashboard-settings-item static-open">
             <div>
               <p className="settings-label">Account Access</p>
               <span className="settings-value">
@@ -257,8 +255,8 @@ export default function AppAdminPage() {
             </div>
           </div>
 
-          <div className="appadmin-settings-subsection">
-            <div className="appadmin-settings-subsection-header">
+          <div className="dashboard-settings-subsection">
+            <div className="dashboard-settings-subsection-header">
               <div>
                 <h4>Change Password</h4>
                 <p>Update your password to keep your account secure.</p>
@@ -266,7 +264,7 @@ export default function AppAdminPage() {
 
               <button
                 type="button"
-                className="appadmin-settings-toggle-btn"
+                className="dashboard-settings-toggle-btn"
                 onClick={() => {
                   setSettingsPasswordMessage("");
                   setShowChangePasswordFields((prev) => !prev);
@@ -277,10 +275,10 @@ export default function AppAdminPage() {
             </div>
 
             {showChangePasswordFields && (
-              <div className="appadmin-settings-password-box nested-security-box">
+              <div className="dashboard-settings-password-box dashboard-nested-security-box">
                 <label>
                   Current Password
-                  <div className="appadmin-settings-password-field">
+                  <div className="dashboard-settings-password-field">
                     <input
                       type={showSettingsPasswords.current ? "text" : "password"}
                       value={settingsPassword.currentPassword}
@@ -307,7 +305,7 @@ export default function AppAdminPage() {
 
                 <label>
                   New Password
-                  <div className="appadmin-settings-password-field">
+                  <div className="dashboard-settings-password-field">
                     <input
                       type={showSettingsPasswords.next ? "text" : "password"}
                       value={settingsPassword.newPassword}
@@ -334,7 +332,7 @@ export default function AppAdminPage() {
 
                 <label>
                   Confirm Password
-                  <div className="appadmin-settings-password-field">
+                  <div className="dashboard-settings-password-field">
                     <input
                       type={showSettingsPasswords.confirm ? "text" : "password"}
                       value={settingsPassword.confirmPassword}
@@ -359,10 +357,10 @@ export default function AppAdminPage() {
                   </div>
                 </label>
 
-                <div className="appadmin-settings-password-actions">
+                <div className="dashboard-settings-password-actions">
                   <button
                     type="button"
-                    className="appadmin-submit-btn"
+                    className="dashboard-primary-btn"
                     onClick={handleChangePassword}
                   >
                     Update Password
@@ -370,7 +368,7 @@ export default function AppAdminPage() {
 
                   <button
                     type="button"
-                    className="appadmin-settings-cancel-btn"
+                    className="dashboard-settings-cancel-btn"
                     onClick={() => {
                       setShowChangePasswordFields(false);
                       setSettingsPassword({
@@ -386,7 +384,7 @@ export default function AppAdminPage() {
                 </div>
 
                 {settingsPasswordMessage ? (
-                  <p className="appadmin-settings-message">
+                  <p className="dashboard-settings-message">
                     {settingsPasswordMessage}
                   </p>
                 ) : null}
@@ -395,10 +393,11 @@ export default function AppAdminPage() {
           </div>
         </div>
 
-        <div className="appadmin-settings-section danger-section">
+        <div className="dashboard-settings-section danger-section">
           <h3>Account Management</h3>
           <p>Manage your account status.</p>
-          <div className="appadmin-settings-item static-open">
+
+          <div className="dashboard-settings-item static-open">
             <div>
               <p className="settings-label">Deactivate Account</p>
               <span className="settings-value">
@@ -409,7 +408,7 @@ export default function AppAdminPage() {
 
             <button
               type="button"
-              className="appadmin-danger-btn"
+              className="dashboard-danger-btn"
               onClick={handleDeactivate}
             >
               Deactivate Account
@@ -425,7 +424,7 @@ export default function AppAdminPage() {
       case "/appadmin/profile":
         return (
           <>
-            <div className="appadmin-profile-layout">
+            <div className="dashboard-page-block">
               <ProfileViewCard
                 fullName={profile.fullName}
                 username={profile.username}
@@ -440,7 +439,7 @@ export default function AppAdminPage() {
             </div>
 
             {profileMessage ? (
-              <p className="appadmin-settings-message">{profileMessage}</p>
+              <p className="dashboard-settings-message">{profileMessage}</p>
             ) : null}
 
             {isEditingProfile && (
@@ -466,7 +465,7 @@ export default function AppAdminPage() {
 
       case "/appadmin/users":
         return (
-          <div className="appadmin-activity">
+          <div className="dashboard-panel">
             <h2>Users</h2>
             <ul>
               <li>View and manage admin accounts</li>
@@ -478,7 +477,7 @@ export default function AppAdminPage() {
 
       case "/appadmin/reports":
         return (
-          <div className="appadmin-activity">
+          <div className="dashboard-panel">
             <h2>Reports</h2>
             <ul>
               <li>6 reports submitted today</li>
@@ -494,24 +493,22 @@ export default function AppAdminPage() {
       default:
         return (
           <>
-            <div className="appadmin-cards">
-              <div className="appadmin-card">
+            <div className="dashboard-stat-grid">
+              <div className="dashboard-stat-card">
                 <h3>Total Users</h3>
                 <p>120</p>
               </div>
-
-              <div className="appadmin-card">
+              <div className="dashboard-stat-card">
                 <h3>Active Sessions</h3>
                 <p>18</p>
               </div>
-
-              <div className="appadmin-card">
+              <div className="dashboard-stat-card">
                 <h3>Reports Today</h3>
                 <p>6</p>
               </div>
             </div>
 
-            <div className="appadmin-activity">
+            <div className="dashboard-panel">
               <h2>Recent Activity</h2>
               <ul>
                 <li>Admin logged in</li>
@@ -525,59 +522,18 @@ export default function AppAdminPage() {
   };
 
   return (
-    <div className="appadmin-page">
-      <aside className="appadmin-sidebar">
-        <div>
-          <h2>AppAdmin</h2>
-          <p>Administrator Panel</p>
-          <nav className="appadmin-nav">
-            <button
-              className={currentPath === "/appadmin" ? "active" : ""}
-              onClick={() => navigate("/appadmin")}
-            >
-              Dashboard
-            </button>
-
-            <button
-              className={currentPath === "/appadmin/users" ? "active" : ""}
-              onClick={() => navigate("/appadmin/users")}
-            >
-              Users
-            </button>
-
-            <button
-              className={currentPath === "/appadmin/profile" ? "active" : ""}
-              onClick={() => navigate("/appadmin/profile")}
-            >
-              Profile
-            </button>
-
-            <button
-              className={currentPath === "/appadmin/reports" ? "active" : ""}
-              onClick={() => navigate("/appadmin/reports")}
-            >
-              Reports
-            </button>
-
-            <button
-              className={currentPath === "/appadmin/settings" ? "active" : ""}
-              onClick={() => navigate("/appadmin/settings")}
-            >
-              Settings
-            </button>
-          </nav>
-        </div>
-
-        <button className="logout-btn" onClick={handleLogout}>
-          Logout
-        </button>
-      </aside>
-
-      <main className="appadmin-main">
-        <h1>{getPageTitle()}</h1>
-        <p>{getPageSubtitle()}</p>
-        {renderContent()}
-      </main>
-    </div>
+    <DashboardShell
+      roleTitle="AppAdmin"
+      roleSubtitle="Administrator Panel"
+      currentPath={currentPath}
+      pageTitle={getPageTitle()}
+      pageSubtitle={getPageSubtitle()}
+      navItems={navItems}
+      onNavigate={navigate}
+      onLogout={handleLogout}
+      mainClassName="appadmin-main"
+    >
+      {renderContent()}
+    </DashboardShell>
   );
 }

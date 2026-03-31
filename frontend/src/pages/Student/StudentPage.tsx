@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import DashboardShell from "../../components/DashboardShell";
 import ProfileViewCard from "../../components/ProfileViewCard";
 import EditProfileCard from "../../components/EditProfileCard";
 import {
@@ -8,11 +9,22 @@ import {
   updateMyProfile,
 } from "../../components/profileService";
 import "./StudentPage.css";
+import "../../components/DashboardShell.css";
 
 export default function StudentPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const currentPath = location.pathname;
+
+  const navItems = [
+    { label: "Dashboard", path: "/student" },
+    { label: "Profile", path: "/student/profile" },
+    { label: "Study Schedule", path: "/student/schedule" },
+    { label: "Manage Tasks", path: "/student/tasks" },
+    { label: "Connections", path: "/student/connections" },
+    { label: "Support", path: "/student/support" },
+    { label: "Settings", path: "/student/settings" },
+  ];
 
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [currentTheme, setCurrentTheme] = useState(
@@ -34,6 +46,7 @@ export default function StudentPage() {
   const [settingsPasswordMessage, setSettingsPasswordMessage] = useState("");
   const [showChangePasswordFields, setShowChangePasswordFields] =
     useState(false);
+  const [profileMessage, setProfileMessage] = useState("");
 
   const [profile, setProfile] = useState({
     fullName: "ALEJANDRA MARAASIN",
@@ -53,8 +66,6 @@ export default function StudentPage() {
       { name: "UI Research Circle", subject: "Information Management" },
     ],
   });
-
-  const [profileMessage, setProfileMessage] = useState("");
 
   const handleThemeChange = (theme: "light" | "dark") => {
     if (theme === "dark") {
@@ -204,12 +215,237 @@ export default function StudentPage() {
     }
   };
 
+  const renderSettings = () => (
+    <div className="dashboard-page-block">
+      <div className="dashboard-settings-card">
+        <h2>Access and Security</h2>
+        <p className="dashboard-settings-description">
+          Manage account access, password, preferences, and protection settings.
+        </p>
+
+        <div className="dashboard-settings-section">
+          <h3>Themes</h3>
+          <p>Customize how the system looks.</p>
+
+          <div className="dashboard-settings-theme-box">
+            <div>
+              <p className="settings-label">Theme Mode</p>
+              <span className="settings-value">
+                Choose how the interface appears on your screen.
+              </span>
+            </div>
+
+            <div className="dashboard-theme-toggle-group">
+              <button
+                type="button"
+                className={
+                  currentTheme === "light"
+                    ? "dashboard-theme-option active"
+                    : "dashboard-theme-option"
+                }
+                onClick={() => handleThemeChange("light")}
+              >
+                Light
+              </button>
+
+              <button
+                type="button"
+                className={
+                  currentTheme === "dark"
+                    ? "dashboard-theme-option active"
+                    : "dashboard-theme-option"
+                }
+                onClick={() => handleThemeChange("dark")}
+              >
+                Dark
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="dashboard-settings-section">
+          <h3>Security Settings</h3>
+          <p>Review your account protection and sign-in details.</p>
+
+          <div className="dashboard-settings-item static-open">
+            <div>
+              <p className="settings-label">Account Access</p>
+              <span className="settings-value">
+                Your account is currently active and available for login.
+              </span>
+            </div>
+          </div>
+
+          <div className="dashboard-settings-subsection">
+            <div className="dashboard-settings-subsection-header">
+              <div>
+                <h4>Change Password</h4>
+                <p>Update your password to keep your account secure.</p>
+              </div>
+
+              <button
+                type="button"
+                className="dashboard-settings-toggle-btn"
+                onClick={() => {
+                  setSettingsPasswordMessage("");
+                  setShowChangePasswordFields((prev) => !prev);
+                }}
+              >
+                {showChangePasswordFields ? "Hide" : "Change Password"}
+              </button>
+            </div>
+
+            {showChangePasswordFields && (
+              <div className="dashboard-settings-password-box dashboard-nested-security-box">
+                <label>
+                  Current Password
+                  <div className="dashboard-settings-password-field">
+                    <input
+                      type={showSettingsPasswords.current ? "text" : "password"}
+                      value={settingsPassword.currentPassword}
+                      onChange={(e) =>
+                        setSettingsPassword((prev) => ({
+                          ...prev,
+                          currentPassword: e.target.value,
+                        }))
+                      }
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setShowSettingsPasswords((prev) => ({
+                          ...prev,
+                          current: !prev.current,
+                        }))
+                      }
+                    >
+                      {showSettingsPasswords.current ? "Hide" : "Show"}
+                    </button>
+                  </div>
+                </label>
+
+                <label>
+                  New Password
+                  <div className="dashboard-settings-password-field">
+                    <input
+                      type={showSettingsPasswords.next ? "text" : "password"}
+                      value={settingsPassword.newPassword}
+                      onChange={(e) =>
+                        setSettingsPassword((prev) => ({
+                          ...prev,
+                          newPassword: e.target.value,
+                        }))
+                      }
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setShowSettingsPasswords((prev) => ({
+                          ...prev,
+                          next: !prev.next,
+                        }))
+                      }
+                    >
+                      {showSettingsPasswords.next ? "Hide" : "Show"}
+                    </button>
+                  </div>
+                </label>
+
+                <label>
+                  Confirm Password
+                  <div className="dashboard-settings-password-field">
+                    <input
+                      type={showSettingsPasswords.confirm ? "text" : "password"}
+                      value={settingsPassword.confirmPassword}
+                      onChange={(e) =>
+                        setSettingsPassword((prev) => ({
+                          ...prev,
+                          confirmPassword: e.target.value,
+                        }))
+                      }
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setShowSettingsPasswords((prev) => ({
+                          ...prev,
+                          confirm: !prev.confirm,
+                        }))
+                      }
+                    >
+                      {showSettingsPasswords.confirm ? "Hide" : "Show"}
+                    </button>
+                  </div>
+                </label>
+
+                <div className="dashboard-settings-password-actions">
+                  <button
+                    type="button"
+                    className="dashboard-primary-btn"
+                    onClick={handleChangePassword}
+                  >
+                    Update Password
+                  </button>
+
+                  <button
+                    type="button"
+                    className="dashboard-settings-cancel-btn"
+                    onClick={() => {
+                      setShowChangePasswordFields(false);
+                      setSettingsPassword({
+                        currentPassword: "",
+                        newPassword: "",
+                        confirmPassword: "",
+                      });
+                      setSettingsPasswordMessage("");
+                    }}
+                  >
+                    Cancel
+                  </button>
+                </div>
+
+                {settingsPasswordMessage ? (
+                  <p className="dashboard-settings-message">
+                    {settingsPasswordMessage}
+                  </p>
+                ) : null}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="dashboard-settings-section danger-section">
+          <h3>Account Management</h3>
+          <p>Manage your account status.</p>
+
+          <div className="dashboard-settings-item static-open">
+            <div>
+              <p className="settings-label">Deactivate Account</p>
+              <span className="settings-value">
+                Temporarily disable your account access. You may need admin help
+                to regain access.
+              </span>
+            </div>
+
+            <button
+              type="button"
+              className="dashboard-danger-btn"
+              onClick={handleDeactivate}
+            >
+              Deactivate Account
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   const renderContent = () => {
     switch (currentPath) {
       case "/student/profile":
         return (
           <>
-            <div className="student-profile-layout">
+            <div className="dashboard-page-block">
               <ProfileViewCard
                 fullName={profile.fullName}
                 username={profile.username}
@@ -224,7 +460,7 @@ export default function StudentPage() {
             </div>
 
             {profileMessage ? (
-              <p className="student-settings-message">{profileMessage}</p>
+              <p className="dashboard-settings-message">{profileMessage}</p>
             ) : null}
 
             {isEditingProfile && (
@@ -250,32 +486,35 @@ export default function StudentPage() {
 
       case "/student/schedule":
         return (
-          <div className="student-calendar">
-            <div className="calendar-header">
-              <button>&lt;</button>
-              <h2>September 2026</h2>
-              <button>&gt;</button>
-            </div>
+          <div className="dashboard-panel">
+            <h2>September 2026</h2>
+            <div className="student-calendar">
+              <div className="calendar-header">
+                <button type="button">&lt;</button>
+                <h3>Monthly View</h3>
+                <button type="button">&gt;</button>
+              </div>
 
-            <div className="calendar-weekdays">
-              <div>Sun</div>
-              <div>Mon</div>
-              <div>Tue</div>
-              <div>Wed</div>
-              <div>Thu</div>
-              <div>Fri</div>
-              <div>Sat</div>
-            </div>
+              <div className="calendar-weekdays">
+                <div>Sun</div>
+                <div>Mon</div>
+                <div>Tue</div>
+                <div>Wed</div>
+                <div>Thu</div>
+                <div>Fri</div>
+                <div>Sat</div>
+              </div>
 
-            <div className="calendar-grid">
-              {Array.from({ length: 35 }, (_, index) => (
-                <div
-                  key={index}
-                  className={`calendar-cell ${index === 17 ? "today" : ""}`}
-                >
-                  {index < 3 ? "" : index - 2}
-                </div>
-              ))}
+              <div className="calendar-grid">
+                {Array.from({ length: 35 }, (_, index) => (
+                  <div
+                    key={index}
+                    className={`calendar-cell ${index === 17 ? "today" : ""}`}
+                  >
+                    {index < 3 ? "" : index - 2}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         );
@@ -283,24 +522,22 @@ export default function StudentPage() {
       case "/student/tasks":
         return (
           <>
-            <div className="student-cards">
-              <div className="student-card">
+            <div className="dashboard-stat-grid">
+              <div className="dashboard-stat-card">
                 <h3>Pending Tasks</h3>
                 <p>4</p>
               </div>
-
-              <div className="student-card">
+              <div className="dashboard-stat-card">
                 <h3>Completed Tasks</h3>
                 <p>12</p>
               </div>
-
-              <div className="student-card">
+              <div className="dashboard-stat-card">
                 <h3>Collaborations</h3>
                 <p>3</p>
               </div>
             </div>
 
-            <div className="student-activity">
+            <div className="dashboard-panel">
               <h2>Task Overview</h2>
               <ul>
                 <li>2 assignments due this week</li>
@@ -313,7 +550,7 @@ export default function StudentPage() {
 
       case "/student/connections":
         return (
-          <div className="student-activity">
+          <div className="dashboard-panel">
             <h2>Collaborations</h2>
             <ul>
               <li>
@@ -331,7 +568,7 @@ export default function StudentPage() {
 
       case "/student/support":
         return (
-          <div className="student-support-card">
+          <div className="dashboard-panel">
             <h2>Submit a Ticket</h2>
 
             <form className="student-support-form">
@@ -349,7 +586,7 @@ export default function StudentPage() {
                 rows={6}
                 placeholder="Describe your concern here..."
               ></textarea>
-              <button type="button" className="student-submit-btn">
+              <button type="button" className="dashboard-primary-btn">
                 Submit Ticket
               </button>
             </form>
@@ -357,262 +594,27 @@ export default function StudentPage() {
         );
 
       case "/student/settings":
-        return (
-          <div className="student-settings-page">
-            <div className="student-settings-card">
-              <h2>Access and Security</h2>
-              <p className="student-settings-description">
-                Manage account access, password, preferences, and protection
-                settings.
-              </p>
-
-              <div className="student-settings-section">
-                <h3>Themes</h3>
-                <p>Customize how the system looks.</p>
-
-                <div className="student-settings-theme-box">
-                  <div>
-                    <p className="settings-label">Theme Mode</p>
-                    <span className="settings-value">
-                      Choose how the interface appears on your screen.
-                    </span>
-                  </div>
-
-                  <div className="student-theme-toggle-group">
-                    <button
-                      type="button"
-                      className={
-                        currentTheme === "light"
-                          ? "theme-option active"
-                          : "theme-option"
-                      }
-                      onClick={() => handleThemeChange("light")}
-                    >
-                      Light
-                    </button>
-
-                    <button
-                      type="button"
-                      className={
-                        currentTheme === "dark"
-                          ? "theme-option active"
-                          : "theme-option"
-                      }
-                      onClick={() => handleThemeChange("dark")}
-                    >
-                      Dark
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <div className="student-settings-section">
-                <h3>Security Settings</h3>
-                <p>Review your account protection and sign-in details.</p>
-
-                <div className="student-settings-item static-open">
-                  <div>
-                    <p className="settings-label">Account Access</p>
-                    <span className="settings-value">
-                      Your account is currently active and available for login.
-                    </span>
-                  </div>
-                </div>
-
-                <div className="student-settings-subsection">
-                  <div className="student-settings-subsection-header">
-                    <div>
-                      <h4>Change Password</h4>
-                      <p>Update your password to keep your account secure.</p>
-                    </div>
-
-                    <button
-                      type="button"
-                      className="student-settings-toggle-btn"
-                      onClick={() => {
-                        setSettingsPasswordMessage("");
-                        setShowChangePasswordFields((prev) => !prev);
-                      }}
-                    >
-                      {showChangePasswordFields ? "Hide" : "Change Password"}
-                    </button>
-                  </div>
-
-                  {showChangePasswordFields && (
-                    <div className="student-settings-password-box nested-security-box">
-                      <label>
-                        Current Password
-                        <div className="student-settings-password-field">
-                          <input
-                            type={
-                              showSettingsPasswords.current
-                                ? "text"
-                                : "password"
-                            }
-                            value={settingsPassword.currentPassword}
-                            onChange={(e) =>
-                              setSettingsPassword((prev) => ({
-                                ...prev,
-                                currentPassword: e.target.value,
-                              }))
-                            }
-                          />
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setShowSettingsPasswords((prev) => ({
-                                ...prev,
-                                current: !prev.current,
-                              }))
-                            }
-                          >
-                            {showSettingsPasswords.current ? "Hide" : "Show"}
-                          </button>
-                        </div>
-                      </label>
-
-                      <label>
-                        New Password
-                        <div className="student-settings-password-field">
-                          <input
-                            type={
-                              showSettingsPasswords.next ? "text" : "password"
-                            }
-                            value={settingsPassword.newPassword}
-                            onChange={(e) =>
-                              setSettingsPassword((prev) => ({
-                                ...prev,
-                                newPassword: e.target.value,
-                              }))
-                            }
-                          />
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setShowSettingsPasswords((prev) => ({
-                                ...prev,
-                                next: !prev.next,
-                              }))
-                            }
-                          >
-                            {showSettingsPasswords.next ? "Hide" : "Show"}
-                          </button>
-                        </div>
-                      </label>
-
-                      <label>
-                        Confirm Password
-                        <div className="student-settings-password-field">
-                          <input
-                            type={
-                              showSettingsPasswords.confirm
-                                ? "text"
-                                : "password"
-                            }
-                            value={settingsPassword.confirmPassword}
-                            onChange={(e) =>
-                              setSettingsPassword((prev) => ({
-                                ...prev,
-                                confirmPassword: e.target.value,
-                              }))
-                            }
-                          />
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setShowSettingsPasswords((prev) => ({
-                                ...prev,
-                                confirm: !prev.confirm,
-                              }))
-                            }
-                          >
-                            {showSettingsPasswords.confirm ? "Hide" : "Show"}
-                          </button>
-                        </div>
-                      </label>
-
-                      <div className="student-settings-password-actions">
-                        <button
-                          type="button"
-                          className="student-submit-btn"
-                          onClick={handleChangePassword}
-                        >
-                          Update Password
-                        </button>
-
-                        <button
-                          type="button"
-                          className="student-settings-cancel-btn"
-                          onClick={() => {
-                            setShowChangePasswordFields(false);
-                            setSettingsPassword({
-                              currentPassword: "",
-                              newPassword: "",
-                              confirmPassword: "",
-                            });
-                            setSettingsPasswordMessage("");
-                          }}
-                        >
-                          Cancel
-                        </button>
-                      </div>
-
-                      {settingsPasswordMessage ? (
-                        <p className="student-settings-message">
-                          {settingsPasswordMessage}
-                        </p>
-                      ) : null}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="student-settings-section danger-section">
-                <h3>Account Management</h3>
-                <p>Manage your account status.</p>
-                <div className="student-settings-item static-open">
-                  <div>
-                    <p className="settings-label">Deactivate Account</p>
-                    <span className="settings-value">
-                      Temporarily disable your account access. You may need
-                      admin help to regain access.
-                    </span>
-                  </div>
-
-                  <button
-                    type="button"
-                    className="student-danger-btn"
-                    onClick={handleDeactivate}
-                  >
-                    Deactivate Account
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        );
+        return renderSettings();
 
       default:
         return (
           <>
-            <div className="student-cards">
-              <div className="student-card">
+            <div className="dashboard-stat-grid">
+              <div className="dashboard-stat-card">
                 <h3>Pending Tasks</h3>
                 <p>4</p>
               </div>
-
-              <div className="student-card">
+              <div className="dashboard-stat-card">
                 <h3>Completed Tasks</h3>
                 <p>12</p>
               </div>
-
-              <div className="student-card">
+              <div className="dashboard-stat-card">
                 <h3>Collaborations</h3>
                 <p>3</p>
               </div>
             </div>
 
-            <div className="student-activity">
+            <div className="dashboard-panel">
               <h2>Overview</h2>
               <ul>
                 <li>Open your Account Profile to view your student info</li>
@@ -626,73 +628,18 @@ export default function StudentPage() {
   };
 
   return (
-    <div className="student-page">
-      <aside className="student-sidebar">
-        <div>
-          <h2>Student</h2>
-          <p>Student Panel</p>
-          <nav className="student-nav">
-            <button
-              className={currentPath === "/student" ? "active" : ""}
-              onClick={() => navigate("/student")}
-            >
-              Dashboard
-            </button>
-
-            <button
-              className={currentPath === "/student/profile" ? "active" : ""}
-              onClick={() => navigate("/student/profile")}
-            >
-              Profile
-            </button>
-
-            <button
-              className={currentPath === "/student/schedule" ? "active" : ""}
-              onClick={() => navigate("/student/schedule")}
-            >
-              Study Schedule
-            </button>
-
-            <button
-              className={currentPath === "/student/tasks" ? "active" : ""}
-              onClick={() => navigate("/student/tasks")}
-            >
-              Manage Tasks
-            </button>
-
-            <button
-              className={currentPath === "/student/connections" ? "active" : ""}
-              onClick={() => navigate("/student/connections")}
-            >
-              Connections
-            </button>
-
-            <button
-              className={currentPath === "/student/support" ? "active" : ""}
-              onClick={() => navigate("/student/support")}
-            >
-              Support
-            </button>
-
-            <button
-              className={currentPath === "/student/settings" ? "active" : ""}
-              onClick={() => navigate("/student/settings")}
-            >
-              Settings
-            </button>
-          </nav>
-        </div>
-
-        <button className="logout-btn" onClick={handleLogout}>
-          Logout
-        </button>
-      </aside>
-
-      <main className="student-main">
-        <h1>{getPageTitle()}</h1>
-        <p>{getPageSubtitle()}</p>
-        {renderContent()}
-      </main>
-    </div>
+    <DashboardShell
+      roleTitle="Student"
+      roleSubtitle="Student Panel"
+      currentPath={currentPath}
+      pageTitle={getPageTitle()}
+      pageSubtitle={getPageSubtitle()}
+      navItems={navItems}
+      onNavigate={navigate}
+      onLogout={handleLogout}
+      mainClassName="student-main"
+    >
+      {renderContent()}
+    </DashboardShell>
   );
 }
