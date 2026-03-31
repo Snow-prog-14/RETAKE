@@ -943,3 +943,48 @@ body.dark .profile-modal-overlay {
   margin-bottom: 14px;
   color: var(--text-soft);
 }
+
+.student-settings-subsection-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.student-settings-toggle-btn,
+.student-settings-cancel-btn {
+  border: 1px solid var(--outline-soft);
+  background: var(--toggle-bg);
+  color: var(--toggle-text);
+  border-radius: 12px;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.student-settings-toggle-btn:hover,
+.student-settings-cancel-btn:hover {
+  filter: brightness(1.03);
+}
+
+.nested-security-box {
+  margin-top: 16px;
+  margin-left: 18px;
+  padding: 18px;
+  border-radius: 16px;
+  border: 1px solid var(--outline-soft);
+  background: color-mix(in srgb, var(--panel-bg) 82%, var(--surface-bg) 18%);
+}
+
+.student-settings-password-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 640px) {
+  .nested-security-box {
+    margin-left: 0;
+  }
+}

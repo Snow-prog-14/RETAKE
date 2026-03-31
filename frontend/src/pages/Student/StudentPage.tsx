@@ -32,6 +32,8 @@ export default function StudentPage() {
   });
 
   const [settingsPasswordMessage, setSettingsPasswordMessage] = useState("");
+  const [showChangePasswordFields, setShowChangePasswordFields] =
+    useState(false);
 
   const [profile, setProfile] = useState({
     fullName: "ALEJANDRA MARAASIN",
@@ -51,6 +53,8 @@ export default function StudentPage() {
       { name: "UI Research Circle", subject: "Information Management" },
     ],
   });
+
+  const [profileMessage, setProfileMessage] = useState("");
 
   const handleThemeChange = (theme: "light" | "dark") => {
     if (theme === "dark") {
@@ -107,17 +111,6 @@ export default function StudentPage() {
         return "Welcome to your student workspace.";
     }
   };
-
-  const getInitials = (name: string) => {
-    return name
-      .split(" ")
-      .map((part) => part[0])
-      .join("")
-      .slice(0, 2)
-      .toUpperCase();
-  };
-
-  const [profileMessage, setProfileMessage] = useState("");
 
   const handleSaveProfile = async (data: {
     username: string;
@@ -179,6 +172,8 @@ export default function StudentPage() {
         newPassword: "",
         confirmPassword: "",
       });
+
+      setShowChangePasswordFields(false);
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Failed to update password.";
@@ -208,6 +203,7 @@ export default function StudentPage() {
       alert(message);
     }
   };
+
   const renderContent = () => {
     switch (currentPath) {
       case "/student/profile":
@@ -369,6 +365,7 @@ export default function StudentPage() {
                 Manage account access, password, preferences, and protection
                 settings.
               </p>
+
               <div className="student-settings-section">
                 <h3>Themes</h3>
                 <p>Customize how the system looks.</p>
@@ -423,111 +420,150 @@ export default function StudentPage() {
                 </div>
 
                 <div className="student-settings-subsection">
-                  <h4>Change Password</h4>
-                  <p>Update your password to keep your account secure.</p>
-
-                  <div className="student-settings-password-box">
-                    <label>
-                      Current Password
-                      <div className="student-settings-password-field">
-                        <input
-                          type={
-                            showSettingsPasswords.current ? "text" : "password"
-                          }
-                          value={settingsPassword.currentPassword}
-                          onChange={(e) =>
-                            setSettingsPassword((prev) => ({
-                              ...prev,
-                              currentPassword: e.target.value,
-                            }))
-                          }
-                        />
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setShowSettingsPasswords((prev) => ({
-                              ...prev,
-                              current: !prev.current,
-                            }))
-                          }
-                        >
-                          {showSettingsPasswords.current ? "Hide" : "Show"}
-                        </button>
-                      </div>
-                    </label>
-
-                    <label>
-                      New Password
-                      <div className="student-settings-password-field">
-                        <input
-                          type={
-                            showSettingsPasswords.next ? "text" : "password"
-                          }
-                          value={settingsPassword.newPassword}
-                          onChange={(e) =>
-                            setSettingsPassword((prev) => ({
-                              ...prev,
-                              newPassword: e.target.value,
-                            }))
-                          }
-                        />
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setShowSettingsPasswords((prev) => ({
-                              ...prev,
-                              next: !prev.next,
-                            }))
-                          }
-                        >
-                          {showSettingsPasswords.next ? "Hide" : "Show"}
-                        </button>
-                      </div>
-                    </label>
-
-                    <label>
-                      Confirm Password
-                      <div className="student-settings-password-field">
-                        <input
-                          type={
-                            showSettingsPasswords.confirm ? "text" : "password"
-                          }
-                          value={settingsPassword.confirmPassword}
-                          onChange={(e) =>
-                            setSettingsPassword((prev) => ({
-                              ...prev,
-                              confirmPassword: e.target.value,
-                            }))
-                          }
-                        />
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setShowSettingsPasswords((prev) => ({
-                              ...prev,
-                              confirm: !prev.confirm,
-                            }))
-                          }
-                        >
-                          {showSettingsPasswords.confirm ? "Hide" : "Show"}
-                        </button>
-                      </div>
-                    </label>
+                  <div className="student-settings-subsection-header">
+                    <div>
+                      <h4>Change Password</h4>
+                      <p>Update your password to keep your account secure.</p>
+                    </div>
 
                     <button
                       type="button"
-                      className="student-submit-btn"
-                      onClick={handleChangePassword}
+                      className="student-settings-toggle-btn"
+                      onClick={() => {
+                        setSettingsPasswordMessage("");
+                        setShowChangePasswordFields((prev) => !prev);
+                      }}
                     >
-                      Update Password
+                      {showChangePasswordFields ? "Hide" : "Change Password"}
                     </button>
-
-                    {settingsPasswordMessage ? (
-                      <p className="student-settings-message">
-                        {settingsPasswordMessage}
-                      </p>
-                    ) : null}
                   </div>
+
+                  {showChangePasswordFields && (
+                    <div className="student-settings-password-box nested-security-box">
+                      <label>
+                        Current Password
+                        <div className="student-settings-password-field">
+                          <input
+                            type={
+                              showSettingsPasswords.current
+                                ? "text"
+                                : "password"
+                            }
+                            value={settingsPassword.currentPassword}
+                            onChange={(e) =>
+                              setSettingsPassword((prev) => ({
+                                ...prev,
+                                currentPassword: e.target.value,
+                              }))
+                            }
+                          />
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setShowSettingsPasswords((prev) => ({
+                                ...prev,
+                                current: !prev.current,
+                              }))
+                            }
+                          >
+                            {showSettingsPasswords.current ? "Hide" : "Show"}
+                          </button>
+                        </div>
+                      </label>
+
+                      <label>
+                        New Password
+                        <div className="student-settings-password-field">
+                          <input
+                            type={
+                              showSettingsPasswords.next ? "text" : "password"
+                            }
+                            value={settingsPassword.newPassword}
+                            onChange={(e) =>
+                              setSettingsPassword((prev) => ({
+                                ...prev,
+                                newPassword: e.target.value,
+                              }))
+                            }
+                          />
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setShowSettingsPasswords((prev) => ({
+                                ...prev,
+                                next: !prev.next,
+                              }))
+                            }
+                          >
+                            {showSettingsPasswords.next ? "Hide" : "Show"}
+                          </button>
+                        </div>
+                      </label>
+
+                      <label>
+                        Confirm Password
+                        <div className="student-settings-password-field">
+                          <input
+                            type={
+                              showSettingsPasswords.confirm
+                                ? "text"
+                                : "password"
+                            }
+                            value={settingsPassword.confirmPassword}
+                            onChange={(e) =>
+                              setSettingsPassword((prev) => ({
+                                ...prev,
+                                confirmPassword: e.target.value,
+                              }))
+                            }
+                          />
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setShowSettingsPasswords((prev) => ({
+                                ...prev,
+                                confirm: !prev.confirm,
+                              }))
+                            }
+                          >
+                            {showSettingsPasswords.confirm ? "Hide" : "Show"}
+                          </button>
+                        </div>
+                      </label>
+
+                      <div className="student-settings-password-actions">
+                        <button
+                          type="button"
+                          className="student-submit-btn"
+                          onClick={handleChangePassword}
+                        >
+                          Update Password
+                        </button>
+
+                        <button
+                          type="button"
+                          className="student-settings-cancel-btn"
+                          onClick={() => {
+                            setShowChangePasswordFields(false);
+                            setSettingsPassword({
+                              currentPassword: "",
+                              newPassword: "",
+                              confirmPassword: "",
+                            });
+                            setSettingsPasswordMessage("");
+                          }}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+
+                      {settingsPasswordMessage ? (
+                        <p className="student-settings-message">
+                          {settingsPasswordMessage}
+                        </p>
+                      ) : null}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -555,6 +591,7 @@ export default function StudentPage() {
             </div>
           </div>
         );
+
       default:
         return (
           <>
