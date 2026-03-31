@@ -20,7 +20,6 @@ type TierForm = {
   name: string;
   level: string;
   description: string;
-  status: TierStatus;
   permissions: string[];
 };
 
@@ -209,7 +208,6 @@ const emptyTierForm: TierForm = {
   name: "",
   level: "",
   description: "",
-  status: "Active",
   permissions: [],
 };
 
@@ -233,12 +231,16 @@ export default function TierPage() {
 
   const [tiers, setTiers] = useState<TierItem[]>(getInitialTiers());
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState<"All" | TierStatus>("All");
 
   const [showTierModal, setShowTierModal] = useState(false);
   const [tierForm, setTierForm] = useState<TierForm>(emptyTierForm);
   const [formError, setFormError] = useState("");
   const [formMessage, setFormMessage] = useState("");
+
+  const [previewPermissions, setPreviewPermissions] = useState<{
+    tierName: string;
+    permissions: string[];
+  } | null>(null);
 
   const allPermissions = useMemo(() => getAllPermissions(), []);
   const permissionMap = useMemo(
@@ -260,15 +262,11 @@ export default function TierPage() {
   const filteredTiers = tiers.filter((tier) => {
     const keyword = searchTerm.toLowerCase();
 
-    const matchesSearch =
+    return (
       tier.name.toLowerCase().includes(keyword) ||
       tier.description.toLowerCase().includes(keyword) ||
-      String(tier.level).includes(keyword);
-
-    const matchesStatus =
-      statusFilter === "All" || tier.status === statusFilter;
-
-    return matchesSearch && matchesStatus;
+      String(tier.level).includes(keyword)
+    );
   });
 
   const totalTiers = tiers.length;
@@ -297,7 +295,6 @@ export default function TierPage() {
       name: tier.name,
       level: String(tier.level),
       description: tier.description,
-      status: tier.status,
       permissions: [...tier.permissions],
     });
     setFormError("");
@@ -310,6 +307,20 @@ export default function TierPage() {
     setTierForm(emptyTierForm);
     setFormError("");
     setFormMessage("");
+  };
+
+  const handleOpenPermissionPreview = (
+    tierName: string,
+    permissions: string[],
+  ) => {
+    setPreviewPermissions({
+      tierName,
+      permissions,
+    });
+  };
+
+  const handleClosePermissionPreview = () => {
+    setPreviewPermissions(null);
   };
 
   const togglePermission = (permissionCode: string) => {
@@ -373,7 +384,7 @@ export default function TierPage() {
         name: trimmedName,
         level: parsedLevel,
         description: trimmedDescription,
-        status: tierForm.status,
+        status: "Active",
         permissions: [...tierForm.permissions],
       };
 
@@ -389,7 +400,6 @@ export default function TierPage() {
                   name: trimmedName,
                   level: parsedLevel,
                   description: trimmedDescription,
-                  status: tierForm.status,
                   permissions: [...tierForm.permissions],
                 }
               : tier,
@@ -466,18 +476,6 @@ export default function TierPage() {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
 
-              <select
-                className="tier-filter"
-                value={statusFilter}
-                onChange={(e) =>
-                  setStatusFilter(e.target.value as "All" | TierStatus)
-                }
-              >
-                <option value="All">All Status</option>
-                <option value="Active">Active</option>
-                <option value="Archived">Archived</option>
-              </select>
-
               <button
                 type="button"
                 className="dashboard-primary-btn"
@@ -494,7 +492,6 @@ export default function TierPage() {
                 <tr>
                   <th>Tier</th>
                   <th>Level</th>
-                  <th>Status</th>
                   <th>Permissions</th>
                   <th>Actions</th>
                 </tr>
@@ -502,94 +499,99 @@ export default function TierPage() {
 
               <tbody>
                 {filteredTiers.length > 0 ? (
-                  filteredTiers.map((tier) => (
-                    <tr key={tier.id}>
-                      <td>
-                        <div className="tier-name-cell">
-                          <span className="tier-name-text">{tier.name}</span>
-                          <span className="tier-description-text">
-                            {tier.description}
+                  filteredTiers.map((tier) => {
+                    const visiblePermissions = tier.permissions.slice(0, 3);
+                    const hiddenPermissions = tier.permissions.slice(3);
+
+                    return (
+                      <tr
+                        key={tier.id}
+                        className={
+                          tier.status === "Archived" ? "tier-row-archived" : ""
+                        }
+                      >
+                        <td>
+                          <div className="tier-name-cell">
+                            <div className="tier-name-top">
+                              <span className="tier-name-text">
+                                {tier.name}
+                              </span>
+                              {tier.status === "Archived" && (
+                                <span className="tier-inline-archived-badge">
+                                  Archived
+                                </span>
+                              )}
+                            </div>
+
+                            <span className="tier-description-text">
+                              {tier.description}
+                            </span>
+                          </div>
+                        </td>
+
+                        <td>
+                          <span className="tier-level-badge">
+                            Tier {tier.level}
                           </span>
-                        </div>
-                      </td>
+                        </td>
 
-                      <td>
-                        <span className="tier-level-badge">
-                          Tier {tier.level}
-                        </span>
-                      </td>
+                        <td>
+                          <div className="tier-pill-list">
+                            {visiblePermissions.map((permission) => (
+                              <span
+                                key={permission}
+                                className="tier-permission-pill active tier-tooltip-pill"
+                                title={permissionMap[permission] || permission}
+                              >
+                                {permission}
+                              </span>
+                            ))}
 
-                      <td>
-                        <span
-                          className={`tier-status-badge ${
-                            tier.status === "Active"
-                              ? "tier-status-active"
-                              : "tier-status-archived"
-                          }`}
-                        >
-                          {tier.status}
-                        </span>
-                      </td>
+                            {hiddenPermissions.length > 0 && (
+                              <button
+                                type="button"
+                                className="tier-permission-pill tier-pill-more tier-pill-more-btn"
+                                onClick={() =>
+                                  handleOpenPermissionPreview(
+                                    tier.name,
+                                    hiddenPermissions,
+                                  )
+                                }
+                              >
+                                +{hiddenPermissions.length} more
+                              </button>
+                            )}
+                          </div>
+                        </td>
 
-                      <td>
-                        <div className="tier-pill-list">
-                          {tier.permissions.slice(0, 3).map((permission) => (
-                            <span
-                              key={permission}
-                              className="tier-permission-pill active tier-tooltip-pill"
-                              title={permissionMap[permission] || permission}
+                        <td>
+                          <div className="tier-actions">
+                            <button
+                              type="button"
+                              className="tier-action-btn tier-edit-btn"
+                              onClick={() => handleOpenEditModal(tier)}
                             >
-                              {permission}
-                            </span>
-                          ))}
+                              Edit
+                            </button>
 
-                          {tier.permissions.length > 3 && (
-                            <span
-                              className="tier-permission-pill tier-pill-more"
-                              title={tier.permissions
-                                .slice(3)
-                                .map(
-                                  (permission) =>
-                                    `${permission}: ${
-                                      permissionMap[permission] ||
-                                      "No description"
-                                    }`,
-                                )
-                                .join("\n")}
+                            <button
+                              type="button"
+                              className="tier-action-btn tier-archive-btn"
+                              onClick={() => handleArchiveTier(tier.id)}
+                              disabled={tier.status === "Archived"}
                             >
-                              +{tier.permissions.length - 3} more
-                            </span>
-                          )}
-                        </div>
-                      </td>
-
-                      <td>
-                        <div className="tier-actions">
-                          <button
-                            type="button"
-                            className="tier-action-btn tier-edit-btn"
-                            onClick={() => handleOpenEditModal(tier)}
-                          >
-                            Edit
-                          </button>
-
-                          <button
-                            type="button"
-                            className="tier-action-btn tier-archive-btn"
-                            onClick={() => handleArchiveTier(tier.id)}
-                            disabled={tier.status === "Archived"}
-                          >
-                            {tier.status === "Archived"
-                              ? "Archived"
-                              : "Archive"}
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
+                              {tier.status === "Archived"
+                                ? "Archived"
+                                : "Archive"}
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
                 ) : (
                   <tr>
-                    <td colSpan={5} className="tier-empty-state">
+                    <td colSpan={4} className="tier-empty-state">
                       No tiers found.
                     </td>
                   </tr>
@@ -667,23 +669,6 @@ export default function TierPage() {
                     }
                   />
                 </div>
-
-                <div className="tier-form-group">
-                  <label htmlFor="tierStatus">Status</label>
-                  <select
-                    id="tierStatus"
-                    value={tierForm.status}
-                    onChange={(e) =>
-                      setTierForm((prev) => ({
-                        ...prev,
-                        status: e.target.value as TierStatus,
-                      }))
-                    }
-                  >
-                    <option value="Active">Active</option>
-                    <option value="Archived">Archived</option>
-                  </select>
-                </div>
               </div>
 
               <div className="tier-permission-section">
@@ -746,6 +731,56 @@ export default function TierPage() {
                   {tierForm.id === null ? "Add Tier" : "Save Changes"}
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {previewPermissions && (
+        <div
+          className="tier-modal-overlay"
+          onClick={handleClosePermissionPreview}
+        >
+          <div
+            className="tier-modal tier-preview-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="tier-modal-header">
+              <div>
+                <h2>Other Permissions</h2>
+                <p>
+                  {previewPermissions.tierName} tier additional permissions.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                className="tier-modal-close-btn"
+                onClick={handleClosePermissionPreview}
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="tier-preview-list">
+              {previewPermissions.permissions.map((permission) => (
+                <div key={permission} className="tier-preview-item">
+                  <span className="tier-preview-code">{permission}</span>
+                  <span className="tier-preview-description">
+                    {permissionMap[permission] || "No description available."}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            <div className="tier-modal-actions">
+              <button
+                type="button"
+                className="dashboard-primary-btn"
+                onClick={handleClosePermissionPreview}
+              >
+                Done
+              </button>
             </div>
           </div>
         </div>

@@ -40,9 +40,9 @@
   justify-content: flex-end;
 }
 
-.tier-search,
-.tier-filter {
+.tier-search {
   height: 44px;
+  min-width: 280px;
   padding: 0 14px;
   border: 1px solid rgba(255, 138, 101, 0.16);
   background: rgba(255, 255, 255, 0.07);
@@ -56,24 +56,11 @@
     background 0.2s ease;
 }
 
-.tier-search {
-  min-width: 280px;
-}
-
-.tier-filter {
-  min-width: 160px;
-}
-
-.tier-filter option {
-  color: #111827;
-}
-
 .tier-search::placeholder {
   color: rgba(255, 255, 255, 0.52);
 }
 
-.tier-search:focus,
-.tier-filter:focus {
+.tier-search:focus {
   border-color: rgba(255, 138, 101, 0.5);
   box-shadow: 0 0 0 3px rgba(255, 138, 101, 0.12);
   background: rgba(255, 255, 255, 0.09);
@@ -89,7 +76,7 @@
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  min-width: 1100px;
+  min-width: 1000px;
 }
 
 .tier-table thead th {
@@ -120,6 +107,10 @@
   background: rgba(255, 255, 255, 0.03);
 }
 
+.tier-row-archived {
+  opacity: 0.82;
+}
+
 .tier-name-cell {
   display: flex;
   flex-direction: column;
@@ -127,11 +118,31 @@
   max-width: 320px;
 }
 
+.tier-name-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 .tier-name-text {
   font-weight: 800;
   font-size: 16px;
   color: #ffffff;
   line-height: 1.2;
+}
+
+.tier-inline-archived-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  background: rgba(248, 113, 113, 0.14);
+  color: #fca5a5;
+  border: 1px solid rgba(248, 113, 113, 0.2);
 }
 
 .tier-description-text {
@@ -154,29 +165,6 @@
   border: 1px solid rgba(96, 165, 250, 0.22);
 }
 
-.tier-status-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 999px;
-  padding: 8px 12px;
-  font-size: 13px;
-  font-weight: 700;
-  min-width: 88px;
-}
-
-.tier-status-active {
-  background: rgba(74, 222, 128, 0.16);
-  color: #86efac;
-  border: 1px solid rgba(74, 222, 128, 0.2);
-}
-
-.tier-status-archived {
-  background: rgba(248, 113, 113, 0.14);
-  color: #fca5a5;
-  border: 1px solid rgba(248, 113, 113, 0.2);
-}
-
 .tier-pill-list {
   display: flex;
   flex-wrap: wrap;
@@ -192,7 +180,6 @@
   font-size: 12px;
   font-weight: 700;
   line-height: 1;
-  cursor: pointer;
   transition:
     transform 0.15s ease,
     background 0.2s ease,
@@ -200,16 +187,8 @@
     opacity 0.2s ease;
 }
 
-.tier-permission-pill:hover {
-  transform: translateY(-1px);
-}
-
 span.tier-permission-pill {
   cursor: default;
-}
-
-span.tier-permission-pill:hover {
-  transform: none;
 }
 
 .tier-permission-pill.active {
@@ -219,17 +198,26 @@ span.tier-permission-pill:hover {
   box-shadow: 0 8px 18px rgba(255, 109, 87, 0.14);
 }
 
-.tier-pill-more {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.12);
-  color: rgba(255, 255, 255, 0.76);
-}
-
 .tier-tooltip-pill {
   max-width: 220px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.tier-pill-more {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.tier-pill-more-btn {
+  cursor: pointer;
+}
+
+.tier-pill-more-btn:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .tier-actions {
@@ -315,6 +303,10 @@ span.tier-permission-pill:hover {
   color: #ffffff;
 }
 
+.tier-preview-modal {
+  max-width: 700px;
+}
+
 .tier-modal::-webkit-scrollbar {
   width: 8px;
 }
@@ -390,7 +382,6 @@ span.tier-permission-pill:hover {
 }
 
 .tier-form-group input,
-.tier-form-group select,
 .tier-form-group textarea {
   width: 100%;
   padding: 12px 14px;
@@ -408,15 +399,10 @@ span.tier-permission-pill:hover {
 }
 
 .tier-form-group input:focus,
-.tier-form-group select:focus,
 .tier-form-group textarea:focus {
   border-color: rgba(255, 138, 101, 0.5);
   box-shadow: 0 0 0 3px rgba(255, 138, 101, 0.12);
   background: rgba(255, 255, 255, 0.1);
-}
-
-.tier-form-group select option {
-  color: #111827;
 }
 
 .tier-form-group input::placeholder,
@@ -473,13 +459,9 @@ span.tier-permission-pill:hover {
 }
 
 .tier-permission-card.active {
-  background: linear-gradient(
-    180deg,
-    rgba(255, 138, 101, 0.2) 0%,
-    rgba(255, 109, 87, 0.16) 100%
-  );
+  background: linear-gradient(180deg, #ff8a65 0%, #ff6d57 100%);
   border-color: rgba(255, 138, 101, 0.45);
-  box-shadow: 0 10px 22px rgba(255, 109, 87, 0.12);
+  box-shadow: 0 10px 22px rgba(255, 109, 87, 0.2);
 }
 
 .tier-permission-card-code {
@@ -498,6 +480,35 @@ span.tier-permission-pill:hover {
 
 .tier-permission-card.active .tier-permission-card-description {
   color: rgba(255, 255, 255, 0.9);
+}
+
+.tier-preview-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tier-preview-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 138, 101, 0.14);
+}
+
+.tier-preview-code {
+  font-size: 13px;
+  font-weight: 800;
+  color: #ffffff;
+  word-break: break-word;
+}
+
+.tier-preview-description {
+  font-size: 13px;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.74);
 }
 
 .tier-form-message {
@@ -541,7 +552,6 @@ span.tier-permission-pill:hover {
   }
 
   .tier-search,
-  .tier-filter,
   .tier-toolbar .dashboard-primary-btn {
     width: 100%;
   }
@@ -555,7 +565,7 @@ span.tier-permission-pill:hover {
   }
 
   .tier-table {
-    min-width: 880px;
+    min-width: 820px;
   }
 }
 
