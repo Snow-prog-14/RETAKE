@@ -5,7 +5,9 @@ export default function AdminPage() {
   const navigate = useNavigate();
 
   const handleLogout = () => {
+    localStorage.removeItem("token");
     localStorage.removeItem("user");
+    localStorage.removeItem("role");
     navigate("/");
   };
 
@@ -16,9 +18,10 @@ export default function AdminPage() {
         <p>Management Panel</p>
 
         <nav className="admin-nav">
-          <button className="active">Dashboard</button>
+          <button className="active" onClick={() => navigate("/admin")}>
+            Dashboard
+          </button>
           <button onClick={() => navigate("/profile")}>Profile</button>
-
           <button>Students</button>
           <button>Courses</button>
           <button>Reports</button>

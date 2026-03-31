@@ -1,4 +1,4 @@
-.appadmin-page {
+.admin-page {
   min-height: 100vh;
   display: flex;
   background:
@@ -9,7 +9,7 @@
   font-family: Arial, Helvetica, sans-serif;
 }
 
-.appadmin-sidebar {
+.admin-sidebar {
   width: 260px;
   background: rgba(255, 255, 255, 0.88);
   border-right: 1px solid rgba(249, 115, 22, 0.2);
@@ -21,26 +21,26 @@
   box-shadow: inset -1px 0 0 rgba(249, 115, 22, 0.08);
 }
 
-.appadmin-sidebar h2 {
+.admin-sidebar h2 {
   margin: 0;
   font-size: 22px;
   color: var(--text-primary);
 }
 
-.appadmin-sidebar p {
+.admin-sidebar p {
   margin: 8px 0 0;
   color: var(--text-secondary);
   font-size: 14px;
 }
 
-.appadmin-nav {
+.admin-nav {
   display: flex;
   flex-direction: column;
   gap: 12px;
   margin-top: 28px;
 }
 
-.appadmin-nav button {
+.admin-nav button {
   background: transparent;
   border: 1px solid transparent;
   color: var(--text-secondary);
@@ -52,8 +52,8 @@
   font-size: 14px;
 }
 
-.appadmin-nav button:hover,
-.appadmin-nav button.active {
+.admin-nav button:hover,
+.admin-nav button.active {
   background: linear-gradient(
     90deg,
     rgba(249, 115, 22, 0.14) 0%,
@@ -80,7 +80,7 @@
   filter: brightness(1.05);
 }
 
-.appadmin-main {
+.admin-main {
   flex: 1;
   padding: 32px;
   display: flex;
@@ -88,25 +88,25 @@
   gap: 24px;
 }
 
-.appadmin-main h1 {
+.admin-main h1 {
   margin: 0;
   font-size: 30px;
   color: var(--text-primary);
 }
 
-.appadmin-main > p {
+.admin-main > p {
   margin: -12px 0 8px;
   color: var(--text-secondary);
   font-size: 15px;
 }
 
-.appadmin-cards {
+.admin-cards {
   display: grid;
   grid-template-columns: repeat(3, minmax(180px, 1fr));
   gap: 18px;
 }
 
-.appadmin-card {
+.admin-card {
   background: rgba(255, 255, 255, 0.9);
   border: 1px solid rgba(249, 115, 22, 0.18);
   border-top: 3px solid var(--accent);
@@ -116,74 +116,44 @@
   backdrop-filter: blur(10px);
 }
 
-.appadmin-card h3 {
+.admin-card h3 {
   margin: 0 0 14px;
   font-size: 15px;
   color: var(--text-secondary);
   font-weight: 600;
 }
 
-.appadmin-card p {
+.admin-card p {
   margin: 0;
   font-size: 36px;
   font-weight: 700;
   color: var(--text-primary);
 }
 
-.appadmin-activity {
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(249, 115, 22, 0.16);
-  border-left: 4px solid var(--accent);
-  border-radius: var(--radius-lg);
-  padding: 24px;
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
-  backdrop-filter: blur(10px);
-}
-
-.appadmin-activity h2 {
-  margin: 0 0 16px;
-  font-size: 22px;
-  color: var(--text-primary);
-}
-
-.appadmin-activity ul {
-  margin: 0;
-  padding-left: 22px;
-  color: var(--text-secondary);
-}
-
-.appadmin-activity li {
-  margin-bottom: 10px;
-}
-
-.appadmin-activity li::marker {
-  color: var(--accent);
-}
-
 @media (max-width: 1000px) {
-  .appadmin-cards {
+  .admin-cards {
     grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 820px) {
-  .appadmin-page {
+  .admin-page {
     flex-direction: column;
   }
 
-  .appadmin-sidebar {
+  .admin-sidebar {
     width: 100%;
   }
 }
 
-body.dark .appadmin-page {
+body.dark .admin-page {
   background:
     linear-gradient(rgba(17, 24, 39, 0.78), rgba(17, 24, 39, 0.9)),
     url("https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1600&q=80")
       center/cover no-repeat;
 }
 
-body.dark .appadmin-sidebar {
+body.dark .admin-sidebar {
   background: linear-gradient(
     180deg,
     rgba(31, 41, 55, 0.94) 0%,
@@ -193,20 +163,20 @@ body.dark .appadmin-sidebar {
   box-shadow: inset -1px 0 0 rgba(255, 138, 92, 0.12);
 }
 
-body.dark .appadmin-sidebar h2 {
+body.dark .admin-sidebar h2 {
   color: var(--text-primary);
 }
 
-body.dark .appadmin-sidebar p {
+body.dark .admin-sidebar p {
   color: var(--secondary-accent);
 }
 
-body.dark .appadmin-nav button {
+body.dark .admin-nav button {
   color: var(--text-secondary);
 }
 
-body.dark .appadmin-nav button:hover,
-body.dark .appadmin-nav button.active {
+body.dark .admin-nav button:hover,
+body.dark .admin-nav button.active {
   background: linear-gradient(
     90deg,
     rgba(255, 138, 92, 0.2) 0%,
@@ -217,11 +187,11 @@ body.dark .appadmin-nav button.active {
   box-shadow: 0 0 0 1px rgba(255, 138, 92, 0.08);
 }
 
-body.dark .appadmin-main > p {
+body.dark .admin-main > p {
   color: var(--secondary-accent);
 }
 
-body.dark .appadmin-card {
+body.dark .admin-card {
   background: linear-gradient(
     180deg,
     rgba(31, 41, 55, 0.92) 0%,
@@ -234,28 +204,10 @@ body.dark .appadmin-card {
     0 0 0 1px rgba(255, 138, 92, 0.04);
 }
 
-body.dark .appadmin-card h3 {
+body.dark .admin-card h3 {
   color: var(--secondary-accent);
 }
 
-body.dark .appadmin-card p {
+body.dark .admin-card p {
   color: #ffffff;
-}
-
-body.dark .appadmin-activity {
-  background: linear-gradient(
-    180deg,
-    rgba(31, 41, 55, 0.9) 0%,
-    rgba(17, 24, 39, 0.93) 100%
-  );
-  border: 1px solid rgba(255, 138, 92, 0.18);
-  border-left: 4px solid var(--accent);
-}
-
-body.dark .appadmin-activity h2 {
-  color: #ffffff;
-}
-
-body.dark .appadmin-activity ul {
-  color: var(--text-secondary);
 }

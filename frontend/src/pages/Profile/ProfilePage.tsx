@@ -3,6 +3,19 @@ import "./ProfilePage.css";
 
 type UserRole = "AppAdmin" | "Admin" | "Student";
 
+type StoredUser = {
+  UserId?: string;
+  UserEmail?: string;
+  UserUsername?: string;
+  UserLastName?: string;
+  UserFirstName?: string;
+  UserTier?: number;
+  UserStatus?: number;
+  MustChangePass?: number;
+  Success?: boolean;
+  Message?: string;
+};
+
 type ProfileData = {
   fullName: string;
   username: string;
@@ -23,70 +36,79 @@ type ProfileData = {
 export default function ProfilePage() {
   const navigate = useNavigate();
 
+  let storedUser: StoredUser | null = null;
+
+  try {
+    const storedUserRaw = localStorage.getItem("user");
+    storedUser = storedUserRaw ? JSON.parse(storedUserRaw) : null;
+  } catch (error) {
+    console.error("Failed to parse stored user:", error);
+    storedUser = null;
+  }
+
   const storedRole =
     (localStorage.getItem("role") as UserRole | null) || "Student";
-  const mockRole: UserRole = storedRole;
 
-  const profileDataByRole: Record<UserRole, ProfileData> = {
-    Student: {
-      fullName: "ALEJANDRA MARAASIN",
-      username: "alejandra.maraasin",
-      role: "Student",
-      email: "alejandramaraasin6@gmail.com",
-      status: "Online",
-      subtitle: "Manage your academic identity and collaborations.",
-      stats: [
-        { label: "Pending Tasks", value: 4 },
-        { label: "Tasks Completed", value: 12 },
-        { label: "Collaborations", value: 3 },
-      ],
-      connections: [
-        { name: "Capstone Group A", role: "Human Computer Interaction" },
-        { name: "Network Team 2", role: "Computer Networks" },
-        { name: "UI Research Circle", role: "Information Management" },
-      ],
-    },
+  const roleFromTier: UserRole =
+    storedUser?.UserTier === 0
+      ? "AppAdmin"
+      : storedUser?.UserTier === 1
+        ? "Admin"
+        : storedUser?.UserTier === 2
+          ? "Student"
+          : storedRole;
 
-    Admin: {
-      fullName: "JONATHAN REYES",
-      username: "jon.reyes",
-      role: "Admin",
-      email: "jonathan.reyes@retake.edu",
-      status: "Online",
-      subtitle: "Manage your admin account and team connections.",
-      stats: [
-        { label: "Users Managed", value: 28 },
-        { label: "Reports Reviewed", value: 16 },
-        { label: "Active Sessions", value: 5 },
-      ],
-      connections: [
-        { name: "Maria T.", role: "Staff" },
-        { name: "Kevin D.", role: "Coordinator" },
-        { name: "Louise P.", role: "Support" },
-      ],
-    },
+  const fullName =
+    `${storedUser?.UserFirstName || ""} ${storedUser?.UserLastName || ""}`.trim() ||
+    "Unknown User";
 
-    AppAdmin: {
-      fullName: "PENELOPE SANTOS",
-      username: "penelope.santos",
-      role: "AppAdmin",
-      email: "penelope.santos@retake.edu",
-      status: "Online",
-      subtitle: "Manage your super admin account and system-level access.",
-      stats: [
-        { label: "Total Admins", value: 8 },
-        { label: "Active Users", value: 214 },
-        { label: "Access Requests", value: 7 },
-      ],
-      connections: [
-        { name: "Admin Rose", role: "Admin" },
-        { name: "Admin Carlo", role: "Admin" },
-        { name: "Admin Mae", role: "Admin" },
-      ],
-    },
+  const username = storedUser?.UserUsername || "no-username";
+  const email = storedUser?.UserEmail || "no-email";
+  const status = storedUser?.UserStatus === 1 ? "Offline" : "Online";
+
+  const subtitle =
+    roleFromTier === "AppAdmin"
+      ? "Manage your super admin account and system-level access."
+      : roleFromTier === "Admin"
+        ? "Manage your admin account and team connections."
+        : "Manage your academic identity and collaborations.";
+
+  const stats =
+    roleFromTier === "AppAdmin"
+      ? [
+          { label: "User ID", value: storedUser?.UserId || "N/A" },
+          { label: "Account Type", value: "Super Admin" },
+          { label: "Status Code", value: storedUser?.UserStatus ?? "N/A" },
+        ]
+      : roleFromTier === "Admin"
+        ? [
+            { label: "User ID", value: storedUser?.UserId || "N/A" },
+            { label: "Account Type", value: "Admin" },
+            { label: "Status Code", value: storedUser?.UserStatus ?? "N/A" },
+          ]
+        : [
+            { label: "User ID", value: storedUser?.UserId || "N/A" },
+            { label: "Account Type", value: "Student" },
+            { label: "Status Code", value: storedUser?.UserStatus ?? "N/A" },
+          ];
+
+  const connections =
+    roleFromTier === "AppAdmin"
+      ? [{ name: "System Access", role: "Full Control" }]
+      : roleFromTier === "Admin"
+        ? [{ name: "Admin Access", role: "Management Control" }]
+        : [{ name: "Student Access", role: "Academic Access" }];
+
+  const profile: ProfileData = {
+    fullName,
+    username,
+    role: roleFromTier,
+    email,
+    status,
+    subtitle,
+    stats,
+    connections,
   };
-
-  const profile = profileDataByRole[mockRole];
 
   const sidebarTitle =
     profile.role === "AppAdmin"
@@ -121,18 +143,14 @@ export default function ProfilePage() {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+    localStorage.removeItem("role");
     navigate("/");
-  };
-
-  const getConnectionsTitle = () => {
-    if (profile.role === "Student") return "Collaborations";
-    if (profile.role === "Admin") return "Team Connections";
-    return "Admin Connections";
   };
 
   const getInitials = (name: string) => {
     return name
       .split(" ")
+      .filter(Boolean)
       .map((part) => part[0])
       .join("")
       .slice(0, 2)
@@ -205,7 +223,7 @@ export default function ProfilePage() {
 
         <section className="card">
           <div className="section-header">
-            <h3 className="section-title">{getConnectionsTitle()}</h3>
+            <h3 className="section-title">Access</h3>
           </div>
 
           <div className="connections-row">
