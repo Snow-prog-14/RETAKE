@@ -14,6 +14,7 @@ import StudentPage from "./pages/Student/StudentPage";
 import StudentListPage from "./pages/Student/StudentListPage";
 import StudentProfilePage from "./pages/Student/StudentProfilePage";
 import UserPage from "./pages/User/UserPage";
+import TierPage from "./pages/Tier/TierPage";
 import ProfilePage from "./pages/Profile/ProfilePage";
 import ThemeToggle from "./components/ThemeToggle";
 
@@ -64,6 +65,7 @@ function AppContent() {
         <Route path="/student/settings" element={<StudentPage />} />
 
         <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/appadmin/tiers" element={<TierPage />} />
       </Routes>
     </>
   );
