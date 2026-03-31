@@ -17,6 +17,7 @@ export default function AppAdminPage() {
   const navItems = [
     { label: "Dashboard", path: "/appadmin" },
     { label: "Users", path: "/appadmin/users" },
+    { label: "Students", path: "/appadmin/students" },
     { label: "Profile", path: "/appadmin/profile" },
     { label: "Reports", path: "/appadmin/reports" },
     { label: "Settings", path: "/appadmin/settings" },
@@ -90,6 +91,8 @@ export default function AppAdminPage() {
         return "Reports";
       case "/appadmin/settings":
         return "Settings";
+      case "/appadmin/students":
+        return "Students";
       default:
         return "AppAdmin Dashboard";
     }
@@ -105,6 +108,8 @@ export default function AppAdminPage() {
         return "Monitor reports and platform activity.";
       case "/appadmin/settings":
         return "Manage your preferences and account settings.";
+      case "/appadmin/students":
+        return "View and manage student records.";
       default:
         return "Manage users, monitor activity, and system status.";
     }

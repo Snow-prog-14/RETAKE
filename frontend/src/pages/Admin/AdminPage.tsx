@@ -457,17 +457,7 @@ export default function AdminPage() {
         );
 
       case "/admin/students":
-        return (
-          <div className="dashboard-panel">
-            <h2>Students</h2>
-            <ul>
-              <li>320 students enrolled</li>
-              <li>24 students with pending requirements</li>
-              <li>12 students recently updated records</li>
-            </ul>
-          </div>
-        );
-
+        return null;
       case "/admin/courses":
         return (
           <div className="dashboard-panel">

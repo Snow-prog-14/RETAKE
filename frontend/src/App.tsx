@@ -11,6 +11,8 @@ import ForgotPasswordPage from "./pages/ForgotPassword/ForgotPasswordPage";
 import AppAdminPage from "./pages/AppAdmin/AppAdminPage";
 import AdminPage from "./pages/Admin/AdminPage";
 import StudentPage from "./pages/Student/StudentPage";
+import StudentListPage from "./pages/Student/StudentListPage";
+import StudentProfilePage from "./pages/Student/StudentProfilePage";
 import UserPage from "./pages/User/UserPage";
 import ProfilePage from "./pages/Profile/ProfilePage";
 import ThemeToggle from "./components/ThemeToggle";
@@ -32,9 +34,26 @@ function AppContent() {
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
         <Route path="/appadmin" element={<AppAdminPage />} />
+        <Route path="/appadmin/profile" element={<AppAdminPage />} />
         <Route path="/appadmin/users" element={<UserPage />} />
+        <Route path="/appadmin/students" element={<StudentListPage />} />
+        <Route
+          path="/appadmin/students/:studentId"
+          element={<StudentProfilePage />}
+        />
+        <Route path="/appadmin/reports" element={<AppAdminPage />} />
+        <Route path="/appadmin/settings" element={<AppAdminPage />} />
 
         <Route path="/admin" element={<AdminPage />} />
+        <Route path="/admin/profile" element={<AdminPage />} />
+        <Route path="/admin/students" element={<StudentListPage />} />
+        <Route
+          path="/admin/students/:studentId"
+          element={<StudentProfilePage />}
+        />
+        <Route path="/admin/courses" element={<AdminPage />} />
+        <Route path="/admin/reports" element={<AdminPage />} />
+        <Route path="/admin/settings" element={<AdminPage />} />
 
         <Route path="/student" element={<StudentPage />} />
         <Route path="/student/profile" element={<StudentPage />} />
@@ -43,19 +62,6 @@ function AppContent() {
         <Route path="/student/connections" element={<StudentPage />} />
         <Route path="/student/support" element={<StudentPage />} />
         <Route path="/student/settings" element={<StudentPage />} />
-
-        <Route path="/admin" element={<AdminPage />} />
-        <Route path="/admin/profile" element={<AdminPage />} />
-        <Route path="/admin/students" element={<AdminPage />} />
-        <Route path="/admin/courses" element={<AdminPage />} />
-        <Route path="/admin/reports" element={<AdminPage />} />
-        <Route path="/admin/settings" element={<AdminPage />} />
-
-        <Route path="/appadmin" element={<AppAdminPage />} />
-        <Route path="/appadmin/profile" element={<AppAdminPage />} />
-        <Route path="/appadmin/users" element={<AppAdminPage />} />
-        <Route path="/appadmin/reports" element={<AppAdminPage />} />
-        <Route path="/appadmin/settings" element={<AppAdminPage />} />
 
         <Route path="/profile" element={<ProfilePage />} />
       </Routes>
