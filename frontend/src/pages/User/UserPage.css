@@ -342,3 +342,17 @@
     width: 100%;
   }
 }
+
+.user-form-group select {
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 138, 101, 0.16);
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  border-radius: 12px;
+  font-size: 14px;
+  outline: none;
+}
+
+.user-form-group select option {
+  color: #111827;
+}

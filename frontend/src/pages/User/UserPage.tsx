@@ -5,15 +5,23 @@ import "../../components/DashboardShell.css";
 import "./UserPage.css";
 
 type ApiUser = {
-  success: boolean;
-  message: string;
-  userId: number;
-  userEmail: string;
-  userUsername: string;
-  userLastName: string;
-  userFirstName: string;
-  userTier: number;
-  userStatus: number;
+  success?: boolean;
+  message?: string;
+  userId?: number | string;
+  userEmail?: string;
+  userUsername?: string;
+  userLastName?: string;
+  userFirstName?: string;
+  userTier?: number;
+  userStatus?: number;
+
+  UserId?: number | string;
+  UserEmail?: string;
+  UserUsername?: string;
+  UserLastName?: string;
+  UserFirstName?: string;
+  UserTier?: number;
+  UserStatus?: number;
 };
 
 type UserRole = "AppAdmin" | "Admin";
@@ -21,6 +29,8 @@ type UserStatus = "Active" | "Inactive";
 
 type User = {
   id: number;
+  firstName: string;
+  lastName: string;
   name: string;
   email: string;
   username: string;
@@ -36,14 +46,53 @@ type AddAdminForm = {
   temporaryPassword: string;
 };
 
+type EditUserForm = {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  username: string;
+  role: UserRole;
+  status: UserStatus;
+};
+
+function getResolvedRole(): number | null {
+  const rawRole = localStorage.getItem("role");
+
+  if (rawRole === "0" || rawRole === "1" || rawRole === "2") {
+    return Number(rawRole);
+  }
+
+  if (rawRole === "AppAdmin") return 0;
+  if (rawRole === "Admin") return 1;
+  if (rawRole === "Student") return 2;
+
+  try {
+    const rawUser = localStorage.getItem("user");
+    if (!rawUser) return null;
+
+    const parsedUser = JSON.parse(rawUser);
+    const tier = parsedUser.userTier ?? parsedUser.UserTier;
+
+    return typeof tier === "number" ? tier : null;
+  } catch (error) {
+    console.error("Failed to parse stored user:", error);
+    return null;
+  }
+}
+
 export default function UserPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const currentPath = location.pathname;
 
+  const resolvedRole = getResolvedRole();
+  const isTier0 = resolvedRole === 0;
+
   const navItems = [
     { label: "Dashboard", path: "/appadmin" },
     { label: "Users", path: "/appadmin/users" },
+    { label: "Students", path: "/appadmin/students" },
     { label: "Profile", path: "/appadmin/profile" },
     { label: "Reports", path: "/appadmin/reports" },
     { label: "Settings", path: "/appadmin/settings" },
@@ -66,6 +115,19 @@ export default function UserPage() {
   const [addAdminLoading, setAddAdminLoading] = useState(false);
   const [addAdminMessage, setAddAdminMessage] = useState("");
   const [addAdminError, setAddAdminError] = useState("");
+
+  const [showEditUserModal, setShowEditUserModal] = useState(false);
+  const [editUserForm, setEditUserForm] = useState<EditUserForm>({
+    id: 0,
+    firstName: "",
+    lastName: "",
+    email: "",
+    username: "",
+    role: "Admin",
+    status: "Active",
+  });
+  const [editUserMessage, setEditUserMessage] = useState("");
+  const [editUserError, setEditUserError] = useState("");
 
   const fetchUsers = async () => {
     try {
@@ -90,17 +152,32 @@ export default function UserPage() {
       }
 
       const data: ApiUser[] = await response.json();
+      console.log("User API data:", data);
 
       const mappedUsers: User[] = data
-        .filter((user) => user.userTier === 0 || user.userTier === 1)
-        .map((user) => ({
-          id: user.userId,
-          name: `${user.userFirstName} ${user.userLastName}`.trim(),
-          email: user.userEmail,
-          username: user.userUsername,
-          role: user.userTier === 0 ? "AppAdmin" : "Admin",
-          status: user.userStatus === 0 ? "Active" : "Inactive",
-        }));
+        .filter(
+          (user) =>
+            (user.userTier ?? user.UserTier) === 0 ||
+            (user.userTier ?? user.UserTier) === 1,
+        )
+        .map((user): User => {
+          const firstName = user.userFirstName ?? user.UserFirstName ?? "";
+          const lastName = user.userLastName ?? user.UserLastName ?? "";
+          const tier = user.userTier ?? user.UserTier ?? 1;
+          const statusCode = user.userStatus ?? user.UserStatus ?? 0;
+
+          return {
+            id: Number(user.userId ?? user.UserId ?? 0),
+            firstName,
+            lastName,
+            name: `${firstName} ${lastName}`.trim(),
+            email: user.userEmail ?? user.UserEmail ?? "",
+            username: user.userUsername ?? user.UserUsername ?? "",
+            role: tier === 0 ? "AppAdmin" : "Admin",
+            status: statusCode === 0 ? "Active" : "Inactive",
+          };
+        })
+        .filter((user) => user.id !== 0);
 
       setUsers(mappedUsers);
     } catch (err) {
@@ -112,8 +189,13 @@ export default function UserPage() {
   };
 
   useEffect(() => {
+    if (!isTier0) {
+      navigate("/");
+      return;
+    }
+
     fetchUsers();
-  }, []);
+  }, [isTier0, navigate]);
 
   const filteredUsers = useMemo(() => {
     return users.filter((user) => {
@@ -144,8 +226,62 @@ export default function UserPage() {
     navigate("/");
   };
 
-  const handleEdit = (user: User) => {
-    alert(`Edit user: ${user.name}`);
+  const handleOpenEditModal = (user: User) => {
+    setEditUserMessage("");
+    setEditUserError("");
+    setEditUserForm({
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      username: user.username,
+      role: user.role,
+      status: user.status,
+    });
+    setShowEditUserModal(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setShowEditUserModal(false);
+    setEditUserMessage("");
+    setEditUserError("");
+  };
+
+  const handleSaveEditedUser = () => {
+    const firstName = editUserForm.firstName.trim();
+    const lastName = editUserForm.lastName.trim();
+    const email = editUserForm.email.trim();
+    const username = editUserForm.username.trim();
+
+    if (!firstName || !lastName || !email || !username) {
+      setEditUserError("Please complete all fields.");
+      return;
+    }
+
+    setUsers((prev) =>
+      prev.map((user) =>
+        user.id === editUserForm.id
+          ? {
+              ...user,
+              firstName,
+              lastName,
+              name: `${firstName} ${lastName}`.trim(),
+              email,
+              username,
+              role: editUserForm.role,
+              status: editUserForm.status,
+            }
+          : user,
+      ),
+    );
+
+    setEditUserError("");
+    setEditUserMessage("User information updated successfully.");
+
+    setTimeout(() => {
+      setShowEditUserModal(false);
+      setEditUserMessage("");
+    }, 900);
   };
 
   const handleChangePassword = (user: User) => {
@@ -377,7 +513,7 @@ export default function UserPage() {
                             <button
                               type="button"
                               className="user-action-btn user-edit-btn"
-                              onClick={() => handleEdit(user)}
+                              onClick={() => handleOpenEditModal(user)}
                             >
                               Edit
                             </button>
@@ -525,6 +661,158 @@ export default function UserPage() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {showEditUserModal && (
+        <div className="user-modal-overlay" onClick={handleCloseEditModal}>
+          <div className="user-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="user-modal-header">
+              <div>
+                <h2>Edit User</h2>
+                <p>
+                  Tier 0 can edit admin information and promote admins to
+                  AppAdmin.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                className="user-modal-close-btn"
+                onClick={handleCloseEditModal}
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="user-add-admin-form">
+              <div className="user-add-admin-grid">
+                <div className="user-form-group">
+                  <label htmlFor="editFirstName">First Name</label>
+                  <input
+                    id="editFirstName"
+                    type="text"
+                    value={editUserForm.firstName}
+                    onChange={(e) =>
+                      setEditUserForm((prev) => ({
+                        ...prev,
+                        firstName: e.target.value,
+                      }))
+                    }
+                  />
+                </div>
+
+                <div className="user-form-group">
+                  <label htmlFor="editLastName">Last Name</label>
+                  <input
+                    id="editLastName"
+                    type="text"
+                    value={editUserForm.lastName}
+                    onChange={(e) =>
+                      setEditUserForm((prev) => ({
+                        ...prev,
+                        lastName: e.target.value,
+                      }))
+                    }
+                  />
+                </div>
+
+                <div className="user-form-group">
+                  <label htmlFor="editUsername">Username</label>
+                  <input
+                    id="editUsername"
+                    type="text"
+                    value={editUserForm.username}
+                    onChange={(e) =>
+                      setEditUserForm((prev) => ({
+                        ...prev,
+                        username: e.target.value,
+                      }))
+                    }
+                  />
+                </div>
+
+                <div className="user-form-group">
+                  <label htmlFor="editEmail">Email</label>
+                  <input
+                    id="editEmail"
+                    type="email"
+                    value={editUserForm.email}
+                    onChange={(e) =>
+                      setEditUserForm((prev) => ({
+                        ...prev,
+                        email: e.target.value,
+                      }))
+                    }
+                  />
+                </div>
+
+                <div className="user-form-group">
+                  <label htmlFor="editRole">Role</label>
+                  <select
+                    id="editRole"
+                    value={editUserForm.role}
+                    onChange={(e) =>
+                      setEditUserForm((prev) => ({
+                        ...prev,
+                        role: e.target.value as UserRole,
+                      }))
+                    }
+                  >
+                    <option value="Admin">Admin</option>
+                    <option value="AppAdmin">AppAdmin</option>
+                  </select>
+                </div>
+
+                <div className="user-form-group">
+                  <label htmlFor="editStatus">Status</label>
+                  <select
+                    id="editStatus"
+                    value={editUserForm.status}
+                    onChange={(e) =>
+                      setEditUserForm((prev) => ({
+                        ...prev,
+                        status: e.target.value as UserStatus,
+                      }))
+                    }
+                  >
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                  </select>
+                </div>
+              </div>
+
+              {editUserError && (
+                <p className="user-form-message user-form-message-error">
+                  {editUserError}
+                </p>
+              )}
+
+              {editUserMessage && (
+                <p className="user-form-message user-form-message-success">
+                  {editUserMessage}
+                </p>
+              )}
+
+              <div className="user-add-admin-actions">
+                <button
+                  type="button"
+                  className="dashboard-settings-cancel-btn"
+                  onClick={handleCloseEditModal}
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="button"
+                  className="dashboard-primary-btn"
+                  onClick={handleSaveEditedUser}
+                >
+                  Save Changes
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
