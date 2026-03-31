@@ -19,17 +19,21 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/change-password" element={<ChangePasswordPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+
         <Route path="/appadmin" element={<AppAdminPage />} />
-        <Route path="/admin" element={<AdminPage />} />
         <Route path="/appadmin/users" element={<UserPage />} />
+
+        <Route path="/admin" element={<AdminPage />} />
+
         <Route path="/student" element={<StudentPage />} />
-        <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/student/profile" element={<ProfilePage />} />
+        <Route path="/student/profile" element={<StudentPage />} />
         <Route path="/student/schedule" element={<StudentPage />} />
         <Route path="/student/tasks" element={<StudentPage />} />
         <Route path="/student/connections" element={<StudentPage />} />
         <Route path="/student/support" element={<StudentPage />} />
         <Route path="/student/settings" element={<StudentPage />} />
+
+        <Route path="/profile" element={<ProfilePage />} />
       </Routes>
     </Router>
   );

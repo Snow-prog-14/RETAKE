@@ -1,17 +1,40 @@
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import ProfileViewCard from "../../components/ProfileViewCard";
+import EditProfileCard from "../../components/EditProfileCard";
 import "./StudentPage.css";
 
 export default function StudentPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const currentPath = location.pathname;
+
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+
+  const [profile, setProfile] = useState({
+    fullName: "ALEJANDRA MARAASIN",
+    username: "alejandra.maraasin",
+    email: "alejandramaraasin6@gmail.com",
+    status: "Online",
+    role: "Student",
+    photo: "",
+    stats: [
+      { label: "Pending Tasks", value: 4 },
+      { label: "Tasks Completed", value: 12 },
+      { label: "Collaborations", value: 3 },
+    ],
+    collaborations: [
+      { name: "Capstone Group A", subject: "Human Computer Interaction" },
+      { name: "Network Team 2", subject: "Computer Networks" },
+      { name: "UI Research Circle", subject: "Information Management" },
+    ],
+  });
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     navigate("/");
   };
-
-  const currentPath = location.pathname;
 
   const getPageTitle = () => {
     switch (currentPath) {
@@ -60,22 +83,44 @@ export default function StudentPage() {
       .toUpperCase();
   };
 
-  const profile = {
-    fullName: "ALEJANDRA MARAASIN",
-    username: "alejandra.maraasin",
-    email: "alejandramaraasin6@gmail.com",
-    status: "Online",
-    role: "Student",
-    stats: [
-      { label: "Pending Tasks", value: 4 },
-      { label: "Tasks Completed", value: 12 },
-      { label: "Collaborations", value: 3 },
-    ],
-    collaborations: [
-      { name: "Capstone Group A", subject: "Human Computer Interaction" },
-      { name: "Network Team 2", subject: "Computer Networks" },
-      { name: "UI Research Circle", subject: "Information Management" },
-    ],
+  const handleSaveProfile = (data: { username: string; photo: string }) => {
+    setProfile((prev) => ({
+      ...prev,
+      username: data.username,
+      photo: data.photo,
+    }));
+    setIsEditingProfile(false);
+
+    // later connect this to backend
+    // PUT /api/profile/me
+  };
+
+  const handleChangePassword = (data: {
+    currentPassword: string;
+    newPassword: string;
+    confirmPassword: string;
+  }) => {
+    console.log("Change password payload:", data);
+
+    // later connect this to backend
+    // PUT /api/profile/change-password
+  };
+
+  const handleDeactivate = () => {
+    const confirmed = window.confirm(
+      "Are you sure you want to deactivate your profile?",
+    );
+
+    if (!confirmed) return;
+
+    console.log("Deactivate profile");
+
+    // later connect this to backend
+    // PUT /api/profile/deactivate
+
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/");
   };
 
   const renderContent = () => {
@@ -83,54 +128,38 @@ export default function StudentPage() {
       case "/student/profile":
         return (
           <>
-            <section className="profile-hero card">
-              <div className="avatar-wrap">
-                <div className="avatar-ring">
-                  <div className="avatar">{getInitials(profile.fullName)}</div>
+            <div className="student-profile-layout">
+              <ProfileViewCard
+                fullName={profile.fullName}
+                username={profile.username}
+                email={profile.email}
+                status={profile.status}
+                role={profile.role}
+                photo={profile.photo}
+                stats={profile.stats}
+                collaborations={profile.collaborations}
+                onEdit={() => setIsEditingProfile(true)}
+              />
+            </div>
+
+            {isEditingProfile && (
+              <div
+                className="profile-modal-overlay"
+                onClick={() => setIsEditingProfile(false)}
+              >
+                <div
+                  className="profile-modal"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <EditProfileCard
+                    username={profile.username}
+                    photo={profile.photo}
+                    onCancel={() => setIsEditingProfile(false)}
+                    onSave={handleSaveProfile}
+                  />
                 </div>
-                <span className="status-badge online">{profile.status}</span>
               </div>
-
-              <div className="hero-info">
-                <div className="hero-row">
-                  <span className="label">Student / User Name</span>
-                  <span className="role-badge">{profile.role}</span>
-                </div>
-
-                <h2>{profile.fullName}</h2>
-                <p className="preferred-name">@{profile.username}</p>
-                <p className="email-text">{profile.email}</p>
-              </div>
-            </section>
-
-            <section className="stats-grid">
-              {profile.stats.map((stat) => (
-                <div className="stat-card card" key={stat.label}>
-                  <span className="stat-label">{stat.label}</span>
-                  <strong className="stat-value">{stat.value}</strong>
-                </div>
-              ))}
-            </section>
-
-            <section className="card">
-              <div className="section-header">
-                <h3 className="section-title">Collaborations</h3>
-              </div>
-
-              <div className="connections-row">
-                {profile.collaborations.map((item) => (
-                  <div className="connection-item" key={item.name}>
-                    <div className="connection-avatar">
-                      {getInitials(item.name)}
-                    </div>
-                    <div>
-                      <p className="connection-name">{item.name}</p>
-                      <span className="connection-role">{item.subject}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
+            )}
           </>
         );
 
@@ -244,34 +273,81 @@ export default function StudentPage() {
 
       case "/student/settings":
         return (
-          <div className="student-support-card">
-            <h2>Settings</h2>
+          <div className="student-settings-page">
+            <div className="student-settings-card">
+              <h2>Access and Security</h2>
+              <p className="student-settings-description">
+                Manage account access, password, and protection settings.
+              </p>
 
-            <div className="student-settings-list">
-              <div className="student-settings-item">
-                <div>
-                  <p className="settings-label">Access and Security</p>
-                  <span className="settings-value">
-                    Manage your email and password
-                  </span>
+              <div className="student-settings-section">
+                <h3>Security Settings</h3>
+                <p>Review your account protection and sign-in details.</p>
+                <div className="student-settings-item static-open">
+                  <div>
+                    <p className="settings-label">Account Access</p>
+                    <span className="settings-value">
+                      Your account is currently active and available for login.
+                    </span>
+                  </div>
                 </div>
-                <button type="button" className="student-submit-btn">
-                  Open
-                </button>
               </div>
 
-              <div className="student-settings-item">
-                <div>
-                  <p className="settings-label">Theme</p>
-                  <span className="settings-value">
-                    Use the floating toggle to switch light and dark mode
-                  </span>
+              <div className="student-settings-section">
+                <h3>Change Password</h3>
+                <p>Update your password to keep your account secure.</p>
+                <div className="student-settings-item static-open">
+                  <div>
+                    <p className="settings-label">Password Management</p>
+                    <span className="settings-value">
+                      You can update your password from Edit Profile.
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="student-settings-section">
+                <h3>Themes</h3>
+                <p>Customize how the system looks.</p>
+                <div className="student-settings-item static-open">
+                  <div>
+                    <p className="settings-label">Theme Mode</p>
+                    <span className="settings-value">
+                      Use the floating theme toggle to switch light and dark
+                      mode.
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="student-settings-section">
+                <h3>Account Management</h3>
+                <p>Manage your account details and status.</p>
+                <div className="student-settings-item static-open">
+                  <div>
+                    <p className="settings-label">Username</p>
+                    <span className="settings-value">
+                      Your username can be updated from Edit Profile.
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="student-settings-section danger-section">
+                <h3>Deactivate Account</h3>
+                <p>Temporarily disable your account access.</p>
+                <div className="student-settings-item static-open">
+                  <div>
+                    <p className="settings-label">Account Deactivation</p>
+                    <span className="settings-value">
+                      Deactivation is available from Edit Profile.
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         );
-
       default:
         return (
           <>

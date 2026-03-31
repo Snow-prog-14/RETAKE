@@ -672,3 +672,126 @@ body.dark .stat-label,
 body.dark .label {
   color: var(--text-secondary);
 }
+
+.student-profile-layout {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 980px) {
+  .student-profile-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.student-profile-layout {
+  display: grid;
+  grid-template-columns: 1.35fr 0.95fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.student-main {
+  padding: 28px;
+}
+
+.student-main > h1 {
+  margin-bottom: 8px;
+}
+
+.student-main > p {
+  margin-bottom: 24px;
+}
+
+@media (max-width: 980px) {
+  .student-profile-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.student-profile-layout {
+  display: block;
+}
+
+.profile-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 9998;
+}
+
+.profile-modal {
+  width: min(560px, 100%);
+}
+
+body.dark .profile-modal-overlay {
+  background: rgba(0, 0, 0, 0.58);
+}
+
+@media (max-width: 640px) {
+  .profile-modal-overlay {
+    padding: 14px;
+    align-items: flex-start;
+  }
+
+  .profile-modal {
+    width: 100%;
+    margin-top: 12px;
+  }
+}
+
+.student-settings-page {
+  display: block;
+}
+
+.student-settings-card {
+  background: var(--card-bg);
+  color: var(--text-main);
+  border: 1px solid var(--outline-soft);
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: var(--shadow-lg);
+}
+
+.student-settings-description {
+  color: var(--text-soft);
+  margin-bottom: 24px;
+}
+
+.student-settings-section {
+  padding: 20px 0;
+  border-top: 1px solid var(--outline-soft);
+}
+
+.student-settings-section:first-of-type {
+  border-top: none;
+  padding-top: 8px;
+}
+
+.student-settings-section h3 {
+  margin-bottom: 6px;
+  color: var(--text-main);
+}
+
+.student-settings-section p {
+  margin-bottom: 14px;
+  color: var(--text-soft);
+}
+
+.student-settings-item.static-open {
+  background: var(--panel-bg);
+  border: 1px solid var(--outline-soft);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.danger-section .settings-label {
+  color: var(--brand-strong);
+}
