@@ -4,8 +4,13 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite("Data Source=studybuddy.db"));
+    options.UseMySql(
+        connectionString!,
+        ServerVersion.AutoDetect(connectionString!)
+    ));
 
 builder.Services.AddScoped<PasswordService>();
 builder.Services.AddScoped<PermissionService>();
