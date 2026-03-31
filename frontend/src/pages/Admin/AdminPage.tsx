@@ -2,7 +2,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import DashboardShell from "../../components/DashboardShell";
 import ProfileViewCard from "../../components/ProfileViewCard";
-import EditProfileCard from "../../components/EditProfileCard";
+import EditProfileModal from "../../components/EditProfileModal";
 import {
   changeMyPassword,
   deactivateMyAccount,
@@ -446,25 +446,13 @@ export default function AdminPage() {
             {profileMessage ? (
               <p className="dashboard-settings-message">{profileMessage}</p>
             ) : null}
-
-            {isEditingProfile && (
-              <div
-                className="profile-modal-overlay"
-                onClick={() => setIsEditingProfile(false)}
-              >
-                <div
-                  className="profile-modal"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <EditProfileCard
-                    username={profile.username}
-                    photo={profile.photo}
-                    onCancel={() => setIsEditingProfile(false)}
-                    onSave={handleSaveProfile}
-                  />
-                </div>
-              </div>
-            )}
+            <EditProfileModal
+              isOpen={isEditingProfile}
+              username={profile.username}
+              photo={profile.photo}
+              onClose={() => setIsEditingProfile(false)}
+              onSave={handleSaveProfile}
+            />
           </>
         );
 

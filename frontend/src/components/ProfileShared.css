@@ -319,3 +319,19 @@ body.dark .profile-status {
   font-size: 12px;
   color: var(--text-muted);
 }
+.profile-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 999;
+  backdrop-filter: blur(4px);
+}
+
+.profile-modal {
+  width: 100%;
+  max-width: 560px;
+}
