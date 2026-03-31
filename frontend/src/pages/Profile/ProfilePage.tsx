@@ -9,6 +9,7 @@ type ProfileData = {
   role: UserRole;
   email: string;
   status: "Online" | "Offline";
+  subtitle: string;
   stats: {
     label: string;
     value: string | number;
@@ -33,6 +34,7 @@ export default function ProfilePage() {
       role: "Student",
       email: "alejandramaraasin6@gmail.com",
       status: "Online",
+      subtitle: "Manage your academic identity and collaborations.",
       stats: [
         { label: "Pending Tasks", value: 4 },
         { label: "Tasks Completed", value: 12 },
@@ -51,6 +53,7 @@ export default function ProfilePage() {
       role: "Admin",
       email: "jonathan.reyes@retake.edu",
       status: "Online",
+      subtitle: "Manage your admin account and team connections.",
       stats: [
         { label: "Users Managed", value: 28 },
         { label: "Reports Reviewed", value: 16 },
@@ -69,6 +72,7 @@ export default function ProfilePage() {
       role: "AppAdmin",
       email: "penelope.santos@retake.edu",
       status: "Online",
+      subtitle: "Manage your super admin account and system-level access.",
       stats: [
         { label: "Total Admins", value: 8 },
         { label: "Active Users", value: 214 },
@@ -83,6 +87,36 @@ export default function ProfilePage() {
   };
 
   const profile = profileDataByRole[mockRole];
+
+  const sidebarTitle =
+    profile.role === "AppAdmin"
+      ? "Super Admin"
+      : profile.role === "Admin"
+        ? "Admin Panel"
+        : "Study Kiosk";
+
+  const navItems =
+    profile.role === "Student"
+      ? [
+          { label: "Account Profile", path: "/profile", active: true },
+          { label: "Study Schedule", path: "/student/schedule" },
+          { label: "Manage Tasks", path: "/student/tasks" },
+          { label: "Connections", path: "/student/connections" },
+          { label: "Support", path: "/student/support" },
+          { label: "Settings", path: "/student/settings" },
+        ]
+      : profile.role === "Admin"
+        ? [
+            { label: "Dashboard", path: "/admin" },
+            { label: "Account Profile", path: "/profile", active: true },
+            { label: "Settings", path: "/admin/settings" },
+          ]
+        : [
+            { label: "Dashboard", path: "/appadmin" },
+            { label: "Users", path: "/appadmin/users" },
+            { label: "Account Profile", path: "/profile", active: true },
+            { label: "Settings", path: "/appadmin/settings" },
+          ];
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -109,44 +143,18 @@ export default function ProfilePage() {
     <div className="profile-page">
       <aside className="profile-sidebar">
         <div>
-          <h2 className="profile-sidebar-title">Study Kiosk</h2>
+          <h2 className="profile-sidebar-title">{sidebarTitle}</h2>
 
           <nav className="profile-nav">
-            <button className="nav-item active">Account Profile</button>
-            {profile.role === "Student" && (
-              <>
-                <button
-                  className="nav-item"
-                  onClick={() => navigate("/student/schedule")}
-                >
-                  Study Schedule
-                </button>
-                <button
-                  className="nav-item"
-                  onClick={() => navigate("/student/tasks")}
-                >
-                  Manage Tasks
-                </button>
-                <button
-                  className="nav-item"
-                  onClick={() => navigate("/student/connections")}
-                >
-                  Connections
-                </button>
-                <button
-                  className="nav-item"
-                  onClick={() => navigate("/student/support")}
-                >
-                  Support
-                </button>
-              </>
-            )}
-            <button
-              className="nav-item"
-              onClick={() => navigate("/student/settings")}
-            >
-              Settings
-            </button>
+            {navItems.map((item) => (
+              <button
+                key={item.label}
+                className={`nav-item ${item.active ? "active" : ""}`}
+                onClick={() => navigate(item.path)}
+              >
+                {item.label}
+              </button>
+            ))}
           </nav>
         </div>
 
@@ -159,7 +167,7 @@ export default function ProfilePage() {
         <div className="profile-header">
           <div>
             <h1>ACCOUNT PROFILE</h1>
-            <p>Manage your academic identity and collaborations.</p>
+            <p>{profile.subtitle}</p>
           </div>
           <button className="edit-btn">Edit Profile</button>
         </div>
@@ -176,7 +184,7 @@ export default function ProfilePage() {
 
           <div className="hero-info">
             <div className="hero-row">
-              <span className="label">Student / User Name</span>
+              <span className="label">User Role / Username</span>
               <span className="role-badge">{profile.role}</span>
             </div>
 

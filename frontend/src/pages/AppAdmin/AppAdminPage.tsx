@@ -16,12 +16,12 @@ export default function AppAdminPage() {
         <div>
           <h2>AppAdmin</h2>
           <p>Administrator Panel</p>
-
           <nav className="appadmin-nav">
             <button className="active" onClick={() => navigate("/appadmin")}>
               Dashboard
             </button>
             <button onClick={() => navigate("/appadmin/users")}>Users</button>
+            <button onClick={() => navigate("/profile")}>Profile</button>
             <button>Reports</button>
             <button>Settings</button>
           </nav>
