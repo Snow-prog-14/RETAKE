@@ -26,6 +26,14 @@ type User = {
   status: UserStatus;
 };
 
+type AddAdminForm = {
+  firstName: string;
+  lastName: string;
+  username: string;
+  email: string;
+  temporaryPassword: string;
+};
+
 export default function UserPage() {
   const navigate = useNavigate();
 
@@ -34,6 +42,15 @@ export default function UserPage() {
   const [roleFilter, setRoleFilter] = useState<"All" | UserRole>("All");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const [showAddAdminModal, setShowAddAdminModal] = useState(false);
+  const [addAdminForm, setAddAdminForm] = useState<AddAdminForm>({
+    firstName: "",
+    lastName: "",
+    username: "",
+    email: "",
+    temporaryPassword: "",
+  });
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -104,6 +121,8 @@ export default function UserPage() {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    localStorage.removeItem("role");
     navigate("/");
   };
 
@@ -113,6 +132,44 @@ export default function UserPage() {
 
   const handleChangePassword = (user: User) => {
     alert(`Change password for: ${user.name}`);
+  };
+
+  const handleOpenAddAdminModal = () => {
+    setAddAdminForm({
+      firstName: "",
+      lastName: "",
+      username: "",
+      email: "",
+      temporaryPassword: "",
+    });
+    setShowAddAdminModal(true);
+  };
+
+  const handleCloseAddAdminModal = () => {
+    setShowAddAdminModal(false);
+  };
+
+  const handleAddAdminInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const { name, value } = e.target;
+    setAddAdminForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleAddAdminSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    alert(
+      `Ready to create admin:\n` +
+        `Name: ${addAdminForm.firstName} ${addAdminForm.lastName}\n` +
+        `Username: ${addAdminForm.username}\n` +
+        `Email: ${addAdminForm.email}`,
+    );
+
+    setShowAddAdminModal(false);
   };
 
   return (
@@ -204,6 +261,13 @@ export default function UserPage() {
                 <option value="AppAdmin">AppAdmin</option>
                 <option value="Admin">Admin</option>
               </select>
+
+              <button
+                className="add-admin-btn"
+                onClick={handleOpenAddAdminModal}
+              >
+                + Add Admin
+              </button>
             </div>
           </div>
 
@@ -287,6 +351,104 @@ export default function UserPage() {
           )}
         </section>
       </main>
+
+      {showAddAdminModal && (
+        <div className="modal-overlay" onClick={handleCloseAddAdminModal}>
+          <div className="add-admin-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="add-admin-modal-header">
+              <div>
+                <h2>Add New Admin</h2>
+                <p>
+                  Create a new tier 1 admin account with a temporary password.
+                </p>
+              </div>
+              <button
+                className="modal-close-btn"
+                onClick={handleCloseAddAdminModal}
+              >
+                ×
+              </button>
+            </div>
+
+            <form className="add-admin-form" onSubmit={handleAddAdminSubmit}>
+              <div className="add-admin-grid">
+                <div className="form-group">
+                  <label htmlFor="firstName">First Name</label>
+                  <input
+                    id="firstName"
+                    name="firstName"
+                    type="text"
+                    value={addAdminForm.firstName}
+                    onChange={handleAddAdminInputChange}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="lastName">Last Name</label>
+                  <input
+                    id="lastName"
+                    name="lastName"
+                    type="text"
+                    value={addAdminForm.lastName}
+                    onChange={handleAddAdminInputChange}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="username">Username</label>
+                  <input
+                    id="username"
+                    name="username"
+                    type="text"
+                    value={addAdminForm.username}
+                    onChange={handleAddAdminInputChange}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="email">Email</label>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    value={addAdminForm.email}
+                    onChange={handleAddAdminInputChange}
+                    required
+                  />
+                </div>
+
+                <div className="form-group form-group-full">
+                  <label htmlFor="temporaryPassword">Temporary Password</label>
+                  <input
+                    id="temporaryPassword"
+                    name="temporaryPassword"
+                    type="text"
+                    value={addAdminForm.temporaryPassword}
+                    onChange={handleAddAdminInputChange}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="add-admin-actions">
+                <button
+                  type="button"
+                  className="cancel-btn"
+                  onClick={handleCloseAddAdminModal}
+                >
+                  Cancel
+                </button>
+                <button type="submit" className="save-admin-btn">
+                  Create Admin
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -7,5 +7,6 @@ public class RegisterRequestDto
     public string UserLastName { get; set; } = string.Empty;
     public string UserFirstName { get; set; } = string.Empty;
     public int MustChangePass { get; set; } = 0;
+    public int UserTier { get; set; } = 2;
     public string Password { get; set; } = string.Empty;
 }

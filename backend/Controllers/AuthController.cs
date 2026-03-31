@@ -37,6 +37,10 @@ public class AuthController : ControllerBase
             });
         }
 
+        var allowedTier = request.UserTier == 0 || request.UserTier == 1 || request.UserTier == 2
+       ? request.UserTier
+       : 2;
+
         var user = new User
         {
             UserId = Guid.NewGuid().ToString(),
@@ -46,7 +50,7 @@ public class AuthController : ControllerBase
             UserFirstName = request.UserFirstName,
             MustChangePass = request.MustChangePass,
             UserPasswordHash = _passwordService.HashPassword(request.Password),
-            UserTier = 2,
+            UserTier = allowedTier,
             UserStatus = 0
         };
 
