@@ -927,3 +927,19 @@ body.dark .profile-modal-overlay {
 .theme-option:hover {
   filter: brightness(1.03);
 }
+
+.student-settings-subsection {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid var(--outline-soft);
+}
+
+.student-settings-subsection h4 {
+  margin-bottom: 6px;
+  color: var(--text-main);
+}
+
+.student-settings-subsection p {
+  margin-bottom: 14px;
+  color: var(--text-soft);
+}
