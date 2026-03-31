@@ -52,18 +52,52 @@ function getResolvedRole(): number | null {
   }
 }
 
-function getAllStudentPermissions(): string[] {
+function getAllPermissions(): string[] {
   return [
+    "profile.view_own",
+    "profile.edit_own",
+    "profile.photo.update_own",
+    "username.update_own",
+    "password.update_own",
+    "profile.deactivate_own",
     "student.list.view",
     "student.profile.view",
     "student.info.edit",
     "student.status.update",
+    "admin.audit.view",
+    "admin.list.view",
+    "admin.info.edit",
+    "admin.status.update",
+    "admin.create",
+    "admin.create_tier",
+    "admin.edit_tier",
+    "profile.view_permission",
+    "profile.edit_permissions",
+    "profile.delete_permission",
+    "prototype.allow_user",
   ];
 }
 
 function getDefaultAssignedPermissions(role: number | null): string[] {
-  if (role === 0 || role === 1) {
-    return ["student.list.view", "student.profile.view"];
+  if (role === 0) {
+    return [
+      "student.list.view",
+      "student.profile.view",
+      "student.info.edit",
+      "student.status.update",
+      "profile.view_permission",
+      "profile.edit_permissions",
+      "profile.delete_permission",
+    ];
+  }
+
+  if (role === 1) {
+    return [
+      "student.list.view",
+      "student.profile.view",
+      "student.info.edit",
+      "student.status.update",
+    ];
   }
 
   return [];
@@ -108,7 +142,7 @@ export default function StudentProfilePage() {
   const canManagePermissions = isAppAdmin;
   const canViewPermissions = isAppAdmin || isAdmin;
 
-  const allPermissions = useMemo(() => getAllStudentPermissions(), []);
+  const allPermissions = useMemo(() => getAllPermissions(), []);
 
   const fetchStudent = async () => {
     try {
