@@ -14,8 +14,10 @@ import StudentPage from "./pages/Student/StudentPage";
 import StudentListPage from "./pages/Student/StudentListPage";
 import StudentProfilePage from "./pages/Student/StudentProfilePage";
 import UserPage from "./pages/User/UserPage";
+import TierPage from "./pages/Tier/TierPage";
 import ProfilePage from "./pages/Profile/ProfilePage";
 import ThemeToggle from "./components/ThemeToggle";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function AppContent() {
   const location = useLocation();
@@ -33,35 +35,184 @@ function AppContent() {
         <Route path="/change-password" element={<ChangePasswordPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
-        <Route path="/appadmin" element={<AppAdminPage />} />
-        <Route path="/appadmin/profile" element={<AppAdminPage />} />
-        <Route path="/appadmin/users" element={<UserPage />} />
-        <Route path="/appadmin/students" element={<StudentListPage />} />
+        <Route
+          path="/appadmin"
+          element={
+            <ProtectedRoute allowedRoles={["AppAdmin"]}>
+              <AppAdminPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/appadmin/profile"
+          element={
+            <ProtectedRoute allowedRoles={["AppAdmin"]}>
+              <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/appadmin/users"
+          element={
+            <ProtectedRoute allowedRoles={["AppAdmin"]}>
+              <UserPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/appadmin/students"
+          element={
+            <ProtectedRoute allowedRoles={["AppAdmin"]}>
+              <StudentListPage />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/appadmin/students/:studentId"
-          element={<StudentProfilePage />}
+          element={
+            <ProtectedRoute allowedRoles={["AppAdmin"]}>
+              <StudentProfilePage />
+            </ProtectedRoute>
+          }
         />
-        <Route path="/appadmin/reports" element={<AppAdminPage />} />
-        <Route path="/appadmin/settings" element={<AppAdminPage />} />
+        <Route
+          path="/appadmin/reports"
+          element={
+            <ProtectedRoute allowedRoles={["AppAdmin"]}>
+              <AppAdminPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/appadmin/settings"
+          element={
+            <ProtectedRoute allowedRoles={["AppAdmin"]}>
+              <AppAdminPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/appadmin/tiers"
+          element={
+            <ProtectedRoute allowedRoles={["AppAdmin"]}>
+              <TierPage />
+            </ProtectedRoute>
+          }
+        />
 
-        <Route path="/admin" element={<AdminPage />} />
-        <Route path="/admin/profile" element={<AdminPage />} />
-        <Route path="/admin/students" element={<StudentListPage />} />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute allowedRoles={["Admin"]}>
+              <AdminPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/profile"
+          element={
+            <ProtectedRoute allowedRoles={["Admin"]}>
+              <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/students"
+          element={
+            <ProtectedRoute allowedRoles={["Admin"]}>
+              <StudentListPage />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/admin/students/:studentId"
-          element={<StudentProfilePage />}
+          element={
+            <ProtectedRoute allowedRoles={["Admin"]}>
+              <StudentProfilePage />
+            </ProtectedRoute>
+          }
         />
-        <Route path="/admin/courses" element={<AdminPage />} />
-        <Route path="/admin/reports" element={<AdminPage />} />
-        <Route path="/admin/settings" element={<AdminPage />} />
+        <Route
+          path="/admin/courses"
+          element={
+            <ProtectedRoute allowedRoles={["Admin"]}>
+              <AdminPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/reports"
+          element={
+            <ProtectedRoute allowedRoles={["Admin"]}>
+              <AdminPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/settings"
+          element={
+            <ProtectedRoute allowedRoles={["Admin"]}>
+              <AdminPage />
+            </ProtectedRoute>
+          }
+        />
 
-        <Route path="/student" element={<StudentPage />} />
-        <Route path="/student/profile" element={<StudentPage />} />
-        <Route path="/student/schedule" element={<StudentPage />} />
-        <Route path="/student/tasks" element={<StudentPage />} />
-        <Route path="/student/connections" element={<StudentPage />} />
-        <Route path="/student/support" element={<StudentPage />} />
-        <Route path="/student/settings" element={<StudentPage />} />
+        <Route
+          path="/student"
+          element={
+            <ProtectedRoute allowedRoles={["Student"]}>
+              <StudentPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student/profile"
+          element={
+            <ProtectedRoute allowedRoles={["Student"]}>
+              <StudentPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student/schedule"
+          element={
+            <ProtectedRoute allowedRoles={["Student"]}>
+              <StudentPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student/tasks"
+          element={
+            <ProtectedRoute allowedRoles={["Student"]}>
+              <StudentPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student/connections"
+          element={
+            <ProtectedRoute allowedRoles={["Student"]}>
+              <StudentPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student/support"
+          element={
+            <ProtectedRoute allowedRoles={["Student"]}>
+              <StudentPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student/settings"
+          element={
+            <ProtectedRoute allowedRoles={["Student"]}>
+              <StudentPage />
+            </ProtectedRoute>
+          }
+        />
 
         <Route path="/profile" element={<ProfilePage />} />
       </Routes>

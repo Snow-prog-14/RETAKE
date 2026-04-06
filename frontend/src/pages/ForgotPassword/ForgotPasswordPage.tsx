@@ -11,7 +11,7 @@ export default function ForgotPasswordPage() {
   const [step, setStep] = useState<1 | 2>(1);
 
   const [userEmail, setUserEmail] = useState("");
-  const [resetToken, setResetToken] = useState("");
+  const [resetCode, setResetCode] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
@@ -33,13 +33,14 @@ export default function ForgotPasswordPage() {
     try {
       setIsSubmitting(true);
 
-      // Replace this endpoint if your backend uses another route
-      const response = await fetch(`${API_BASE}/api/Auth/forgot-password`, {
+      const response = await fetch(`${API_BASE}/api/ForgotPassword`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ userEmail }),
+        body: JSON.stringify({
+          userEmail: userEmail.trim(),
+        }),
       });
 
       const text = await response.text();
@@ -52,10 +53,7 @@ export default function ForgotPasswordPage() {
       }
 
       setIsError(false);
-      setMessage(
-        data.message ||
-          "Reset request sent. Check your email or use the reset token provided by your backend.",
-      );
+      setMessage(data.message || "Password reset code sent successfully.");
       setStep(2);
     } catch (error) {
       console.error("FORGOT PASSWORD ERROR:", error);
@@ -71,7 +69,7 @@ export default function ForgotPasswordPage() {
     setMessage("");
     setIsError(false);
 
-    if (!resetToken.trim() || !newPassword || !confirmPassword) {
+    if (!resetCode.trim() || !newPassword || !confirmPassword) {
       setIsError(true);
       setMessage("Please fill in all fields.");
       return;
@@ -92,15 +90,14 @@ export default function ForgotPasswordPage() {
     try {
       setIsSubmitting(true);
 
-      // Replace this endpoint if your backend uses another route
-      const response = await fetch(`${API_BASE}/api/Auth/reset-password`, {
+      const response = await fetch(`${API_BASE}/api/ForgotPassword/reset`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          userEmail,
-          resetToken,
+          userEmail: userEmail.trim(),
+          code: resetCode.trim(),
           newPassword,
         }),
       });
@@ -115,9 +112,7 @@ export default function ForgotPasswordPage() {
       }
 
       setIsError(false);
-      setMessage(
-        data.message || "Password reset successful. You can now log in.",
-      );
+      setMessage(data.message || "Password reset successful. You can now log in.");
     } catch (error) {
       console.error("RESET PASSWORD ERROR:", error);
       setIsError(true);
@@ -131,7 +126,7 @@ export default function ForgotPasswordPage() {
     <AuthLayout
       mode="login"
       title="Forgot Password"
-      subtitle="Recover access to your account with your email and reset token."
+      subtitle="Recover access to your account with your email and reset code."
       visualTitle="Get back in."
       visualText="Request a password reset, then set a new password and return to your dashboard."
       lightVisualImage="/images/lightmode.png"
@@ -172,9 +167,9 @@ export default function ForgotPasswordPage() {
             <span className="input-icon">🧷</span>
             <input
               type="text"
-              placeholder="Reset token / OTP"
-              value={resetToken}
-              onChange={(e) => setResetToken(e.target.value)}
+              placeholder="Reset code"
+              value={resetCode}
+              onChange={(e) => setResetCode(e.target.value)}
               required
             />
           </div>

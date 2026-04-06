@@ -171,4 +171,55 @@ public class UserController : ControllerBase
             newUserTier = user.UserTier
         });
     }
+
+    [HttpPut("edit/{id}")]
+    public IActionResult EditUser(string id, [FromQuery] int userTier, EditUserRequestDto request)
+    {
+        var hasPermission = _permissionService.HasPermission(userTier, "admin.info.edit");
+
+        if (!hasPermission)
+        {
+            return StatusCode(403, new { message = "You do not have permission to edit users." });
+        }
+
+        var user = _context.Users.FirstOrDefault(u => u.UserId == id);
+
+        if (user == null)
+        {
+            return NotFound(new { message = "User not found." });
+        }
+
+        var oldValue =
+            $"UserFirstName: {user.UserFirstName}, UserLastName: {user.UserLastName}, UserEmail: {user.UserEmail}, UserUsername: {user.UserUsername}, UserTier: {user.UserTier}, UserStatus: {user.UserStatus}";
+
+        user.UserFirstName = request.UserFirstName.Trim();
+        user.UserLastName = request.UserLastName.Trim();
+        user.UserEmail = request.UserEmail.Trim().ToLower();
+        user.UserUsername = request.UserUsername.Trim();
+        user.UserTier = request.UserTier;
+        user.UserStatus = request.UserStatus;
+
+        _context.SaveChanges();
+
+        var newValue =
+            $"UserFirstName: {user.UserFirstName}, UserLastName: {user.UserLastName}, UserEmail: {user.UserEmail}, UserUsername: {user.UserUsername}, UserTier: {user.UserTier}, UserStatus: {user.UserStatus}";
+
+        var auditLog = new AuditTrail
+        {
+            AuditTrailId = Guid.NewGuid().ToString(),
+            UserId = user.UserId,
+            ActionType = "EDIT_USER",
+            TargetTable = "user_list_table",
+            TargetId = user.UserId,
+            OldValue = oldValue,
+            NewValue = newValue,
+            Description = "User information updated.",
+            Status = "SUCCESS"
+        };
+
+        _context.AuditTrails.Add(auditLog);
+        _context.SaveChanges();
+
+        return Ok(new { message = "User updated successfully." });
+    }
 }

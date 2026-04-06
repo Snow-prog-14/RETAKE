@@ -9,11 +9,17 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(
         connectionString!,
-        ServerVersion.AutoDetect(connectionString!)
+        new MySqlServerVersion(new Version(8, 0, 36)),
+        mysqlOptions => mysqlOptions.EnableRetryOnFailure()
     ));
+
+builder.Services.Configure<EmailSettings>(
+    builder.Configuration.GetSection("EmailSettings"));
 
 builder.Services.AddScoped<PasswordService>();
 builder.Services.AddScoped<PermissionService>();
+builder.Services.AddScoped<EmailService>();
+builder.Services.AddScoped<ForgotPasswordService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import DashboardShell from "../../components/DashboardShell";
 import "../../components/DashboardShell.css";
 import "./UserPage.css";
+import { getStoredUserTier } from "../../utils/auth";
 
 type ApiUser = {
   success?: boolean;
@@ -28,7 +29,7 @@ type UserRole = "AppAdmin" | "Admin";
 type UserStatus = "Active" | "Inactive";
 
 type User = {
-  id: number;
+  id: string;
   firstName: string;
   lastName: string;
   name: string;
@@ -47,7 +48,7 @@ type AddAdminForm = {
 };
 
 type EditUserForm = {
-  id: number;
+  id: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -56,29 +57,62 @@ type EditUserForm = {
   status: UserStatus;
 };
 
-function getResolvedRole(): number | null {
-  const rawRole = localStorage.getItem("role");
+function getAllPermissions(): string[] {
+  return [
+    "profile.view_own",
+    "profile.edit_own",
+    "profile.photo.update_own",
+    "username.update_own",
+    "password.update_own",
+    "profile.deactivate_own",
+    "student.list.view",
+    "student.profile.view",
+    "student.info.edit",
+    "student.status.update",
+    "admin.audit.view",
+    "admin.list.view",
+    "admin.info.edit",
+    "admin.status.update",
+    "admin.create",
+    "admin.create_tier",
+    "admin.edit_tier",
+    "profile.view_permission",
+    "profile.edit_permissions",
+    "profile.delete_permission",
+    "prototype.allow_user",
+  ];
+}
 
-  if (rawRole === "0" || rawRole === "1" || rawRole === "2") {
-    return Number(rawRole);
+function getDefaultAssignedPermissions(role: UserRole): string[] {
+  if (role === "AppAdmin") {
+    return [
+      "student.list.view",
+      "student.profile.view",
+      "student.info.edit",
+      "student.status.update",
+      "admin.audit.view",
+      "admin.list.view",
+      "admin.info.edit",
+      "admin.status.update",
+      "admin.create",
+      "admin.create_tier",
+      "admin.edit_tier",
+      "profile.view_permission",
+      "profile.edit_permissions",
+      "profile.delete_permission",
+      "prototype.allow_user",
+    ];
   }
 
-  if (rawRole === "AppAdmin") return 0;
-  if (rawRole === "Admin") return 1;
-  if (rawRole === "Student") return 2;
-
-  try {
-    const rawUser = localStorage.getItem("user");
-    if (!rawUser) return null;
-
-    const parsedUser = JSON.parse(rawUser);
-    const tier = parsedUser.userTier ?? parsedUser.UserTier;
-
-    return typeof tier === "number" ? tier : null;
-  } catch (error) {
-    console.error("Failed to parse stored user:", error);
-    return null;
-  }
+  return [
+    "student.list.view",
+    "student.profile.view",
+    "student.info.edit",
+    "student.status.update",
+    "admin.list.view",
+    "admin.info.edit",
+    "admin.status.update",
+  ];
 }
 
 export default function UserPage() {
@@ -86,7 +120,7 @@ export default function UserPage() {
   const location = useLocation();
   const currentPath = location.pathname;
 
-  const resolvedRole = getResolvedRole();
+  const resolvedRole = getStoredUserTier();
   const isTier0 = resolvedRole === 0;
 
   const navItems = [
@@ -118,7 +152,7 @@ export default function UserPage() {
 
   const [showEditUserModal, setShowEditUserModal] = useState(false);
   const [editUserForm, setEditUserForm] = useState<EditUserForm>({
-    id: 0,
+    id: "",
     firstName: "",
     lastName: "",
     email: "",
@@ -129,6 +163,15 @@ export default function UserPage() {
   const [editUserMessage, setEditUserMessage] = useState("");
   const [editUserError, setEditUserError] = useState("");
 
+  const [showPermissionModal, setShowPermissionModal] = useState(false);
+  const [selectedPermissionUser, setSelectedPermissionUser] =
+    useState<User | null>(null);
+  const [assignedPermissionsByUser, setAssignedPermissionsByUser] = useState<
+    Record<string, string[]>
+  >({});
+
+  const allPermissions = useMemo(() => getAllPermissions(), []);
+
   const fetchUsers = async () => {
     try {
       setLoading(true);
@@ -136,8 +179,12 @@ export default function UserPage() {
 
       const token = localStorage.getItem("token");
 
+      if (resolvedRole === null) {
+        throw new Error("No stored user tier found.");
+      }
+
       const response = await fetch(
-        "http://localhost:5023/api/User?userTier=0",
+        `http://localhost:5023/api/User?userTier=${resolvedRole}`,
         {
           method: "GET",
           headers: {
@@ -165,9 +212,10 @@ export default function UserPage() {
           const lastName = user.userLastName ?? user.UserLastName ?? "";
           const tier = user.userTier ?? user.UserTier ?? 1;
           const statusCode = user.userStatus ?? user.UserStatus ?? 0;
+          const id = String(user.userId ?? user.UserId ?? "");
 
           return {
-            id: Number(user.userId ?? user.UserId ?? 0),
+            id,
             firstName,
             lastName,
             name: `${firstName} ${lastName}`.trim(),
@@ -177,9 +225,21 @@ export default function UserPage() {
             status: statusCode === 0 ? "Active" : "Inactive",
           };
         })
-        .filter((user) => user.id !== 0);
+        .filter((user) => user.id !== "");
 
       setUsers(mappedUsers);
+
+      setAssignedPermissionsByUser((prev) => {
+        const next = { ...prev };
+
+        mappedUsers.forEach((user) => {
+          if (!next[user.id]) {
+            next[user.id] = getDefaultAssignedPermissions(user.role);
+          }
+        });
+
+        return next;
+      });
     } catch (err) {
       console.error("Fetch users error:", err);
       setError("Failed to load users.");
@@ -247,14 +307,54 @@ export default function UserPage() {
     setEditUserError("");
   };
 
-  const handleSaveEditedUser = () => {
-    const firstName = editUserForm.firstName.trim();
-    const lastName = editUserForm.lastName.trim();
-    const email = editUserForm.email.trim();
-    const username = editUserForm.username.trim();
+const handleSaveEditedUser = async () => {
+  const firstName = editUserForm.firstName.trim();
+  const lastName = editUserForm.lastName.trim();
+  const email = editUserForm.email.trim();
+  const username = editUserForm.username.trim();
 
-    if (!firstName || !lastName || !email || !username) {
-      setEditUserError("Please complete all fields.");
+  if (!firstName || !lastName || !email || !username) {
+    setEditUserError("Please complete all fields.");
+    return;
+  }
+
+  try {
+    setEditUserError("");
+    setEditUserMessage("");
+
+    const token = localStorage.getItem("token");
+    const userTier = getStoredUserTier();
+
+    if (userTier === null) {
+      setEditUserError("No stored user tier found.");
+      return;
+    }
+
+    const response = await fetch(
+      `http://localhost:5023/api/User/edit/${editUserForm.id}?userTier=${userTier}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          userFirstName: firstName,
+          userLastName: lastName,
+          userEmail: email,
+          userUsername: username,
+          userTier: editUserForm.role === "AppAdmin" ? 0 : 1,
+          userStatus: editUserForm.status === "Active" ? 0 : 1,
+        }),
+      },
+    );
+
+    const text = await response.text();
+    const data = text ? JSON.parse(text) : {};
+
+    if (!response.ok) {
+      setEditUserError(data.message || "Failed to update user.");
       return;
     }
 
@@ -275,15 +375,32 @@ export default function UserPage() {
       ),
     );
 
-    setEditUserError("");
-    setEditUserMessage("User information updated successfully.");
+    setAssignedPermissionsByUser((prev) => {
+      const existingPermissions = prev[editUserForm.id] ?? [];
+      const defaultPermissionsForRole = getDefaultAssignedPermissions(
+        editUserForm.role,
+      );
+
+      return {
+        ...prev,
+        [editUserForm.id]:
+          existingPermissions.length > 0
+            ? existingPermissions
+            : defaultPermissionsForRole,
+      };
+    });
+
+    setEditUserMessage(data.message || "User information updated successfully.");
 
     setTimeout(() => {
       setShowEditUserModal(false);
       setEditUserMessage("");
     }, 900);
-  };
-
+  } catch (err) {
+    console.error("Edit user error:", err);
+    setEditUserError("Failed to update user.");
+  }
+};
   const handleChangePassword = (user: User) => {
     alert(`Change password for: ${user.name}`);
   };
@@ -372,6 +489,46 @@ export default function UserPage() {
       setAddAdminLoading(false);
     }
   };
+
+  const handleOpenPermissionModal = (user: User) => {
+    setSelectedPermissionUser(user);
+
+    setAssignedPermissionsByUser((prev) => {
+      if (prev[user.id]) return prev;
+
+      return {
+        ...prev,
+        [user.id]: getDefaultAssignedPermissions(user.role),
+      };
+    });
+
+    setShowPermissionModal(true);
+  };
+
+  const handleClosePermissionModal = () => {
+    setShowPermissionModal(false);
+    setSelectedPermissionUser(null);
+  };
+
+  const togglePermission = (permissionCode: string) => {
+    if (!selectedPermissionUser || !isTier0) return;
+
+    setAssignedPermissionsByUser((prev) => {
+      const currentPermissions = prev[selectedPermissionUser.id] ?? [];
+      const exists = currentPermissions.includes(permissionCode);
+
+      return {
+        ...prev,
+        [selectedPermissionUser.id]: exists
+          ? currentPermissions.filter((item) => item !== permissionCode)
+          : [...currentPermissions, permissionCode],
+      };
+    });
+  };
+
+  const selectedUserPermissions = selectedPermissionUser
+    ? (assignedPermissionsByUser[selectedPermissionUser.id] ?? [])
+    : [];
 
   return (
     <>
@@ -516,6 +673,14 @@ export default function UserPage() {
                               onClick={() => handleOpenEditModal(user)}
                             >
                               Edit
+                            </button>
+
+                            <button
+                              type="button"
+                              className="user-action-btn user-permission-btn"
+                              onClick={() => handleOpenPermissionModal(user)}
+                            >
+                              Permissions
                             </button>
 
                             <button
@@ -812,6 +977,66 @@ export default function UserPage() {
                   Save Changes
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showPermissionModal && selectedPermissionUser && (
+        <div
+          className="user-modal-overlay"
+          onClick={handleClosePermissionModal}
+        >
+          <div
+            className="user-modal user-permission-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="user-modal-header">
+              <div>
+                <h2>Edit Permissions</h2>
+                <p>
+                  Click a pill to add or remove a permission. Highlighted pills
+                  are currently assigned.
+                </p>
+                <p className="user-permission-user-meta">
+                  {selectedPermissionUser.name} ({selectedPermissionUser.role})
+                </p>
+              </div>
+
+              <button
+                type="button"
+                className="user-modal-close-btn"
+                onClick={handleClosePermissionModal}
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="user-pill-list user-modal-pill-list">
+              {allPermissions.map((permission) => {
+                const isActive = selectedUserPermissions.includes(permission);
+
+                return (
+                  <button
+                    key={permission}
+                    type="button"
+                    className={`user-permission-pill ${isActive ? "active" : ""}`}
+                    onClick={() => togglePermission(permission)}
+                  >
+                    {permission}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="user-modal-actions">
+              <button
+                type="button"
+                className="dashboard-primary-btn"
+                onClick={handleClosePermissionModal}
+              >
+                Done
+              </button>
             </div>
           </div>
         </div>
