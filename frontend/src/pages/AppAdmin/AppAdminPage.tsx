@@ -122,28 +122,28 @@ export default function AppAdminPage() {
     }
   };
 
-  const handleSaveProfile = async (data: {
-    username: string;
-    photo: string;
-  }) => {
-    try {
-      setProfileMessage("");
-      await updateMyProfile();
-      setProfile((prev) => ({
-        ...prev,
-        username: data.username,
-        photo: data.photo,
-      }));
-      setProfileMessage("Profile updated successfully.");
-      setIsEditingProfile(false);
-    } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : "Username update is not available yet.";
-      setProfileMessage(message);
-    }
-  };
+const handleSaveProfile = async (data: {
+  username: string;
+  photo: string;
+}) => {
+  try {
+    setProfileMessage("");
+    await updateMyProfile({ username: data.username }); // ✅ fixed
+    setProfile((prev) => ({
+      ...prev,
+      username: data.username,
+      photo: data.photo,
+    }));
+    setProfileMessage("Profile updated successfully.");
+    setIsEditingProfile(false);
+  } catch (error) {
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Username update is not available yet.";
+    setProfileMessage(message);
+  }
+};
 
   const handleChangePassword = async () => {
     if (
