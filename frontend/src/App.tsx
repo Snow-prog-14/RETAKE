@@ -215,6 +215,7 @@ function AppContent() {
         />
 
         <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/appadmin/tiers" element={<TierPage />} />
       </Routes>
     </>
   );

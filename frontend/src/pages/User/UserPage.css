@@ -356,3 +356,64 @@
 .user-form-group select option {
   color: #111827;
 }
+
+.user-permission-btn {
+  background: linear-gradient(180deg, #ff8a65 0%, #ff6d57 100%);
+  color: #ffffff;
+}
+
+.user-permission-modal {
+  max-width: 700px;
+}
+
+.user-permission-user-meta {
+  margin-top: 8px !important;
+  color: rgba(255, 255, 255, 0.72) !important;
+  font-size: 14px;
+}
+
+.user-pill-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.user-modal-pill-list {
+  margin-top: 8px;
+}
+
+.user-permission-pill {
+  border: 1px solid rgba(255, 138, 101, 0.2);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.86);
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.user-permission-pill.active {
+  background: linear-gradient(180deg, #ff8a65 0%, #ff6d57 100%);
+  border-color: rgba(255, 138, 101, 0.45);
+  color: #ffffff;
+}
+
+.user-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 22px;
+}
+
+@media (max-width: 768px) {
+  .user-modal-actions {
+    flex-direction: column;
+  }
+
+  .user-modal-actions .dashboard-primary-btn {
+    width: 100%;
+  }
+}
