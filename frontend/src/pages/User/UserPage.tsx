@@ -115,6 +115,64 @@ function getDefaultAssignedPermissions(role: UserRole): string[] {
   ];
 }
 
+function getAllPermissions(): string[] {
+  return [
+    "profile.view_own",
+    "profile.edit_own",
+    "profile.photo.update_own",
+    "username.update_own",
+    "password.update_own",
+    "profile.deactivate_own",
+    "student.list.view",
+    "student.profile.view",
+    "student.info.edit",
+    "student.status.update",
+    "admin.audit.view",
+    "admin.list.view",
+    "admin.info.edit",
+    "admin.status.update",
+    "admin.create",
+    "admin.create_tier",
+    "admin.edit_tier",
+    "profile.view_permission",
+    "profile.edit_permissions",
+    "profile.delete_permission",
+    "prototype.allow_user",
+  ];
+}
+
+function getDefaultAssignedPermissions(role: UserRole): string[] {
+  if (role === "AppAdmin") {
+    return [
+      "student.list.view",
+      "student.profile.view",
+      "student.info.edit",
+      "student.status.update",
+      "admin.audit.view",
+      "admin.list.view",
+      "admin.info.edit",
+      "admin.status.update",
+      "admin.create",
+      "admin.create_tier",
+      "admin.edit_tier",
+      "profile.view_permission",
+      "profile.edit_permissions",
+      "profile.delete_permission",
+      "prototype.allow_user",
+    ];
+  }
+
+  return [
+    "student.list.view",
+    "student.profile.view",
+    "student.info.edit",
+    "student.status.update",
+    "admin.list.view",
+    "admin.info.edit",
+    "admin.status.update",
+  ];
+}
+
 export default function UserPage() {
   const navigate = useNavigate();
   const location = useLocation();
