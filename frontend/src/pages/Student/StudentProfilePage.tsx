@@ -36,6 +36,16 @@ type EditableStudent = {
   userId: string;
 };
 
+type UserPermissionEntry = {
+  referenceId?: string;
+  permissionId?: string;
+  userId?: string;
+
+  ReferenceId?: string;
+  PermissionId?: string;
+  UserId?: string;
+};
+
 function getResolvedRole(): number | null {
   const rawRole = localStorage.getItem("role");
 
@@ -87,31 +97,6 @@ function getAllPermissions(): string[] {
   ];
 }
 
-function getDefaultAssignedPermissions(role: number | null): string[] {
-  if (role === 0) {
-    return [
-      "student.list.view",
-      "student.profile.view",
-      "student.info.edit",
-      "student.status.update",
-      "profile.view_permission",
-      "profile.edit_permissions",
-      "profile.delete_permission",
-    ];
-  }
-
-  if (role === 1) {
-    return [
-      "student.list.view",
-      "student.profile.view",
-      "student.info.edit",
-      "student.status.update",
-    ];
-  }
-
-  return [];
-}
-
 export default function StudentProfilePage() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -147,9 +132,11 @@ export default function StudentProfilePage() {
   const [error, setError] = useState("");
   const [showPermissionModal, setShowPermissionModal] = useState(false);
   const [showEditInfoModal, setShowEditInfoModal] = useState(false);
-  const [assignedPermissions, setAssignedPermissions] = useState<string[]>(
-    getDefaultAssignedPermissions(resolvedRole),
-  );
+  const [assignedPermissions, setAssignedPermissions] = useState<string[]>([]);
+  const [permissionEntries, setPermissionEntries] = useState<
+    UserPermissionEntry[]
+  >([]);
+  const [permissionSaving, setPermissionSaving] = useState(false);
   const [editForm, setEditForm] = useState<EditableStudent>({
     fullName: "",
     email: "",
@@ -164,6 +151,46 @@ export default function StudentProfilePage() {
 
   const allPermissions = useMemo(() => getAllPermissions(), []);
 
+  const fetchUserPermissions = async (targetUserId: string) => {
+    try {
+      const token = localStorage.getItem("token");
+
+      if (resolvedRole === null) {
+        throw new Error("No stored user tier found.");
+      }
+
+      const response = await fetch(
+        `http://localhost:5023/api/UserPermission/${targetUserId}?userTier=${resolvedRole}`,
+        {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          `Failed to fetch user permissions. Status: ${response.status}`,
+        );
+      }
+
+      const data: UserPermissionEntry[] = await response.json();
+
+      setPermissionEntries(data);
+      setAssignedPermissions(
+        data
+          .map((entry) => entry.permissionId ?? entry.PermissionId ?? "")
+          .filter(Boolean),
+      );
+    } catch (err) {
+      console.error("Fetch user permissions error:", err);
+      setPermissionEntries([]);
+      setAssignedPermissions([]);
+    }
+  };
+
   const fetchStudent = async () => {
     try {
       setLoading(true);
@@ -171,13 +198,20 @@ export default function StudentProfilePage() {
 
       const token = localStorage.getItem("token");
 
-      const response = await fetch("http://localhost:5023/api/User", {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      if (resolvedRole === null) {
+        throw new Error("No stored user tier found.");
+      }
+
+      const response = await fetch(
+        `http://localhost:5023/api/User?userTier=${resolvedRole}`,
+        {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
         },
-      });
+      );
 
       if (!response.ok) {
         throw new Error(`Failed to fetch student. Status: ${response.status}`);
@@ -217,8 +251,13 @@ export default function StudentProfilePage() {
         userId: String(foundStudent.userId ?? foundStudent.UserId ?? "N/A"),
       };
 
+      setStudent(foundStudent);
       setEditableStudent(normalizedStudent);
       setEditForm(normalizedStudent);
+
+      await fetchUserPermissions(
+        String(foundStudent.userId ?? foundStudent.UserId ?? ""),
+      );
     } catch (err) {
       console.error("Fetch student profile error:", err);
       setError("Failed to load student profile.");
@@ -243,18 +282,74 @@ export default function StudentProfilePage() {
     navigate("/");
   };
 
-  const togglePermission = (permissionCode: string) => {
-    if (!canManagePermissions) return;
+  const togglePermission = async (permissionCode: string) => {
+    if (!canManagePermissions || resolvedRole === null || !editableStudent) {
+      return;
+    }
 
-    setAssignedPermissions((prev) => {
-      const exists = prev.includes(permissionCode);
+    try {
+      setPermissionSaving(true);
 
-      if (exists) {
-        return prev.filter((item) => item !== permissionCode);
+      const token = localStorage.getItem("token");
+      const existingEntry = permissionEntries.find(
+        (entry) => (entry.permissionId ?? entry.PermissionId) === permissionCode,
+      );
+
+      if (existingEntry) {
+        const referenceId =
+          existingEntry.referenceId ?? existingEntry.ReferenceId ?? "";
+
+        const response = await fetch(
+          `http://localhost:5023/api/UserPermission/revoke/${referenceId}?userTier=${resolvedRole}`,
+          {
+            method: "DELETE",
+            headers: {
+              Accept: "application/json",
+              ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            },
+          },
+        );
+
+        const text = await response.text();
+        const data = text ? JSON.parse(text) : {};
+
+        if (!response.ok) {
+          alert(data.message || "Failed to revoke permission.");
+          return;
+        }
+      } else {
+        const response = await fetch(
+          `http://localhost:5023/api/UserPermission/grant?userTier=${resolvedRole}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+              ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            },
+            body: JSON.stringify({
+              targetUserId: editableStudent.userId,
+              permissionId: permissionCode,
+            }),
+          },
+        );
+
+        const text = await response.text();
+        const data = text ? JSON.parse(text) : {};
+
+        if (!response.ok) {
+          alert(data.message || "Failed to grant permission.");
+          return;
+        }
       }
 
-      return [...prev, permissionCode];
-    });
+      await fetchUserPermissions(editableStudent.userId);
+    } catch (error) {
+      console.error("Toggle permission error:", error);
+      alert("Failed to update permission.");
+    } finally {
+      setPermissionSaving(false);
+    }
   };
 
   const handleOpenEditInfoModal = () => {
@@ -263,7 +358,7 @@ export default function StudentProfilePage() {
     setShowEditInfoModal(true);
   };
 
-  const handleSaveAccountInfo = () => {
+  const handleSaveAccountInfo = async () => {
     const trimmedFullName = editForm.fullName.trim();
     const trimmedEmail = editForm.email.trim();
     const trimmedUsername = editForm.username.trim();
@@ -273,16 +368,165 @@ export default function StudentProfilePage() {
       return;
     }
 
-    const updatedStudent: EditableStudent = {
-      ...editForm,
-      fullName: trimmedFullName,
-      email: trimmedEmail,
-      username: trimmedUsername,
-    };
+    const nameParts = trimmedFullName.split(" ").filter(Boolean);
+    const firstName = nameParts[0] ?? "";
+    const lastName = nameParts.slice(1).join(" ") || "";
 
-    setEditableStudent(updatedStudent);
-    setEditForm(updatedStudent);
-    setShowEditInfoModal(false);
+    if (!firstName || !lastName) {
+      alert("Please enter both first name and last name.");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+
+      if (resolvedRole === null) {
+        alert("No stored user tier found.");
+        return;
+      }
+
+      const response = await fetch(
+        `http://localhost:5023/api/User/edit/${editForm.userId}?userTier=${resolvedRole}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: JSON.stringify({
+            userFirstName: firstName,
+            userLastName: lastName,
+            userEmail: trimmedEmail,
+            userUsername: trimmedUsername,
+            userTier:
+              editForm.role === "AppAdmin"
+                ? 0
+                : editForm.role === "Admin"
+                  ? 1
+                  : 2,
+            userStatus: editForm.status === "Active" ? 0 : 1,
+          }),
+        },
+      );
+
+      const text = await response.text();
+      const data = text ? JSON.parse(text) : {};
+
+      if (!response.ok) {
+        alert(data.message || "Failed to update student account.");
+        return;
+      }
+
+      const updatedStudent: EditableStudent = {
+        ...editForm,
+        fullName: trimmedFullName,
+        email: trimmedEmail,
+        username: trimmedUsername,
+      };
+
+      setEditableStudent(updatedStudent);
+      setEditForm(updatedStudent);
+      setShowEditInfoModal(false);
+      alert(data.message || "Student account updated successfully.");
+    } catch (error) {
+      console.error("Save student account info error:", error);
+      alert("Failed to update student account.");
+    }
+  };
+
+  const handleDeactivateStudent = async () => {
+    if (!editableStudent) return;
+
+    const confirmed = window.confirm("Deactivate this student account?");
+    if (!confirmed) return;
+
+    try {
+      const token = localStorage.getItem("token");
+
+      if (resolvedRole === null) {
+        alert("No stored user tier found.");
+        return;
+      }
+
+      const response = await fetch(
+        `http://localhost:5023/api/User/deactivate/${editableStudent.userId}?userTier=${resolvedRole}`,
+        {
+          method: "PUT",
+          headers: {
+            Accept: "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+        },
+      );
+
+      const text = await response.text();
+      const data = text ? JSON.parse(text) : {};
+
+      if (!response.ok) {
+        alert(data.message || "Failed to deactivate student.");
+        return;
+      }
+
+      const updatedStudent = {
+        ...editableStudent,
+        status: "Inactive" as const,
+      };
+
+      setEditableStudent(updatedStudent);
+      setEditForm(updatedStudent);
+      alert(data.message || "Student deactivated successfully.");
+    } catch (error) {
+      console.error("Deactivate student error:", error);
+      alert("Failed to deactivate student.");
+    }
+  };
+
+  const handleReactivateStudent = async () => {
+    if (!editableStudent) return;
+
+    const confirmed = window.confirm("Reactivate this student account?");
+    if (!confirmed) return;
+
+    try {
+      const token = localStorage.getItem("token");
+
+      if (resolvedRole === null) {
+        alert("No stored user tier found.");
+        return;
+      }
+
+      const response = await fetch(
+        `http://localhost:5023/api/User/reactivate/${editableStudent.userId}?userTier=${resolvedRole}`,
+        {
+          method: "PUT",
+          headers: {
+            Accept: "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+        },
+      );
+
+      const text = await response.text();
+      const data = text ? JSON.parse(text) : {};
+
+      if (!response.ok) {
+        alert(data.message || "Failed to reactivate student.");
+        return;
+      }
+
+      const updatedStudent = {
+        ...editableStudent,
+        status: "Active" as const,
+      };
+
+      setEditableStudent(updatedStudent);
+      setEditForm(updatedStudent);
+      alert(data.message || "Student reactivated successfully.");
+    } catch (error) {
+      console.error("Reactivate student error:", error);
+      alert("Failed to reactivate student.");
+    }
   };
 
   const initials = useMemo(() => {
@@ -401,6 +645,29 @@ export default function StudentProfilePage() {
                     <strong>{editableStudent.userId}</strong>
                   </div>
                 </div>
+
+                <div
+                  className="student-modal-actions"
+                  style={{ marginTop: "1rem" }}
+                >
+                  {editableStudent.status === "Active" ? (
+                    <button
+                      type="button"
+                      className="dashboard-settings-cancel-btn"
+                      onClick={handleDeactivateStudent}
+                    >
+                      Deactivate Account
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      className="dashboard-primary-btn"
+                      onClick={handleReactivateStudent}
+                    >
+                      Reactivate Account
+                    </button>
+                  )}
+                </div>
               </div>
 
               <div className="dashboard-panel student-profile-card">
@@ -409,7 +676,7 @@ export default function StudentProfilePage() {
                     <h2>Permissions</h2>
                     <p className="student-panel-subtext">
                       {canManagePermissions
-                        ? "Click Edit to add or remove permissions."
+                        ? "Click Edit to add or remove permissions for this student only."
                         : "View-only permission access."}
                     </p>
                   </div>
@@ -464,7 +731,7 @@ export default function StudentProfilePage() {
                 <h2>Edit Permissions</h2>
                 <p>
                   Click a pill to add or remove a permission. Highlighted pills
-                  are currently assigned.
+                  are currently assigned to this student only.
                 </p>
               </div>
 
@@ -489,6 +756,7 @@ export default function StudentProfilePage() {
                       isActive ? "active" : ""
                     }`}
                     onClick={() => togglePermission(permission)}
+                    disabled={permissionSaving}
                   >
                     {permission}
                   </button>
@@ -501,6 +769,7 @@ export default function StudentProfilePage() {
                 type="button"
                 className="dashboard-primary-btn"
                 onClick={() => setShowPermissionModal(false)}
+                disabled={permissionSaving}
               >
                 Done
               </button>

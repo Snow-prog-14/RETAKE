@@ -4,11 +4,22 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite("Data Source=studybuddy.db"));
+    options.UseMySql(
+        connectionString!,
+        new MySqlServerVersion(new Version(8, 0, 36)),
+        mysqlOptions => mysqlOptions.EnableRetryOnFailure()
+    ));
+
+builder.Services.Configure<EmailSettings>(
+    builder.Configuration.GetSection("EmailSettings"));
 
 builder.Services.AddScoped<PasswordService>();
 builder.Services.AddScoped<PermissionService>();
+builder.Services.AddScoped<EmailService>();
+builder.Services.AddScoped<ForgotPasswordService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

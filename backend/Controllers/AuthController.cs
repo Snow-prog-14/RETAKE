@@ -51,7 +51,8 @@ public class AuthController : ControllerBase
             MustChangePass = request.MustChangePass,
             UserPasswordHash = _passwordService.HashPassword(request.Password),
             UserTier = allowedTier,
-            UserStatus = 0
+            UserStatus = 0,
+            UserPhoto = string.Empty
         };
 
         _context.Users.Add(user);
@@ -84,9 +85,11 @@ public class AuthController : ControllerBase
             UserFirstName = user.UserFirstName,
             UserTier = user.UserTier,
             MustChangePass = user.MustChangePass,
-            UserStatus = user.UserStatus
+            UserStatus = user.UserStatus,
+            UserPhoto = user.UserPhoto
         });
     }
+
     [HttpPost("login")]
     public IActionResult Login(LoginRequestDto request)
     {
@@ -130,7 +133,8 @@ public class AuthController : ControllerBase
                 UserFirstName = user.UserFirstName,
                 UserTier = user.UserTier,
                 MustChangePass = user.MustChangePass,
-                UserStatus = user.UserStatus
+                UserStatus = user.UserStatus,
+                UserPhoto = user.UserPhoto
             });
         }
 
@@ -161,9 +165,11 @@ public class AuthController : ControllerBase
             UserFirstName = user.UserFirstName,
             UserTier = user.UserTier,
             MustChangePass = user.MustChangePass,
-            UserStatus = user.UserStatus
+            UserStatus = user.UserStatus,
+            UserPhoto = user.UserPhoto
         });
     }
+
     [HttpPut("change-password/{id}")]
     public IActionResult ChangePassword(string id, ChangePasswordRequestDto request)
     {
@@ -206,6 +212,110 @@ public class AuthController : ControllerBase
             message = "Password changed successfully.",
             userId = user.UserId,
             mustChangePass = user.MustChangePass
+        });
+    }
+
+    [HttpPut("update-profile/{id}")]
+    public IActionResult UpdateOwnProfile(string id, UpdateOwnProfileRequestDto request)
+    {
+        var user = _context.Users.FirstOrDefault(u => u.UserId == id);
+
+        if (user == null)
+        {
+            return NotFound(new { message = "User not found." });
+        }
+
+        var normalizedEmail = request.UserEmail.Trim().ToLower();
+
+        var existingUser = _context.Users.FirstOrDefault(u =>
+            u.UserId != id &&
+            u.UserEmail != null &&
+            u.UserEmail.ToLower() == normalizedEmail
+        );
+
+        if (existingUser != null)
+        {
+            return BadRequest(new { message = "Email is already in use." });
+        }
+
+        var oldValue =
+            $"UserFirstName: {user.UserFirstName}, UserLastName: {user.UserLastName}, UserEmail: {user.UserEmail}, UserUsername: {user.UserUsername}";
+
+        user.UserFirstName = request.UserFirstName.Trim();
+        user.UserLastName = request.UserLastName.Trim();
+        user.UserEmail = normalizedEmail;
+        user.UserUsername = request.UserUsername.Trim();
+
+        _context.SaveChanges();
+
+        var newValue =
+            $"UserFirstName: {user.UserFirstName}, UserLastName: {user.UserLastName}, UserEmail: {user.UserEmail}, UserUsername: {user.UserUsername}";
+
+        var auditLog = new AuditTrail
+        {
+            AuditTrailId = Guid.NewGuid().ToString(),
+            UserId = user.UserId,
+            ActionType = "UPDATE_PROFILE",
+            TargetTable = "user_list_table",
+            TargetId = user.UserId,
+            OldValue = oldValue,
+            NewValue = newValue,
+            Description = "User updated own profile.",
+            Status = "SUCCESS"
+        };
+
+        _context.AuditTrails.Add(auditLog);
+        _context.SaveChanges();
+
+        return Ok(new
+        {
+            message = "Profile updated successfully.",
+            userId = user.UserId,
+            userEmail = user.UserEmail,
+            userUsername = user.UserUsername,
+            userLastName = user.UserLastName,
+            userFirstName = user.UserFirstName,
+            userTier = user.UserTier,
+            mustChangePass = user.MustChangePass,
+            userStatus = user.UserStatus,
+            userPhoto = user.UserPhoto
+        });
+    }
+
+    [HttpPut("update-photo/{id}")]
+    public IActionResult UpdateProfilePhoto(string id, UpdateProfilePhotoRequestDto request)
+    {
+        var user = _context.Users.FirstOrDefault(u => u.UserId == id);
+
+        if (user == null)
+        {
+            return NotFound(new { message = "User not found." });
+        }
+
+        user.UserPhoto = request.UserPhoto?.Trim() ?? string.Empty;
+        _context.SaveChanges();
+
+        var auditLog = new AuditTrail
+        {
+            AuditTrailId = Guid.NewGuid().ToString(),
+            UserId = user.UserId,
+            ActionType = "UPDATE_PROFILE_PHOTO",
+            TargetTable = "user_list_table",
+            TargetId = user.UserId,
+            OldValue = "UserPhoto updated",
+            NewValue = "UserPhoto updated",
+            Description = "User updated profile photo.",
+            Status = "SUCCESS"
+        };
+
+        _context.AuditTrails.Add(auditLog);
+        _context.SaveChanges();
+
+        return Ok(new
+        {
+            message = "Profile photo updated successfully.",
+            userId = user.UserId,
+            userPhoto = user.UserPhoto
         });
     }
 }

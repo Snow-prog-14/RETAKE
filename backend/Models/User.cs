@@ -11,4 +11,5 @@ public class User
     public int MustChangePass { get; set; } = 0;
     public string UserPasswordHash { get; set; } = string.Empty;
     public int UserStatus { get; set; } = 0;
+    public string UserPhoto { get; set; } = string.Empty;
 }

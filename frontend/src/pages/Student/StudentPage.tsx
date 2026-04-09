@@ -7,6 +7,7 @@ import {
   changeMyPassword,
   deactivateMyAccount,
   updateMyProfile,
+  updateMyProfilePhoto,
 } from "../../components/Profile/profileService";
 import "./StudentPage.css";
 import "../../components/DashboardShell.css";
@@ -25,6 +26,33 @@ export default function StudentPage() {
     { label: "Support", path: "/student/support" },
     { label: "Settings", path: "/student/settings" },
   ];
+
+  const storedUserRaw = localStorage.getItem("user");
+
+  let storedUser: Record<string, unknown> | null = null;
+
+  try {
+    storedUser = storedUserRaw ? (JSON.parse(storedUserRaw) as Record<string, unknown>) : null;
+  } catch (error) {
+    console.error("Failed to parse stored user:", error);
+    storedUser = null;
+  }
+
+  const initialFirstName = String(
+    storedUser?.userFirstName ?? storedUser?.UserFirstName ?? "ALEJANDRA",
+  );
+  const initialLastName = String(
+    storedUser?.userLastName ?? storedUser?.UserLastName ?? "MARAASIN",
+  );
+  const initialUsername = String(
+    storedUser?.userUsername ?? storedUser?.UserUsername ?? "alejandra.maraasin",
+  );
+  const initialEmail = String(
+    storedUser?.userEmail ?? storedUser?.UserEmail ?? "alejandramaraasin6@gmail.com",
+  );
+  const initialPhoto = String(
+    storedUser?.userPhoto ?? storedUser?.UserPhoto ?? "",
+  );
 
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [currentTheme, setCurrentTheme] = useState(
@@ -49,12 +77,12 @@ export default function StudentPage() {
   const [profileMessage, setProfileMessage] = useState("");
 
   const [profile, setProfile] = useState({
-    fullName: "ALEJANDRA MARAASIN",
-    username: "alejandra.maraasin",
-    email: "alejandramaraasin6@gmail.com",
+    fullName: `${initialFirstName} ${initialLastName}`.trim(),
+    username: initialUsername,
+    email: initialEmail,
     status: "Online",
     role: "Student",
-    photo: "",
+    photo: initialPhoto,
     stats: [
       { label: "Pending Tasks", value: 4 },
       { label: "Tasks Completed", value: 12 },
@@ -130,7 +158,13 @@ export default function StudentPage() {
     try {
       setProfileMessage("");
 
-      await updateMyProfile();
+      await updateMyProfile({
+        username: data.username,
+      });
+
+      await updateMyProfilePhoto({
+        photo: data.photo,
+      });
 
       setProfile((prev) => ({
         ...prev,
@@ -144,7 +178,7 @@ export default function StudentPage() {
       const message =
         error instanceof Error
           ? error.message
-          : "Username update is not available yet.";
+          : "Failed to update profile.";
 
       setProfileMessage(message);
     }
