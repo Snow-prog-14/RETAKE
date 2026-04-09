@@ -1,6 +1,7 @@
 # .NET build files
 **/bin/
 **/obj/
+backend/backend.csproj
 
 # SQLite
 *.db
